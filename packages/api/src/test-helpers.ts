@@ -140,6 +140,7 @@ ALTER TABLE tasks ADD COLUMN expires_at TEXT;
 ALTER TABLE tasks ADD COLUMN expired_at TEXT;
 CREATE INDEX IF NOT EXISTS idx_tasks_open_expires ON tasks(status, expires_at);
 CREATE INDEX IF NOT EXISTS idx_tasks_status_created ON tasks(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_verifications_created ON verifications(created_at DESC);
 `.trim();
 
 /**
