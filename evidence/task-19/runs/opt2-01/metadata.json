@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-02T16:15:18.598Z",
+  "mode": "full",
+  "upstreamHead": "167983b5faae1da46e0327a204a07866a239e285",
+  "platform": "linux",
+  "arch": "arm64",
+  "node": "v22.23.3",
+  "cpu": "Neoverse-N1",
+  "availableParallelism": 2,
+  "workload": {
+    "schema": 1,
+    "dataset": {
+      "agents": 2000,
+      "tasks": 50000,
+      "verifications": 100000
+    },
+    "concurrency": 4,
+    "warmupRequests": 120,
+    "measuredRequests": 400,
+    "runs": 5,
+    "profileRequests": 400,
+    "endpoints": [
+      {
+        "name": "tasks-open",
+        "path": "/v1/tasks?status=open&limit=100"
+      },
+      {
+        "name": "tasks-verified",
+        "path": "/v1/tasks?status=verified&limit=100"
+      },
+      {
+        "name": "agent-profile",
+        "path": "/v1/agents/Benchmark-0001"
+      },
+      {
+        "name": "status",
+        "path": "/v1/status"
+      },
+      {
+        "name": "chain",
+        "path": "/v1/chain"
+      }
+    ]
+  },
+  "workloadSha256": "55f33155142fa300dc88b152221632e14f7f6a9a2d8e298665760120b7f9e6bd",
+  "sourceSha256": {
+    "bench/server.ts": "73102f0a0e90de37bf0b3d98a2ad5fa18ef661e5955d627a5252f6c151d5b7e0",
+    "bench/run.mjs": "901887b3c8b5a338825e7accdf792bc882910a0d7239de0ad484f44cce3fc7ef",
+    "packages/api/src/index.ts": "b0d381d85bf22b69506e35c9ff68ed918039a1b858358e591131ab90a9a6eec7",
+    "packages/api/src/db/sqlite-adapter.ts": "cac56a7b9c7adf10cef3d56275a5049df6f03cabf6a8cb802a303f9b9d36079c",
+    "packages/api/src/tasks/service.ts": "d66365168ce0d92beb583be2f337aca797babfc8e3b00f2a7cf23173854e2dc9",
+    "packages/api/src/tasks/settled.ts": "9320f8ac9d3cd4ef8090470ad0ef018a37d9e50cf572ea44da369d948a2fead9"
+  }
+}

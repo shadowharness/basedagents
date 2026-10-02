@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ShadowHarness <contact@shadowharness.com>
+Date: Sat, 3 Oct 2026 00:47:00 +0900
+Subject: [PATCH] Close benchmark server when its driver disconnects
+
+---
+ bench/server.ts | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/bench/server.ts b/bench/server.ts
+index 6655b7b..fa43a3a 100644
+--- a/bench/server.ts
++++ b/bench/server.ts
+@@ -77,6 +77,8 @@ globalThis.fetch = (async () => { throw new Error('Benchmark server external fet
+ const session = new inspector.Session(); session.connect();
+ const post = (method: string, params: object = {}) => new Promise<any>((resolve, reject) => session.post(method as any, params, (error, result) => error ? reject(error) : resolve(result)));
+ const server = serve({ fetch: req => app.fetch(req, env), hostname: '127.0.0.1', port: 0 }, info => process.send?.({ type: 'ready', port: info.port, dataset: workload.dataset }));
++// Do not retain an orphan HTTP server if the measurement driver exits.
++process.on('disconnect', () => server.close(() => { session.disconnect(); sqlite.close(); process.exit(1); }));
+ process.on('message', async (message: any) => {
+   try {
+     if (message.type === 'profile-start') {

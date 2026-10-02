@@ -1,0 +1,37 @@
+{
+  "projectionMode": "rust-fresh",
+  "cpuMicroseconds": {
+    "user": 452938,
+    "system": 108151
+  },
+  "elapsedMs": 550.8054049999992,
+  "memoryBefore": {
+    "rss": 198639616,
+    "heapTotal": 64262144,
+    "heapUsed": 44431664,
+    "external": 8828111,
+    "arrayBuffers": 1662845
+  },
+  "memoryAfter": {
+    "rss": 198639616,
+    "heapTotal": 64262144,
+    "heapUsed": 46199448,
+    "external": 8611537,
+    "arrayBuffers": 1446411
+  },
+  "projection": [
+    {
+      "mode": "rust-fresh:8388608:64",
+      "hits": 5038,
+      "misses": 2,
+      "rebuilds": 2,
+      "evictions": 0,
+      "oversize": 0,
+      "changedDuringBuild": 0,
+      "unavailable": 0,
+      "pages": 2,
+      "retainedBytes": 365076,
+      "outputCapacity": 0
+    }
+  ]
+}

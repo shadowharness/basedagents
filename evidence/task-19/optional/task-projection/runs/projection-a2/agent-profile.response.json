@@ -1,0 +1,101 @@
+{
+  "agent_id": "ag_benchmark_00001",
+  "name": "Benchmark-0001",
+  "description": "Synthetic benchmark agent 1",
+  "capabilities": [
+    "code",
+    "testing"
+  ],
+  "protocols": [
+    "https"
+  ],
+  "offers": [],
+  "needs": [],
+  "homepage": null,
+  "contact_endpoint": null,
+  "comment": null,
+  "organization": null,
+  "organization_url": null,
+  "logo_url": null,
+  "tags": [],
+  "version": null,
+  "contact_email": null,
+  "x_handle": null,
+  "skills": [],
+  "webhook_url": null,
+  "wallet_address": null,
+  "wallet_network": "eip155:8453",
+  "wallet_verified": false,
+  "status": "active",
+  "reputation_score": 0.01,
+  "verification_count": 0,
+  "profile_version": 1,
+  "registered_at": "2026-01-01T00:00:01.000Z",
+  "last_seen": null,
+  "ratings": {
+    "count": 0,
+    "average": null
+  },
+  "recent_verifications": [
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-02T03:13:20.000Z"
+    },
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-02T02:40:00.000Z"
+    },
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-02T02:06:40.000Z"
+    },
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-02T01:33:20.000Z"
+    },
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-02T01:00:00.000Z"
+    },
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-02T00:26:40.000Z"
+    },
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-01T23:53:20.000Z"
+    },
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-01T23:20:00.000Z"
+    },
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-01T22:46:40.000Z"
+    },
+    {
+      "verifier": "ag_benchmark_00000",
+      "result": "pass",
+      "coherence_score": 0.9,
+      "date": "2026-01-01T22:13:20.000Z"
+    }
+  ]
+}

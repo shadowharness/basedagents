@@ -1,0 +1,3660 @@
+{
+  "at": "2026-10-02T20:10:28.743Z",
+  "source": "3db101e6040287271ed94e2a6ae2d488d21cb5bf",
+  "scope": "Fixed local Node/SQLite HTTP workload; Rust compiled to Wasm. SQL remains durable source. No production D1 latency claim.",
+  "samples": 80000,
+  "tests": 1723,
+  "testFiles": 99,
+  "typecheckExit": 0,
+  "modes": {
+    "off": {
+      "labels": [
+        "projection-a1",
+        "projection-a2"
+      ],
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "p50": 38.26914449999822,
+          "p99": 87.34913799999958,
+          "p50Range": {
+            "min": 35.41708700000163,
+            "max": 43.480075999999826
+          },
+          "p99Range": {
+            "min": 71.83698799999911,
+            "max": 157.86288499999864
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            12872.8,
+            12229.3075
+          ],
+          "rssBytes": [
+            179507200,
+            184176640
+          ],
+          "projection": [
+            [],
+            []
+          ],
+          "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+        },
+        {
+          "endpoint": "tasks-verified",
+          "p50": 38.6165304999995,
+          "p99": 85.86573800000042,
+          "p50Range": {
+            "min": 35.221002999998746,
+            "max": 42.95563000000402
+          },
+          "p99Range": {
+            "min": 70.11588499999925,
+            "max": 120.0482520000005
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            13695.6925,
+            12979.965
+          ],
+          "rssBytes": [
+            184401920,
+            171126784
+          ],
+          "projection": [
+            [],
+            []
+          ],
+          "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+        },
+        {
+          "endpoint": "agent-profile",
+          "p50": 3.9533140000057756,
+          "p99": 11.274254500003735,
+          "p50Range": {
+            "min": 3.5730899999980466,
+            "max": 4.842666000011377
+          },
+          "p99Range": {
+            "min": 9.225847000001522,
+            "max": 16.090460999999777
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            1729.4075,
+            1492.9325
+          ],
+          "rssBytes": [
+            173854720,
+            176689152
+          ],
+          "projection": [
+            [],
+            []
+          ],
+          "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+        },
+        {
+          "endpoint": "status",
+          "p50": 23.41250150000269,
+          "p99": 37.027029500000936,
+          "p50Range": {
+            "min": 21.66321899999457,
+            "max": 24.502737000002526
+          },
+          "p99Range": {
+            "min": 32.69656899999245,
+            "max": 41.39736799999082
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            8253.09,
+            6795.3925
+          ],
+          "rssBytes": [
+            177827840,
+            183193600
+          ],
+          "projection": [
+            [],
+            []
+          ],
+          "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+        },
+        {
+          "endpoint": "chain",
+          "p50": 3.4259470000033616,
+          "p99": 6.796813500004646,
+          "p50Range": {
+            "min": 3.228004000004148,
+            "max": 3.605009999999311
+          },
+          "p99Range": {
+            "min": 5.333192999998573,
+            "max": 12.081164999995963
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            1443.1725,
+            1494.1475
+          ],
+          "rssBytes": [
+            177045504,
+            183062528
+          ],
+          "projection": [
+            [],
+            []
+          ],
+          "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+        }
+      ]
+    },
+    "js": {
+      "labels": [
+        "projection-b1",
+        "projection-b2"
+      ],
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "p50": 10.474543999999696,
+          "p99": 40.574517499999274,
+          "p50Range": {
+            "min": 7.239659000000756,
+            "max": 19.589829000000464
+          },
+          "p99Range": {
+            "min": 33.08305499999915,
+            "max": 95.81311500000083
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            4269.01,
+            3328.0075
+          ],
+          "rssBytes": [
+            192397312,
+            174075904
+          ],
+          "projection": [
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 2519,
+                "misses": 1,
+                "rebuilds": 1,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 1,
+                "retainedBytes": 168261,
+                "outputCapacity": 166922
+              }
+            ],
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 2519,
+                "misses": 1,
+                "rebuilds": 1,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 1,
+                "retainedBytes": 168261,
+                "outputCapacity": 166922
+              }
+            ]
+          ],
+          "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+        },
+        {
+          "endpoint": "tasks-verified",
+          "p50": 10.097838499999853,
+          "p99": 36.9844475000009,
+          "p50Range": {
+            "min": 8.338354999999865,
+            "max": 12.80153600000267
+          },
+          "p99Range": {
+            "min": 25.946716000002198,
+            "max": 98.0817879999995
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            3850.965,
+            3415.355
+          ],
+          "rssBytes": [
+            194580480,
+            197042176
+          ],
+          "projection": [
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 195472
+              }
+            ],
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 195472
+              }
+            ]
+          ],
+          "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+        },
+        {
+          "endpoint": "agent-profile",
+          "p50": 3.8281329999990703,
+          "p99": 10.524404499998127,
+          "p50Range": {
+            "min": 3.4379269999990356,
+            "max": 4.538622000000032
+          },
+          "p99Range": {
+            "min": 8.187552999999753,
+            "max": 26.86200800000006
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            1604.6025,
+            1634.415
+          ],
+          "rssBytes": [
+            203632640,
+            203362304
+          ],
+          "projection": [
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 195472
+              }
+            ],
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 195472
+              }
+            ]
+          ],
+          "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+        },
+        {
+          "endpoint": "status",
+          "p50": 23.15709749999587,
+          "p99": 36.22459700000036,
+          "p50Range": {
+            "min": 21.581457000000228,
+            "max": 27.241494000001694
+          },
+          "p99Range": {
+            "min": 32.75117099999625,
+            "max": 69.56027500000346
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            7644.8125,
+            6910.81
+          ],
+          "rssBytes": [
+            209059840,
+            208289792
+          ],
+          "projection": [
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 195472
+              }
+            ],
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 195472
+              }
+            ]
+          ],
+          "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+        },
+        {
+          "endpoint": "chain",
+          "p50": 3.4827280000026803,
+          "p99": 6.813513500004774,
+          "p50Range": {
+            "min": 3.316805000002205,
+            "max": 3.8787739999970654
+          },
+          "p99Range": {
+            "min": 6.00244300000486,
+            "max": 11.586919000001217
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            1492.3975,
+            1674.8425
+          ],
+          "rssBytes": [
+            207237120,
+            208158720
+          ],
+          "projection": [
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 195472
+              }
+            ],
+            [
+              {
+                "mode": "js:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 195472
+              }
+            ]
+          ],
+          "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+        }
+      ]
+    },
+    "rust-fresh": {
+      "labels": [
+        "projection-c01",
+        "projection-c02"
+      ],
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "p50": 9.741914000001088,
+          "p99": 33.911245999999664,
+          "p50Range": {
+            "min": 7.876028000000588,
+            "max": 12.29584900000009
+          },
+          "p99Range": {
+            "min": 26.609325000001263,
+            "max": 49.857764000000316
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            3548.4125,
+            3401.845
+          ],
+          "rssBytes": [
+            190025728,
+            183742464
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 2519,
+                "misses": 1,
+                "rebuilds": 1,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 1,
+                "retainedBytes": 168261,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 2519,
+                "misses": 1,
+                "rebuilds": 1,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 1,
+                "retainedBytes": 168261,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+        },
+        {
+          "endpoint": "tasks-verified",
+          "p50": 10.986831000000166,
+          "p99": 39.28998000000138,
+          "p50Range": {
+            "min": 8.725518999999622,
+            "max": 16.691509000000224
+          },
+          "p99Range": {
+            "min": 31.408870999999635,
+            "max": 88.13484999999855
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            3138.4925,
+            3205.125
+          ],
+          "rssBytes": [
+            189603840,
+            196816896
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+        },
+        {
+          "endpoint": "agent-profile",
+          "p50": 3.5861894999998185,
+          "p99": 9.947656500000448,
+          "p50Range": {
+            "min": 3.5048879999994824,
+            "max": 4.1046170000008715
+          },
+          "p99Range": {
+            "min": 8.669959000002564,
+            "max": 13.111259999997856
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            1810.085,
+            1608.355
+          ],
+          "rssBytes": [
+            192888832,
+            206061568
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+        },
+        {
+          "endpoint": "status",
+          "p50": 21.839560500000516,
+          "p99": 37.589216500000475,
+          "p50Range": {
+            "min": 21.60893699999724,
+            "max": 25.01398400000471
+          },
+          "p99Range": {
+            "min": 32.50840600000083,
+            "max": 64.50216699999874
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            6731.88,
+            6838.63
+          ],
+          "rssBytes": [
+            196341760,
+            210034688
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+        },
+        {
+          "endpoint": "chain",
+          "p50": 3.319445500001166,
+          "p99": 6.478989000002912,
+          "p50Range": {
+            "min": 3.2647649999998976,
+            "max": 4.2338579999996
+          },
+          "p99Range": {
+            "min": 5.38567399999738,
+            "max": 10.245740999998816
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            1402.7225,
+            1415.785
+          ],
+          "rssBytes": [
+            198639616,
+            209649664
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-fresh:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+        }
+      ]
+    },
+    "rust-reuse": {
+      "labels": [
+        "projection-c11",
+        "projection-c12"
+      ],
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "p50": 9.810874499999954,
+          "p99": 36.24051800000052,
+          "p50Range": {
+            "min": 8.255753000001278,
+            "max": 19.599308999999266
+          },
+          "p99Range": {
+            "min": 27.37617599999976,
+            "max": 95.79811599999994
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            3092.0175,
+            3222.5675
+          ],
+          "rssBytes": [
+            190730240,
+            200085504
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 2519,
+                "misses": 1,
+                "rebuilds": 1,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 1,
+                "retainedBytes": 168261,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 2519,
+                "misses": 1,
+                "rebuilds": 1,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 1,
+                "retainedBytes": 168261,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+        },
+        {
+          "endpoint": "tasks-verified",
+          "p50": 10.169380000001183,
+          "p99": 39.504863000000114,
+          "p50Range": {
+            "min": 8.64115899999888,
+            "max": 12.079406000000745
+          },
+          "p99Range": {
+            "min": 25.85383499999807,
+            "max": 91.98582399999941
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            3023.005,
+            3139.7575
+          ],
+          "rssBytes": [
+            192872448,
+            196009984
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+        },
+        {
+          "endpoint": "agent-profile",
+          "p50": 3.7208109999992303,
+          "p99": 9.872115499998472,
+          "p50Range": {
+            "min": 3.5654090000025462,
+            "max": 4.725104999997711
+          },
+          "p99Range": {
+            "min": 8.95052299999952,
+            "max": 15.8684179999982
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            1583.17,
+            1592.5075
+          ],
+          "rssBytes": [
+            194338816,
+            203984896
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+        },
+        {
+          "endpoint": "status",
+          "p50": 21.80279949999749,
+          "p99": 34.70567700000174,
+          "p50Range": {
+            "min": 21.55929599999945,
+            "max": 23.09879699999874
+          },
+          "p99Range": {
+            "min": 32.23176299999977,
+            "max": 73.90453500000149
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            6765.1525,
+            7169.995
+          ],
+          "rssBytes": [
+            205246464,
+            208760832
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+        },
+        {
+          "endpoint": "chain",
+          "p50": 3.513387999999395,
+          "p99": 9.775093500000366,
+          "p50Range": {
+            "min": 3.380166000002646,
+            "max": 4.994309000001522
+          },
+          "p99Range": {
+            "min": 6.318526999995811,
+            "max": 21.678337999997893
+          },
+          "cpuMicrosecondsPerProfileRequest": [
+            1551.435,
+            1409.655
+          ],
+          "rssBytes": [
+            206553088,
+            208801792
+          ],
+          "projection": [
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ],
+            [
+              {
+                "mode": "rust-reuse:8388608:64",
+                "hits": 5038,
+                "misses": 2,
+                "rebuilds": 2,
+                "evictions": 0,
+                "oversize": 0,
+                "changedDuringBuild": 0,
+                "unavailable": 0,
+                "pages": 2,
+                "retainedBytes": 365076,
+                "outputCapacity": 0
+              }
+            ]
+          ],
+          "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+        }
+      ]
+    }
+  },
+  "comparisons": [
+    {
+      "name": "avoid-repeated-work",
+      "before": "off",
+      "after": "js",
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "p50Ratio": 3.653537996498877,
+          "p99Ratio": 2.152807806032472,
+          "p50RangesDisjoint": true,
+          "cpuRatio": 3.304205564881218,
+          "before": {
+            "endpoint": "tasks-open",
+            "p50": 38.26914449999822,
+            "p99": 87.34913799999958,
+            "p50Range": {
+              "min": 35.41708700000163,
+              "max": 43.480075999999826
+            },
+            "p99Range": {
+              "min": 71.83698799999911,
+              "max": 157.86288499999864
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              12872.8,
+              12229.3075
+            ],
+            "rssBytes": [
+              179507200,
+              184176640
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+          },
+          "after": {
+            "endpoint": "tasks-open",
+            "p50": 10.474543999999696,
+            "p99": 40.574517499999274,
+            "p50Range": {
+              "min": 7.239659000000756,
+              "max": 19.589829000000464
+            },
+            "p99Range": {
+              "min": 33.08305499999915,
+              "max": 95.81311500000083
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              4269.01,
+              3328.0075
+            ],
+            "rssBytes": [
+              192397312,
+              174075904
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 166922
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 166922
+                }
+              ]
+            ],
+            "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+          }
+        },
+        {
+          "endpoint": "tasks-verified",
+          "p50Ratio": 3.8242372860290907,
+          "p99Ratio": 2.3216715080034205,
+          "p50RangesDisjoint": true,
+          "cpuRatio": 3.6711371781039097,
+          "before": {
+            "endpoint": "tasks-verified",
+            "p50": 38.6165304999995,
+            "p99": 85.86573800000042,
+            "p50Range": {
+              "min": 35.221002999998746,
+              "max": 42.95563000000402
+            },
+            "p99Range": {
+              "min": 70.11588499999925,
+              "max": 120.0482520000005
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              13695.6925,
+              12979.965
+            ],
+            "rssBytes": [
+              184401920,
+              171126784
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+          },
+          "after": {
+            "endpoint": "tasks-verified",
+            "p50": 10.097838499999853,
+            "p99": 36.9844475000009,
+            "p50Range": {
+              "min": 8.338354999999865,
+              "max": 12.80153600000267
+            },
+            "p99Range": {
+              "min": 25.946716000002198,
+              "max": 98.0817879999995
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3850.965,
+              3415.355
+            ],
+            "rssBytes": [
+              194580480,
+              197042176
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ]
+            ],
+            "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+          }
+        },
+        {
+          "endpoint": "agent-profile",
+          "p50Ratio": 1.0327002745220022,
+          "p99Ratio": 1.07124868680273,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 0.9948510620890441,
+          "before": {
+            "endpoint": "agent-profile",
+            "p50": 3.9533140000057756,
+            "p99": 11.274254500003735,
+            "p50Range": {
+              "min": 3.5730899999980466,
+              "max": 4.842666000011377
+            },
+            "p99Range": {
+              "min": 9.225847000001522,
+              "max": 16.090460999999777
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1729.4075,
+              1492.9325
+            ],
+            "rssBytes": [
+              173854720,
+              176689152
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+          },
+          "after": {
+            "endpoint": "agent-profile",
+            "p50": 3.8281329999990703,
+            "p99": 10.524404499998127,
+            "p50Range": {
+              "min": 3.4379269999990356,
+              "max": 4.538622000000032
+            },
+            "p99Range": {
+              "min": 8.187552999999753,
+              "max": 26.86200800000006
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1604.6025,
+              1634.415
+            ],
+            "rssBytes": [
+              203632640,
+              203362304
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ]
+            ],
+            "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+          }
+        },
+        {
+          "endpoint": "status",
+          "p50Ratio": 1.0110291887835625,
+          "p99Ratio": 1.0221515921902615,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.0338604549547776,
+          "before": {
+            "endpoint": "status",
+            "p50": 23.41250150000269,
+            "p99": 37.027029500000936,
+            "p50Range": {
+              "min": 21.66321899999457,
+              "max": 24.502737000002526
+            },
+            "p99Range": {
+              "min": 32.69656899999245,
+              "max": 41.39736799999082
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              8253.09,
+              6795.3925
+            ],
+            "rssBytes": [
+              177827840,
+              183193600
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+          },
+          "after": {
+            "endpoint": "status",
+            "p50": 23.15709749999587,
+            "p99": 36.22459700000036,
+            "p50Range": {
+              "min": 21.581457000000228,
+              "max": 27.241494000001694
+            },
+            "p99Range": {
+              "min": 32.75117099999625,
+              "max": 69.56027500000346
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              7644.8125,
+              6910.81
+            ],
+            "rssBytes": [
+              209059840,
+              208289792
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ]
+            ],
+            "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+          }
+        },
+        {
+          "endpoint": "chain",
+          "p50Ratio": 0.9836964012121316,
+          "p99Ratio": 0.9975489884917501,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 0.927406827395461,
+          "before": {
+            "endpoint": "chain",
+            "p50": 3.4259470000033616,
+            "p99": 6.796813500004646,
+            "p50Range": {
+              "min": 3.228004000004148,
+              "max": 3.605009999999311
+            },
+            "p99Range": {
+              "min": 5.333192999998573,
+              "max": 12.081164999995963
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1443.1725,
+              1494.1475
+            ],
+            "rssBytes": [
+              177045504,
+              183062528
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+          },
+          "after": {
+            "endpoint": "chain",
+            "p50": 3.4827280000026803,
+            "p99": 6.813513500004774,
+            "p50Range": {
+              "min": 3.316805000002205,
+              "max": 3.8787739999970654
+            },
+            "p99Range": {
+              "min": 6.00244300000486,
+              "max": 11.586919000001217
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1492.3975,
+              1674.8425
+            ],
+            "rssBytes": [
+              207237120,
+              208158720
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ]
+            ],
+            "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+          }
+        }
+      ]
+    },
+    {
+      "name": "rust-and-boundary",
+      "before": "js",
+      "after": "rust-fresh",
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "p50Ratio": 1.075203907568731,
+          "p99Ratio": 1.1964914972454765,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.0930555450643376,
+          "before": {
+            "endpoint": "tasks-open",
+            "p50": 10.474543999999696,
+            "p99": 40.574517499999274,
+            "p50Range": {
+              "min": 7.239659000000756,
+              "max": 19.589829000000464
+            },
+            "p99Range": {
+              "min": 33.08305499999915,
+              "max": 95.81311500000083
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              4269.01,
+              3328.0075
+            ],
+            "rssBytes": [
+              192397312,
+              174075904
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 166922
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 166922
+                }
+              ]
+            ],
+            "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+          },
+          "after": {
+            "endpoint": "tasks-open",
+            "p50": 9.741914000001088,
+            "p99": 33.911245999999664,
+            "p50Range": {
+              "min": 7.876028000000588,
+              "max": 12.29584900000009
+            },
+            "p99Range": {
+              "min": 26.609325000001263,
+              "max": 49.857764000000316
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3548.4125,
+              3401.845
+            ],
+            "rssBytes": [
+              190025728,
+              183742464
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+          }
+        },
+        {
+          "endpoint": "tasks-verified",
+          "p50Ratio": 0.9190856307883228,
+          "p99Ratio": 0.9413200897531533,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.1454536784413625,
+          "before": {
+            "endpoint": "tasks-verified",
+            "p50": 10.097838499999853,
+            "p99": 36.9844475000009,
+            "p50Range": {
+              "min": 8.338354999999865,
+              "max": 12.80153600000267
+            },
+            "p99Range": {
+              "min": 25.946716000002198,
+              "max": 98.0817879999995
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3850.965,
+              3415.355
+            ],
+            "rssBytes": [
+              194580480,
+              197042176
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ]
+            ],
+            "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+          },
+          "after": {
+            "endpoint": "tasks-verified",
+            "p50": 10.986831000000166,
+            "p99": 39.28998000000138,
+            "p50Range": {
+              "min": 8.725518999999622,
+              "max": 16.691509000000224
+            },
+            "p99Range": {
+              "min": 31.408870999999635,
+              "max": 88.13484999999855
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3138.4925,
+              3205.125
+            ],
+            "rssBytes": [
+              189603840,
+              196816896
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+          }
+        },
+        {
+          "endpoint": "agent-profile",
+          "p50Ratio": 1.0674653416946494,
+          "p99Ratio": 1.0579782786023675,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 0.9475133394179801,
+          "before": {
+            "endpoint": "agent-profile",
+            "p50": 3.8281329999990703,
+            "p99": 10.524404499998127,
+            "p50Range": {
+              "min": 3.4379269999990356,
+              "max": 4.538622000000032
+            },
+            "p99Range": {
+              "min": 8.187552999999753,
+              "max": 26.86200800000006
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1604.6025,
+              1634.415
+            ],
+            "rssBytes": [
+              203632640,
+              203362304
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ]
+            ],
+            "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+          },
+          "after": {
+            "endpoint": "agent-profile",
+            "p50": 3.5861894999998185,
+            "p99": 9.947656500000448,
+            "p50Range": {
+              "min": 3.5048879999994824,
+              "max": 4.1046170000008715
+            },
+            "p99Range": {
+              "min": 8.669959000002564,
+              "max": 13.111259999997856
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1810.085,
+              1608.355
+            ],
+            "rssBytes": [
+              192888832,
+              206061568
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+          }
+        },
+        {
+          "endpoint": "status",
+          "p50Ratio": 1.0603279997321982,
+          "p99Ratio": 0.9636965165262197,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.072592150184481,
+          "before": {
+            "endpoint": "status",
+            "p50": 23.15709749999587,
+            "p99": 36.22459700000036,
+            "p50Range": {
+              "min": 21.581457000000228,
+              "max": 27.241494000001694
+            },
+            "p99Range": {
+              "min": 32.75117099999625,
+              "max": 69.56027500000346
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              7644.8125,
+              6910.81
+            ],
+            "rssBytes": [
+              209059840,
+              208289792
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ]
+            ],
+            "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+          },
+          "after": {
+            "endpoint": "status",
+            "p50": 21.839560500000516,
+            "p99": 37.589216500000475,
+            "p50Range": {
+              "min": 21.60893699999724,
+              "max": 25.01398400000471
+            },
+            "p99Range": {
+              "min": 32.50840600000083,
+              "max": 64.50216699999874
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              6731.88,
+              6838.63
+            ],
+            "rssBytes": [
+              196341760,
+              210034688
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+          }
+        },
+        {
+          "endpoint": "chain",
+          "p50Ratio": 1.0491896914714995,
+          "p99Ratio": 1.0516322068152473,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.1237294915837548,
+          "before": {
+            "endpoint": "chain",
+            "p50": 3.4827280000026803,
+            "p99": 6.813513500004774,
+            "p50Range": {
+              "min": 3.316805000002205,
+              "max": 3.8787739999970654
+            },
+            "p99Range": {
+              "min": 6.00244300000486,
+              "max": 11.586919000001217
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1492.3975,
+              1674.8425
+            ],
+            "rssBytes": [
+              207237120,
+              208158720
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ],
+              [
+                {
+                  "mode": "js:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 195472
+                }
+              ]
+            ],
+            "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+          },
+          "after": {
+            "endpoint": "chain",
+            "p50": 3.319445500001166,
+            "p99": 6.478989000002912,
+            "p50Range": {
+              "min": 3.2647649999998976,
+              "max": 4.2338579999996
+            },
+            "p99Range": {
+              "min": 5.38567399999738,
+              "max": 10.245740999998816
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1402.7225,
+              1415.785
+            ],
+            "rssBytes": [
+              198639616,
+              209649664
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+          }
+        }
+      ]
+    },
+    {
+      "name": "reuse-output-buffer",
+      "before": "rust-fresh",
+      "after": "rust-reuse",
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "p50Ratio": 0.9929710139499933,
+          "p99Ratio": 0.9357274087527993,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.100667343934716,
+          "before": {
+            "endpoint": "tasks-open",
+            "p50": 9.741914000001088,
+            "p99": 33.911245999999664,
+            "p50Range": {
+              "min": 7.876028000000588,
+              "max": 12.29584900000009
+            },
+            "p99Range": {
+              "min": 26.609325000001263,
+              "max": 49.857764000000316
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3548.4125,
+              3401.845
+            ],
+            "rssBytes": [
+              190025728,
+              183742464
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+          },
+          "after": {
+            "endpoint": "tasks-open",
+            "p50": 9.810874499999954,
+            "p99": 36.24051800000052,
+            "p50Range": {
+              "min": 8.255753000001278,
+              "max": 19.599308999999266
+            },
+            "p99Range": {
+              "min": 27.37617599999976,
+              "max": 95.79811599999994
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3092.0175,
+              3222.5675
+            ],
+            "rssBytes": [
+              190730240,
+              200085504
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+          }
+        },
+        {
+          "endpoint": "tasks-verified",
+          "p50Ratio": 1.0803835632063004,
+          "p99Ratio": 0.9945605937173169,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.0293464172925697,
+          "before": {
+            "endpoint": "tasks-verified",
+            "p50": 10.986831000000166,
+            "p99": 39.28998000000138,
+            "p50Range": {
+              "min": 8.725518999999622,
+              "max": 16.691509000000224
+            },
+            "p99Range": {
+              "min": 31.408870999999635,
+              "max": 88.13484999999855
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3138.4925,
+              3205.125
+            ],
+            "rssBytes": [
+              189603840,
+              196816896
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+          },
+          "after": {
+            "endpoint": "tasks-verified",
+            "p50": 10.169380000001183,
+            "p99": 39.504863000000114,
+            "p50Range": {
+              "min": 8.64115899999888,
+              "max": 12.079406000000745
+            },
+            "p99Range": {
+              "min": 25.85383499999807,
+              "max": 91.98582399999941
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3023.005,
+              3139.7575
+            ],
+            "rssBytes": [
+              192872448,
+              196009984
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+          }
+        },
+        {
+          "endpoint": "agent-profile",
+          "p50Ratio": 0.9638193125102459,
+          "p99Ratio": 1.0076519566654167,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.0764443177873069,
+          "before": {
+            "endpoint": "agent-profile",
+            "p50": 3.5861894999998185,
+            "p99": 9.947656500000448,
+            "p50Range": {
+              "min": 3.5048879999994824,
+              "max": 4.1046170000008715
+            },
+            "p99Range": {
+              "min": 8.669959000002564,
+              "max": 13.111259999997856
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1810.085,
+              1608.355
+            ],
+            "rssBytes": [
+              192888832,
+              206061568
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+          },
+          "after": {
+            "endpoint": "agent-profile",
+            "p50": 3.7208109999992303,
+            "p99": 9.872115499998472,
+            "p50Range": {
+              "min": 3.5654090000025462,
+              "max": 4.725104999997711
+            },
+            "p99Range": {
+              "min": 8.95052299999952,
+              "max": 15.8684179999982
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1583.17,
+              1592.5075
+            ],
+            "rssBytes": [
+              194338816,
+              203984896
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+          }
+        },
+        {
+          "endpoint": "status",
+          "p50Ratio": 1.0016860678833024,
+          "p99Ratio": 1.0830855280534821,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 0.9738332514959028,
+          "before": {
+            "endpoint": "status",
+            "p50": 21.839560500000516,
+            "p99": 37.589216500000475,
+            "p50Range": {
+              "min": 21.60893699999724,
+              "max": 25.01398400000471
+            },
+            "p99Range": {
+              "min": 32.50840600000083,
+              "max": 64.50216699999874
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              6731.88,
+              6838.63
+            ],
+            "rssBytes": [
+              196341760,
+              210034688
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+          },
+          "after": {
+            "endpoint": "status",
+            "p50": 21.80279949999749,
+            "p99": 34.70567700000174,
+            "p50Range": {
+              "min": 21.55929599999945,
+              "max": 23.09879699999874
+            },
+            "p99Range": {
+              "min": 32.23176299999977,
+              "max": 73.90453500000149
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              6765.1525,
+              7169.995
+            ],
+            "rssBytes": [
+              205246464,
+              208760832
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+          }
+        },
+        {
+          "endpoint": "chain",
+          "p50Ratio": 0.9447990088204711,
+          "p99Ratio": 0.6628058340314258,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 0.9518479681468649,
+          "before": {
+            "endpoint": "chain",
+            "p50": 3.319445500001166,
+            "p99": 6.478989000002912,
+            "p50Range": {
+              "min": 3.2647649999998976,
+              "max": 4.2338579999996
+            },
+            "p99Range": {
+              "min": 5.38567399999738,
+              "max": 10.245740999998816
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1402.7225,
+              1415.785
+            ],
+            "rssBytes": [
+              198639616,
+              209649664
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-fresh:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+          },
+          "after": {
+            "endpoint": "chain",
+            "p50": 3.513387999999395,
+            "p99": 9.775093500000366,
+            "p50Range": {
+              "min": 3.380166000002646,
+              "max": 4.994309000001522
+            },
+            "p99Range": {
+              "min": 6.318526999995811,
+              "max": 21.678337999997893
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1551.435,
+              1409.655
+            ],
+            "rssBytes": [
+              206553088,
+              208801792
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+          }
+        }
+      ]
+    },
+    {
+      "name": "combined",
+      "before": "off",
+      "after": "rust-reuse",
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "p50Ratio": 3.900686376122577,
+          "p99Ratio": 2.4102618511136713,
+          "p50RangesDisjoint": true,
+          "cpuRatio": 3.9752584690838746,
+          "before": {
+            "endpoint": "tasks-open",
+            "p50": 38.26914449999822,
+            "p99": 87.34913799999958,
+            "p50Range": {
+              "min": 35.41708700000163,
+              "max": 43.480075999999826
+            },
+            "p99Range": {
+              "min": 71.83698799999911,
+              "max": 157.86288499999864
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              12872.8,
+              12229.3075
+            ],
+            "rssBytes": [
+              179507200,
+              184176640
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+          },
+          "after": {
+            "endpoint": "tasks-open",
+            "p50": 9.810874499999954,
+            "p99": 36.24051800000052,
+            "p50Range": {
+              "min": 8.255753000001278,
+              "max": 19.599308999999266
+            },
+            "p99Range": {
+              "min": 27.37617599999976,
+              "max": 95.79811599999994
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3092.0175,
+              3222.5675
+            ],
+            "rssBytes": [
+              190730240,
+              200085504
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 2519,
+                  "misses": 1,
+                  "rebuilds": 1,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 1,
+                  "retainedBytes": 168261,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9"
+          }
+        },
+        {
+          "endpoint": "tasks-verified",
+          "p50Ratio": 3.7973338099269576,
+          "p99Ratio": 2.173548557806672,
+          "p50RangesDisjoint": true,
+          "cpuRatio": 4.32852272012754,
+          "before": {
+            "endpoint": "tasks-verified",
+            "p50": 38.6165304999995,
+            "p99": 85.86573800000042,
+            "p50Range": {
+              "min": 35.221002999998746,
+              "max": 42.95563000000402
+            },
+            "p99Range": {
+              "min": 70.11588499999925,
+              "max": 120.0482520000005
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              13695.6925,
+              12979.965
+            ],
+            "rssBytes": [
+              184401920,
+              171126784
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+          },
+          "after": {
+            "endpoint": "tasks-verified",
+            "p50": 10.169380000001183,
+            "p99": 39.504863000000114,
+            "p50Range": {
+              "min": 8.64115899999888,
+              "max": 12.079406000000745
+            },
+            "p99Range": {
+              "min": 25.85383499999807,
+              "max": 91.98582399999941
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              3023.005,
+              3139.7575
+            ],
+            "rssBytes": [
+              192872448,
+              196009984
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60"
+          }
+        },
+        {
+          "endpoint": "agent-profile",
+          "p50Ratio": 1.0624871835754608,
+          "p99Ratio": 1.1420302467090746,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.0146937149631852,
+          "before": {
+            "endpoint": "agent-profile",
+            "p50": 3.9533140000057756,
+            "p99": 11.274254500003735,
+            "p50Range": {
+              "min": 3.5730899999980466,
+              "max": 4.842666000011377
+            },
+            "p99Range": {
+              "min": 9.225847000001522,
+              "max": 16.090460999999777
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1729.4075,
+              1492.9325
+            ],
+            "rssBytes": [
+              173854720,
+              176689152
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+          },
+          "after": {
+            "endpoint": "agent-profile",
+            "p50": 3.7208109999992303,
+            "p99": 9.872115499998472,
+            "p50Range": {
+              "min": 3.5654090000025462,
+              "max": 4.725104999997711
+            },
+            "p99Range": {
+              "min": 8.95052299999952,
+              "max": 15.8684179999982
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1583.17,
+              1592.5075
+            ],
+            "rssBytes": [
+              194338816,
+              203984896
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020"
+          }
+        },
+        {
+          "endpoint": "status",
+          "p50Ratio": 1.0738300602179727,
+          "p99Ratio": 1.0668868237320102,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 1.0798940233678904,
+          "before": {
+            "endpoint": "status",
+            "p50": 23.41250150000269,
+            "p99": 37.027029500000936,
+            "p50Range": {
+              "min": 21.66321899999457,
+              "max": 24.502737000002526
+            },
+            "p99Range": {
+              "min": 32.69656899999245,
+              "max": 41.39736799999082
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              8253.09,
+              6795.3925
+            ],
+            "rssBytes": [
+              177827840,
+              183193600
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+          },
+          "after": {
+            "endpoint": "status",
+            "p50": 21.80279949999749,
+            "p99": 34.70567700000174,
+            "p50Range": {
+              "min": 21.55929599999945,
+              "max": 23.09879699999874
+            },
+            "p99Range": {
+              "min": 32.23176299999977,
+              "max": 73.90453500000149
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              6765.1525,
+              7169.995
+            ],
+            "rssBytes": [
+              205246464,
+              208760832
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576"
+          }
+        },
+        {
+          "endpoint": "chain",
+          "p50Ratio": 0.9751120570810714,
+          "p99Ratio": 0.6953195383762203,
+          "p50RangesDisjoint": false,
+          "cpuRatio": 0.9919725506485786,
+          "before": {
+            "endpoint": "chain",
+            "p50": 3.4259470000033616,
+            "p99": 6.796813500004646,
+            "p50Range": {
+              "min": 3.228004000004148,
+              "max": 3.605009999999311
+            },
+            "p99Range": {
+              "min": 5.333192999998573,
+              "max": 12.081164999995963
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1443.1725,
+              1494.1475
+            ],
+            "rssBytes": [
+              177045504,
+              183062528
+            ],
+            "projection": [
+              [],
+              []
+            ],
+            "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+          },
+          "after": {
+            "endpoint": "chain",
+            "p50": 3.513387999999395,
+            "p99": 9.775093500000366,
+            "p50Range": {
+              "min": 3.380166000002646,
+              "max": 4.994309000001522
+            },
+            "p99Range": {
+              "min": 6.318526999995811,
+              "max": 21.678337999997893
+            },
+            "cpuMicrosecondsPerProfileRequest": [
+              1551.435,
+              1409.655
+            ],
+            "rssBytes": [
+              206553088,
+              208801792
+            ],
+            "projection": [
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ],
+              [
+                {
+                  "mode": "rust-reuse:8388608:64",
+                  "hits": 5038,
+                  "misses": 2,
+                  "rebuilds": 2,
+                  "evictions": 0,
+                  "oversize": 0,
+                  "changedDuringBuild": 0,
+                  "unavailable": 0,
+                  "pages": 2,
+                  "retainedBytes": 365076,
+                  "outputCapacity": 0
+                }
+              ]
+            ],
+            "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5"
+          }
+        }
+      ]
+    }
+  ],
+  "mixed": {
+    "off": [
+      {
+        "scenario": "cold-distinct-pages",
+        "p50": 66.04190899999958,
+        "p99": 146.5679770000006,
+        "p50Range": {
+          "min": 66.04190899999958,
+          "max": 66.04190899999958
+        },
+        "p99Range": {
+          "min": 146.5679770000006,
+          "max": 146.5679770000006
+        },
+        "resources": null
+      },
+      {
+        "scenario": "hot-eight-pages",
+        "p50": 37.8202399999991,
+        "p99": 92.82667799999763,
+        "p50Range": {
+          "min": 33.56366199999684,
+          "max": 40.42115699999886
+        },
+        "p99Range": {
+          "min": 65.53486199999861,
+          "max": 132.46966299999985
+        },
+        "resources": {
+          "projectionMode": "off",
+          "cpuMicroseconds": {
+            "user": 4265883,
+            "system": 755119
+          },
+          "elapsedMs": 4672.530629000001,
+          "memoryBefore": {
+            "rss": 176566272,
+            "heapTotal": 68104192,
+            "heapUsed": 48003944,
+            "external": 6307113,
+            "arrayBuffers": 1764067
+          },
+          "memoryAfter": {
+            "rss": 174637056,
+            "heapTotal": 63348736,
+            "heapUsed": 46855768,
+            "external": 7133090,
+            "arrayBuffers": 2590004
+          },
+          "projection": []
+        }
+      },
+      {
+        "scenario": "churn-128-pages",
+        "p50": 57.18606700000237,
+        "p99": 145.61776399999508,
+        "p50Range": {
+          "min": 53.00268900000083,
+          "max": 59.61246099999698
+        },
+        "p99Range": {
+          "min": 125.76021100000071,
+          "max": 171.4988799999992
+        },
+        "resources": {
+          "projectionMode": "off",
+          "cpuMicroseconds": {
+            "user": 5556448,
+            "system": 2624189
+          },
+          "elapsedMs": 8420.711064999996,
+          "memoryBefore": {
+            "rss": 167108608,
+            "heapTotal": 51494912,
+            "heapUsed": 29244176,
+            "external": 4956101,
+            "arrayBuffers": 413115
+          },
+          "memoryAfter": {
+            "rss": 187686912,
+            "heapTotal": 73293824,
+            "heapUsed": 54710520,
+            "external": 6982653,
+            "arrayBuffers": 2439567
+          },
+          "projection": []
+        }
+      },
+      {
+        "scenario": "read-write-eight-pages",
+        "p50": 36.41842099999485,
+        "p99": 68.91142899999977,
+        "p50Range": {
+          "min": 35.94805500000075,
+          "max": 44.51497199998994
+        },
+        "p99Range": {
+          "min": 66.47467500000494,
+          "max": 134.1974479999917
+        },
+        "resources": {
+          "projectionMode": "off",
+          "cpuMicroseconds": {
+            "user": 4181592,
+            "system": 852206
+          },
+          "elapsedMs": 4686.474549999999,
+          "memoryBefore": {
+            "rss": 181997568,
+            "heapTotal": 69103616,
+            "heapUsed": 52645768,
+            "external": 7474920,
+            "arrayBuffers": 2931814
+          },
+          "memoryAfter": {
+            "rss": 186396672,
+            "heapTotal": 75911168,
+            "heapUsed": 55004912,
+            "external": 6799435,
+            "arrayBuffers": 2256369
+          },
+          "projection": []
+        }
+      }
+    ],
+    "js": [
+      {
+        "scenario": "cold-distinct-pages",
+        "p50": 90.13796100000036,
+        "p99": 371.83055799999966,
+        "p50Range": {
+          "min": 90.13796100000036,
+          "max": 90.13796100000036
+        },
+        "p99Range": {
+          "min": 371.83055799999966,
+          "max": 371.83055799999966
+        },
+        "resources": null
+      },
+      {
+        "scenario": "hot-eight-pages",
+        "p50": 10.90414999999848,
+        "p99": 39.356942000000345,
+        "p50Range": {
+          "min": 8.162553000000116,
+          "max": 12.01616599999943
+        },
+        "p99Range": {
+          "min": 30.568101000000752,
+          "max": 48.07466199999999
+        },
+        "resources": {
+          "projectionMode": "js",
+          "cpuMicroseconds": {
+            "user": 1245105,
+            "system": 174978
+          },
+          "elapsedMs": 1516.5409960000015,
+          "memoryBefore": {
+            "rss": 196259840,
+            "heapTotal": 50106368,
+            "heapUsed": 31078008,
+            "external": 24954519,
+            "arrayBuffers": 20411173
+          },
+          "memoryAfter": {
+            "rss": 198258688,
+            "heapTotal": 52023296,
+            "heapUsed": 31796888,
+            "external": 18606737,
+            "arrayBuffers": 14063591
+          },
+          "projection": [
+            {
+              "mode": "js:8388608:64",
+              "hits": 2521,
+              "misses": 47,
+              "rebuilds": 47,
+              "evictions": 0,
+              "oversize": 0,
+              "changedDuringBuild": 0,
+              "unavailable": 0,
+              "pages": 47,
+              "retainedBytes": 7908391,
+              "outputCapacity": 166922
+            }
+          ]
+        }
+      },
+      {
+        "scenario": "churn-128-pages",
+        "p50": 59.49973900000259,
+        "p99": 143.33457400000043,
+        "p50Range": {
+          "min": 57.16726699999708,
+          "max": 61.83817100000306
+        },
+        "p99Range": {
+          "min": 128.64729100000113,
+          "max": 326.23585099999764
+        },
+        "resources": {
+          "projectionMode": "js",
+          "cpuMicroseconds": {
+            "user": 6529746,
+            "system": 2480613
+          },
+          "elapsedMs": 8976.598138000001,
+          "memoryBefore": {
+            "rss": 206688256,
+            "heapTotal": 54562816,
+            "heapUsed": 36542360,
+            "external": 17098721,
+            "arrayBuffers": 12555655
+          },
+          "memoryAfter": {
+            "rss": 209514496,
+            "heapTotal": 56274944,
+            "heapUsed": 38334048,
+            "external": 16263717,
+            "arrayBuffers": 11720691
+          },
+          "projection": [
+            {
+              "mode": "js:8388608:64",
+              "hits": 2609,
+              "misses": 2487,
+              "rebuilds": 2487,
+              "evictions": 2438,
+              "oversize": 0,
+              "changedDuringBuild": 0,
+              "unavailable": 0,
+              "pages": 49,
+              "retainedBytes": 8244917,
+              "outputCapacity": 166922
+            }
+          ]
+        }
+      },
+      {
+        "scenario": "read-write-eight-pages",
+        "p50": 15.413451999993413,
+        "p99": 70.27656699999352,
+        "p50Range": {
+          "min": 14.547481000001426,
+          "max": 17.8898060000065
+        },
+        "p99Range": {
+          "min": 57.343909000002895,
+          "max": 98.91828199999873
+        },
+        "resources": {
+          "projectionMode": "js",
+          "cpuMicroseconds": {
+            "user": 2559241,
+            "system": 434484
+          },
+          "elapsedMs": 3701.9468449999986,
+          "memoryBefore": {
+            "rss": 209543168,
+            "heapTotal": 56135680,
+            "heapUsed": 31250984,
+            "external": 13600489,
+            "arrayBuffers": 9057503
+          },
+          "memoryAfter": {
+            "rss": 209719296,
+            "heapTotal": 56094720,
+            "heapUsed": 36481960,
+            "external": 27603229,
+            "arrayBuffers": 23059963
+          },
+          "projection": [
+            {
+              "mode": "js:8388608:64",
+              "hits": 4177,
+              "misses": 3447,
+              "rebuilds": 3447,
+              "evictions": 2438,
+              "oversize": 0,
+              "changedDuringBuild": 0,
+              "unavailable": 0,
+              "pages": 49,
+              "retainedBytes": 8244917,
+              "outputCapacity": 166922
+            }
+          ]
+        }
+      }
+    ],
+    "rust-fresh": [
+      {
+        "scenario": "cold-distinct-pages",
+        "p50": 75.45219899999938,
+        "p99": 128.4337689999993,
+        "p50Range": {
+          "min": 75.45219899999938,
+          "max": 75.45219899999938
+        },
+        "p99Range": {
+          "min": 128.4337689999993,
+          "max": 128.4337689999993
+        },
+        "resources": null
+      },
+      {
+        "scenario": "hot-eight-pages",
+        "p50": 9.442370000000665,
+        "p99": 28.694994999999835,
+        "p50Range": {
+          "min": 8.454956000001403,
+          "max": 11.147393999999622
+        },
+        "p99Range": {
+          "min": 26.740327999999863,
+          "max": 39.41398300000037
+        },
+        "resources": {
+          "projectionMode": "rust-fresh",
+          "cpuMicroseconds": {
+            "user": 1217373,
+            "system": 235078
+          },
+          "elapsedMs": 2075.2747710000003,
+          "memoryBefore": {
+            "rss": 196722688,
+            "heapTotal": 49319936,
+            "heapUsed": 29013360,
+            "external": 26145243,
+            "arrayBuffers": 12099197
+          },
+          "memoryAfter": {
+            "rss": 196665344,
+            "heapTotal": 50720768,
+            "heapUsed": 29308640,
+            "external": 16127155,
+            "arrayBuffers": 2081409
+          },
+          "projection": [
+            {
+              "mode": "rust-fresh:8388608:64",
+              "hits": 2521,
+              "misses": 47,
+              "rebuilds": 47,
+              "evictions": 0,
+              "oversize": 0,
+              "changedDuringBuild": 0,
+              "unavailable": 0,
+              "pages": 47,
+              "retainedBytes": 7908391,
+              "outputCapacity": 0
+            }
+          ]
+        }
+      },
+      {
+        "scenario": "churn-128-pages",
+        "p50": 65.43986099999893,
+        "p99": 140.57517499999813,
+        "p50Range": {
+          "min": 54.30258799999865,
+          "max": 68.74798700000247
+        },
+        "p99Range": {
+          "min": 123.58834200000274,
+          "max": 187.51310099999682
+        },
+        "resources": {
+          "projectionMode": "rust-fresh",
+          "cpuMicroseconds": {
+            "user": 5876542,
+            "system": 2499437
+          },
+          "elapsedMs": 8132.139606000004,
+          "memoryBefore": {
+            "rss": 194265088,
+            "heapTotal": 58232832,
+            "heapUsed": 34813440,
+            "external": 19072208,
+            "arrayBuffers": 4633066
+          },
+          "memoryAfter": {
+            "rss": 196214784,
+            "heapTotal": 56979456,
+            "heapUsed": 38069840,
+            "external": 17879431,
+            "arrayBuffers": 3440409
+          },
+          "projection": [
+            {
+              "mode": "rust-fresh:8388608:64",
+              "hits": 2609,
+              "misses": 2487,
+              "rebuilds": 2487,
+              "evictions": 2438,
+              "oversize": 0,
+              "changedDuringBuild": 0,
+              "unavailable": 0,
+              "pages": 49,
+              "retainedBytes": 8244917,
+              "outputCapacity": 0
+            }
+          ]
+        }
+      },
+      {
+        "scenario": "read-write-eight-pages",
+        "p50": 15.027046000002883,
+        "p99": 69.22743299999274,
+        "p50Range": {
+          "min": 14.752642999999807,
+          "max": 19.475788000010652
+        },
+        "p99Range": {
+          "min": 50.99858200000017,
+          "max": 114.62469799999963
+        },
+        "resources": {
+          "projectionMode": "rust-fresh",
+          "cpuMicroseconds": {
+            "user": 2349918,
+            "system": 404489
+          },
+          "elapsedMs": 3275.917824999997,
+          "memoryBefore": {
+            "rss": 194605056,
+            "heapTotal": 57446400,
+            "heapUsed": 43028728,
+            "external": 27630023,
+            "arrayBuffers": 13190661
+          },
+          "memoryAfter": {
+            "rss": 195653632,
+            "heapTotal": 57667584,
+            "heapUsed": 40026776,
+            "external": 26571085,
+            "arrayBuffers": 12131803
+          },
+          "projection": [
+            {
+              "mode": "rust-fresh:8388608:64",
+              "hits": 4177,
+              "misses": 3447,
+              "rebuilds": 3447,
+              "evictions": 2438,
+              "oversize": 0,
+              "changedDuringBuild": 0,
+              "unavailable": 0,
+              "pages": 49,
+              "retainedBytes": 8244917,
+              "outputCapacity": 0
+            }
+          ]
+        }
+      }
+    ],
+    "rust-reuse": [
+      {
+        "scenario": "cold-distinct-pages",
+        "p50": 91.96598600000016,
+        "p99": 213.73726299999998,
+        "p50Range": {
+          "min": 91.96598600000016,
+          "max": 91.96598600000016
+        },
+        "p99Range": {
+          "min": 213.73726299999998,
+          "max": 213.73726299999998
+        },
+        "resources": null
+      },
+      {
+        "scenario": "hot-eight-pages",
+        "p50": 8.889803000000029,
+        "p99": 30.785303999999087,
+        "p50Range": {
+          "min": 8.179673000000548,
+          "max": 9.872455999999147
+        },
+        "p99Range": {
+          "min": 29.775649999999587,
+          "max": 38.523049999999785
+        },
+        "resources": {
+          "projectionMode": "rust-reuse",
+          "cpuMicroseconds": {
+            "user": 1155518,
+            "system": 207781
+          },
+          "elapsedMs": 1591.8389180000013,
+          "memoryBefore": {
+            "rss": 185966592,
+            "heapTotal": 49844224,
+            "heapUsed": 29092616,
+            "external": 26478929,
+            "arrayBuffers": 12432863
+          },
+          "memoryAfter": {
+            "rss": 194105344,
+            "heapTotal": 49942528,
+            "heapUsed": 30887960,
+            "external": 27805417,
+            "arrayBuffers": 13759311
+          },
+          "projection": [
+            {
+              "mode": "rust-reuse:8388608:64",
+              "hits": 2521,
+              "misses": 47,
+              "rebuilds": 47,
+              "evictions": 0,
+              "oversize": 0,
+              "changedDuringBuild": 0,
+              "unavailable": 0,
+              "pages": 47,
+              "retainedBytes": 7908391,
+              "outputCapacity": 0
+            }
+          ]
+        }
+      },
+      {
+        "scenario": "churn-128-pages",
+        "p50": 58.52996600000188,
+        "p99": 133.01775100000305,
+        "p50Range": {
+          "min": 54.11586499999976,
+          "max": 61.657569000002695
+        },
+        "p99Range": {
+          "min": 121.35295100000076,
+          "max": 230.60233499999958
+        },
+        "resources": {
+          "projectionMode": "rust-reuse",
+          "cpuMicroseconds": {
+            "user": 5730124,
+            "system": 2366596
+          },
+          "elapsedMs": 8156.401591000002,
+          "memoryBefore": {
+            "rss": 184004608,
+            "heapTotal": 55087104,
+            "heapUsed": 40854024,
+            "external": 19174199,
+            "arrayBuffers": 4800673
+          },
+          "memoryAfter": {
+            "rss": 185384960,
+            "heapTotal": 55390208,
+            "heapUsed": 36220704,
+            "external": 17964973,
+            "arrayBuffers": 3591467
+          },
+          "projection": [
+            {
+              "mode": "rust-reuse:8388608:64",
+              "hits": 2609,
+              "misses": 2487,
+              "rebuilds": 2487,
+              "evictions": 2438,
+              "oversize": 0,
+              "changedDuringBuild": 0,
+              "unavailable": 0,
+              "pages": 49,
+              "retainedBytes": 8244917,
+              "outputCapacity": 0
+            }
+          ]
+        }
+      },
+      {
+        "scenario": "read-write-eight-pages",
+        "p50": 14.957766000006814,
+        "p99": 63.26611099999718,
+        "p50Range": {
+          "min": 13.186541000002762,
+          "max": 17.72856399999
+        },
+        "p99Range": {
+          "min": 51.51066899999569,
+          "max": 70.403330000001
+        },
+        "resources": {
+          "projectionMode": "rust-reuse",
+          "cpuMicroseconds": {
+            "user": 2304613,
+            "system": 476700
+          },
+          "elapsedMs": 2912.1921809999913,
+          "memoryBefore": {
+            "rss": 183951360,
+            "heapTotal": 55611392,
+            "heapUsed": 39497504,
+            "external": 29240987,
+            "arrayBuffers": 14867041
+          },
+          "memoryAfter": {
+            "rss": 183783424,
+            "heapTotal": 57405440,
+            "heapUsed": 41079928,
+            "external": 26139976,
+            "arrayBuffers": 11766250
+          },
+          "projection": [
+            {
+              "mode": "rust-reuse:8388608:64",
+              "hits": 4177,
+              "misses": 3447,
+              "rebuilds": 3447,
+              "evictions": 2438,
+              "oversize": 0,
+              "changedDuringBuild": 0,
+              "unavailable": 0,
+              "pages": 49,
+              "retainedBytes": 8244917,
+              "outputCapacity": 0
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "mixedSamples": 24160,
+  "profiles": 52,
+  "moduleSha256": "b48a8cd5f107a11e1f0aed3e451a01ac5dec0acbb06e52c6eda77f9a772c0f3c"
+}

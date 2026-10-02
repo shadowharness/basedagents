@@ -1,0 +1,82 @@
+[
+  {
+    "method": "all",
+    "sql": "SELECT t.*, a.name AS creator_name,\n      cl.name AS claimer_name,\n      ow.display_name AS creator_owner_name,\n      EXISTS(SELECT 1 FROM delegations d\n    JOIN owners o ON o.id = d.owner_id AND o.status = 'active'\n    JOIN owner_webauthn_credentials c ON c.owner_id = o.id AND c.status = 'active'\n    WHERE d.agent_id = t.creator_agent_id AND d.status = 'active') AS creator_certified,\n      EXISTS(SELECT 1 FROM owners o\n    JOIN owner_webauthn_credentials c ON c.owner_id = o.id AND c.status = 'active'\n    WHERE o.id = t.creator_owner_id AND o.status = 'active') AS creator_owner_certified FROM tasks t LEFT JOIN agents a ON a.id = t.creator_agent_id LEFT JOIN agents cl ON cl.id = t.claimed_by_agent_id LEFT JOIN owners ow ON ow.id = t.creator_owner_id WHERE 1=1 AND t.status = ? ORDER BY t.created_at DESC LIMIT ? OFFSET ?",
+    "count": 400,
+    "totalMs": 2334.913851999998,
+    "maxMs": 26.666887999999744,
+    "params": [
+      "open",
+      100,
+      0
+    ],
+    "plan": [
+      {
+        "id": 17,
+        "parent": 0,
+        "notused": 61,
+        "detail": "SEARCH t USING INDEX idx_tasks_status_created (status=?)"
+      },
+      {
+        "id": 24,
+        "parent": 0,
+        "notused": 46,
+        "detail": "SEARCH a USING INDEX sqlite_autoindex_agents_1 (id=?) LEFT-JOIN"
+      },
+      {
+        "id": 32,
+        "parent": 0,
+        "notused": 46,
+        "detail": "SEARCH cl USING INDEX sqlite_autoindex_agents_1 (id=?) LEFT-JOIN"
+      },
+      {
+        "id": 40,
+        "parent": 0,
+        "notused": 46,
+        "detail": "SEARCH ow USING INDEX sqlite_autoindex_owners_1 (id=?) LEFT-JOIN"
+      },
+      {
+        "id": 120,
+        "parent": 0,
+        "notused": 0,
+        "detail": "CORRELATED SCALAR SUBQUERY 1"
+      },
+      {
+        "id": 128,
+        "parent": 120,
+        "notused": 216,
+        "detail": "SCAN c"
+      },
+      {
+        "id": 132,
+        "parent": 120,
+        "notused": 46,
+        "detail": "SEARCH o USING INDEX sqlite_autoindex_owners_1 (id=?)"
+      },
+      {
+        "id": 139,
+        "parent": 120,
+        "notused": 46,
+        "detail": "SEARCH d USING INDEX sqlite_autoindex_delegations_2 (owner_id=? AND agent_id=?)"
+      },
+      {
+        "id": 161,
+        "parent": 0,
+        "notused": 0,
+        "detail": "CORRELATED SCALAR SUBQUERY 2"
+      },
+      {
+        "id": 168,
+        "parent": 161,
+        "notused": 46,
+        "detail": "SEARCH o USING INDEX sqlite_autoindex_owners_1 (id=?)"
+      },
+      {
+        "id": 176,
+        "parent": 161,
+        "notused": 61,
+        "detail": "SEARCH c USING INDEX idx_owner_webauthn_owner (owner_id=?)"
+      }
+    ]
+  }
+]

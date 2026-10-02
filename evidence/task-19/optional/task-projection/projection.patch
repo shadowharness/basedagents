@@ -1,0 +1,811 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ShadowHarness <contact@shadowharness.com>
+Date: Sat, 3 Oct 2026 04:41:32 +0900
+Subject: [PATCH] Add bounded public task fragments with JS and Rust/Wasm
+ assembly
+
+Keep SQL authoritative through generation validation and bounded rebuilds. Compare repeated, varied and read/write HTTP workloads with identical responses.
+---
+ bench/projection-mixed.mjs                |  93 ++++++++++++
+ bench/run.mjs                             |   5 +-
+ bench/server.ts                           |  14 +-
+ optional/task-projection/.gitignore       |   2 +
+ optional/task-projection/README.md        |  72 +++++++++
+ optional/task-projection/install.sql      |  24 +++
+ optional/task-projection/rust/Cargo.lock  |   7 +
+ optional/task-projection/rust/Cargo.toml  |  14 ++
+ optional/task-projection/rust/src/lib.rs  |  79 ++++++++++
+ packages/api/src/routes/tasks.ts          |   4 +
+ packages/api/src/task-projection.test.ts  | 128 ++++++++++++++++
+ packages/api/src/tasks/list-projection.ts | 177 ++++++++++++++++++++++
+ packages/api/src/types/index.ts           |   2 +
+ packages/api/src/types/wasm.d.ts          |  10 ++
+ 14 files changed, 628 insertions(+), 3 deletions(-)
+ create mode 100644 bench/projection-mixed.mjs
+ create mode 100644 optional/task-projection/.gitignore
+ create mode 100644 optional/task-projection/README.md
+ create mode 100644 optional/task-projection/install.sql
+ create mode 100644 optional/task-projection/rust/Cargo.lock
+ create mode 100644 optional/task-projection/rust/Cargo.toml
+ create mode 100644 optional/task-projection/rust/src/lib.rs
+ create mode 100644 packages/api/src/task-projection.test.ts
+ create mode 100644 packages/api/src/tasks/list-projection.ts
+ create mode 100644 packages/api/src/types/wasm.d.ts
+
+diff --git a/bench/projection-mixed.mjs b/bench/projection-mixed.mjs
+new file mode 100644
+index 0000000..edb9566
+--- /dev/null
++++ b/bench/projection-mixed.mjs
+@@ -0,0 +1,93 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import http from 'node:http';
++import os from 'node:os';
++import { spawn, execFileSync } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++import { createHash } from 'node:crypto';
++import { performance } from 'node:perf_hooks';
++import Database from 'better-sqlite3';
++
++const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const [mode, label] = process.argv.slice(2);
++if (!['off','js','rust-fresh','rust-reuse'].includes(mode) || !/^[a-z0-9-]+$/.test(label ?? '')) throw Error('Use mode label');
++const output = path.resolve(root, '../runs', label);
++fs.mkdirSync(output, { recursive:true });
++const hash = value => createHash('sha256').update(value).digest('hex');
++const log = fs.openSync(path.join(output,'server.log'),'wx');
++const child = spawn(process.execPath, ['--import','tsx','bench/server.ts'], { cwd:root, stdio:['ignore',log,log,'ipc'],
++  env: { PATH:process.env.PATH, HOME:process.env.HOME, NODE_ENV:'production', BENCH_OUTPUT:output, TASK_LIST_PROJECTION_MODE:mode } });
++function waitFor(type) {
++  return new Promise((resolve,reject) => {
++    const timer = setTimeout(() => { clean(); reject(Error(`Timeout ${type}`)); },120000);
++    const exit = code => { clean(); reject(Error(`Server exit ${code}`)); };
++    const message = data => { if(data.type === type) { clean(); resolve(data); } else if(data.type === 'error') { clean(); reject(Error(data.message)); } };
++    function clean() { clearTimeout(timer); child.off('exit',exit); child.off('message',message); }
++    child.on('exit',exit); child.on('message',message);
++  });
++}
++const agent = new http.Agent({keepAlive:true,maxSockets:4});
++let port, db;
++const fingerprints = {}, results = [], writes = [];
++function request(url) {
++  const start = performance.now();
++  return new Promise((resolve,reject) => {
++    const req = http.get({hostname:'127.0.0.1',port,path:url,agent}, res => {
++      const chunks=[]; res.on('data',chunk=>chunks.push(chunk)); res.on('error',reject);
++      res.on('end',()=>{
++        const elapsed=performance.now()-start, body=Buffer.concat(chunks);
++        try {
++          if(res.statusCode!==200) throw Error(`HTTP ${res.statusCode}`);
++          const value=JSON.parse(body), digest=hash(JSON.stringify(value));
++          if(fingerprints[url] && fingerprints[url]!==digest) throw Error(`Changed response: ${url}`);
++          fingerprints[url]=digest; resolve(elapsed);
++        } catch(e) { reject(e); }
++      });
++    }); req.setTimeout(30000,()=>req.destroy(Error('HTTP timeout'))); req.on('error',reject);
++  });
++}
++async function load(urls, count, writeEvery=0) {
++  let next=0; const times=[], start=performance.now();
++  await Promise.all(Array.from({length:4},async()=>{
++    while(next<count) {
++      const i=next++;
++      if(writeEvery && i%writeEvery===0) {
++        const began=performance.now();
++        // Oldest row is outside all measured pages. This is a real committed
++        // public-field change through an independent SQL connection; it
++        // invalidates snapshots without changing the compared page bodies.
++        db.prepare("UPDATE tasks SET title=? WHERE task_id='task_benchmark_000000'").run(`write-${writes.length}`);
++        writes.push(performance.now()-began);
++      }
++      times.push(await request(urls[i%urls.length]));
++    }
++  }));
++  const sorted=[...times].sort((a,b)=>a-b);
++  return {count:times.length,elapsedMs:performance.now()-start,p50:sorted[Math.ceil(sorted.length*.5)-1],p99:sorted[Math.ceil(sorted.length*.99)-1],timesMs:times};
++}
++try {
++  ({port}=await waitFor('ready'));
++  db = new Database(path.join(output,'fixture.sqlite')); db.pragma('busy_timeout=5000');
++  const urls=(n,step,extra='')=>Array.from({length:n},(_,i)=>`/v1/tasks?status=open&limit=100&offset=${i*step}${extra}`);
++  // Every URL is new in this stage; first-build costs are retained separately.
++  results.push({scenario:'cold-distinct-pages',runs:[await load(urls(40,137),40)]});
++  for(const [name, paths, writeEvery] of [
++    ['hot-eight-pages',urls(8,100),0], ['churn-128-pages',urls(128,50),0], ['read-write-eight-pages',urls(8,100),20],
++  ]) {
++    await load(paths,128);
++    const runs=[];
++    for(let i=0;i<5;i++) runs.push(await load(paths,400,writeEvery));
++    const started=waitFor('profile-started'); child.send({type:'profile-start'}); await started;
++    const profilePass=await load(paths,400,writeEvery);
++    const stopped=waitFor('profile-stopped'); child.send({type:'profile-stop',name}); await stopped;
++    results.push({scenario:name,runs,profilePass});
++  }
++  fs.writeFileSync(path.join(output,'results.json'),JSON.stringify(results,null,2));
++  fs.writeFileSync(path.join(output,'responses.json'),JSON.stringify(fingerprints,null,2));
++  fs.writeFileSync(path.join(output,'writes.json'),JSON.stringify({count:writes.length,timesMs:writes},null,2));
++  fs.writeFileSync(path.join(output,'metadata.json'),JSON.stringify({mode,node:process.version,cpu:os.cpus()[0].model,availableParallelism:os.availableParallelism(),commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),scriptSha256:hash(fs.readFileSync(fileURLToPath(import.meta.url))),serverSha256:hash(fs.readFileSync(path.join(root,'bench/server.ts'))),dataset:JSON.parse(fs.readFileSync(path.join(root,'bench/workload.json'))).dataset},null,2));
++  fs.writeFileSync(path.join(output,'complete.json'),JSON.stringify({at:new Date().toISOString(),requestsFailed:0}));
++  console.log(JSON.stringify({mode,label,scenarios:results.map(r=>({name:r.scenario,p50:r.runs.map(x=>x.p50),p99:r.runs.map(x=>x.p99)})),writes:writes.length}));
++} finally {
++  db?.close(); agent.destroy(); child.send({type:'stop'}); setTimeout(()=>child.kill('SIGTERM'),5000).unref();
++}
+diff --git a/bench/run.mjs b/bench/run.mjs
+index 83fb18b..79f87ea 100644
+--- a/bench/run.mjs
++++ b/bench/run.mjs
+@@ -15,13 +15,14 @@ const output = path.resolve(root, '../runs', label);
+ fs.mkdirSync(output, { recursive: true });
+ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+ const metadata = { at: new Date().toISOString(), mode, upstreamHead: execFileSync('git', ['rev-parse','HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
++  projectionMode: process.env.TASK_LIST_PROJECTION_MODE ?? 'off',
+   platform: process.platform, arch: process.arch, node: process.version, cpu: os.cpus()[0].model, availableParallelism: os.availableParallelism(),
+   workload, workloadSha256: sha(workloadBytes), sourceSha256: {} };
+-for (const filename of ['bench/server.ts','bench/run.mjs','packages/api/src/index.ts','packages/api/src/db/sqlite-adapter.ts','packages/api/src/tasks/service.ts','packages/api/src/tasks/settled.ts']) metadata.sourceSha256[filename] = sha(fs.readFileSync(path.join(root, filename)));
++for (const filename of ['bench/server.ts','bench/run.mjs','packages/api/src/index.ts','packages/api/src/db/sqlite-adapter.ts','packages/api/src/tasks/service.ts','packages/api/src/tasks/settled.ts','packages/api/src/tasks/list-projection.ts','optional/task-projection/install.sql','optional/task-projection/task_projection.wasm']) metadata.sourceSha256[filename] = sha(fs.readFileSync(path.join(root, filename)));
+ fs.writeFileSync(path.join(output, 'metadata.json'), JSON.stringify(metadata, null, 2));
+ const log = fs.openSync(path.join(output, 'server.log'), 'wx');
+ const child = spawn(process.execPath, ['--import', 'tsx', 'bench/server.ts'], { cwd: root, stdio: ['ignore',log,log,'ipc'],
+-  env: { PATH: process.env.PATH, HOME: process.env.HOME, BENCH_OUTPUT: output, NODE_ENV: 'production' } });
++  env: { PATH: process.env.PATH, HOME: process.env.HOME, BENCH_OUTPUT: output, NODE_ENV: 'production', TASK_LIST_PROJECTION_MODE: process.env.TASK_LIST_PROJECTION_MODE ?? 'off' } });
+ function waitFor(type) {
+   return new Promise((resolve, reject) => {
+     const timer = setTimeout(() => { cleanup(); reject(new Error(`Timed out waiting for ${type}`)); }, 120000);
+diff --git a/bench/server.ts b/bench/server.ts
+index fa43a3a..1a80acf 100644
+--- a/bench/server.ts
++++ b/bench/server.ts
+@@ -9,6 +9,7 @@ import { initDatabase } from '../packages/api/src/db/index.js';
+ import { runnerMigrationFiles, RUNNER_LOCAL_STATEMENTS } from '../packages/api/src/db/migration-list.js';
+ import { SQLiteAdapter } from '../packages/api/src/db/sqlite-adapter.js';
+ import app, { setNodeAdapter } from '../packages/api/src/index.js';
++import { installTaskProjectionModule, taskProjectionStats } from '../packages/api/src/tasks/list-projection.js';
+ 
+ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+ const output = process.env.BENCH_OUTPUT;
+@@ -52,6 +53,11 @@ sqlite.transaction(() => {
+   }
+ })();
+ sqlite.pragma('wal_checkpoint(TRUNCATE)');
++const projectionMode = process.env.TASK_LIST_PROJECTION_MODE ?? 'off';
++sqlite.transaction(() => sqlite.exec(fs.readFileSync(path.join(root, 'optional/task-projection/install.sql'), 'utf8')))();
++if (projectionMode.startsWith('rust')) {
++  installTaskProjectionModule(new WebAssembly.Module(fs.readFileSync(path.join(root, 'optional/task-projection/task_projection.wasm'))));
++}
+ const adapter = new SQLiteAdapter(sqlite);
+ let profiling = false;
+ let queries = new Map<string, { method: string; sql: string; count: number; totalMs: number; maxMs: number; params: unknown[] }>();
+@@ -72,9 +78,10 @@ for (const method of ['get', 'all', 'run'] as const) {
+ }
+ setNodeAdapter(adapter);
+ // All data is synthetic. No networked payment, analytics, webhook or email environment is passed.
+-const env = { TASK_PAYMENTS_ENABLED: '0', TASK_ESCROW_ENABLED: '0' };
++const env = { TASK_PAYMENTS_ENABLED: '0', TASK_ESCROW_ENABLED: '0', TASK_LIST_PROJECTION_MODE: projectionMode as any };
+ globalThis.fetch = (async () => { throw new Error('Benchmark server external fetch is disabled'); }) as typeof fetch;
+ const session = new inspector.Session(); session.connect();
++let resources = { cpu: process.cpuUsage(), memory: process.memoryUsage(), at: performance.now() };
+ const post = (method: string, params: object = {}) => new Promise<any>((resolve, reject) => session.post(method as any, params, (error, result) => error ? reject(error) : resolve(result)));
+ const server = serve({ fetch: req => app.fetch(req, env), hostname: '127.0.0.1', port: 0 }, info => process.send?.({ type: 'ready', port: info.port, dataset: workload.dataset }));
+ // Do not retain an orphan HTTP server if the measurement driver exits.
+@@ -83,6 +90,7 @@ process.on('message', async (message: any) => {
+   try {
+     if (message.type === 'profile-start') {
+       queries = new Map();
++      resources = { cpu: process.cpuUsage(), memory: process.memoryUsage(), at: performance.now() };
+       await post('Profiler.enable'); await post('Profiler.setSamplingInterval', { interval: 100 });
+       await post('Profiler.start'); profiling = true;
+       process.send?.({ type: 'profile-started' });
+@@ -96,6 +104,10 @@ process.on('message', async (message: any) => {
+       });
+       fs.writeFileSync(path.join(output, `${message.name}.cpuprofile`), JSON.stringify(profile));
+       fs.writeFileSync(path.join(output, `${message.name}.sql.json`), JSON.stringify(entries, null, 2));
++      fs.writeFileSync(path.join(output, `${message.name}.resources.json`), JSON.stringify({
++        projectionMode, cpuMicroseconds: process.cpuUsage(resources.cpu), elapsedMs: performance.now() - resources.at,
++        memoryBefore: resources.memory, memoryAfter: process.memoryUsage(), projection: taskProjectionStats(adapter),
++      }, null, 2));
+       process.send?.({ type: 'profile-stopped' });
+     } else if (message.type === 'stop') {
+       server.close(() => { session.disconnect(); sqlite.close(); process.exit(0); });
+diff --git a/optional/task-projection/.gitignore b/optional/task-projection/.gitignore
+new file mode 100644
+index 0000000..1c40ba9
+--- /dev/null
++++ b/optional/task-projection/.gitignore
+@@ -0,0 +1,2 @@
++task_projection.wasm
++rust/target/
+diff --git a/optional/task-projection/README.md b/optional/task-projection/README.md
+new file mode 100644
+index 0000000..4036308
+--- /dev/null
++++ b/optional/task-projection/README.md
+@@ -0,0 +1,72 @@
++# Optional public task projection
++
++This extension sits on the three indexed SQL optimizations. SQL owns all
++durable data, filtering, ordering, authorization and mutation decisions.
++The projection retains public row fragments from recently used query pages.
++It assembles each HTTP response from those fragments and evaluates expiry
++against the current request time. It does not store completed HTTP responses.
++
++Modes are `off`, `js`, `rust-fresh` and `rust-reuse`. The two Rust modes use
++the same compiled Wasm module; only output-buffer allocation differs. JS
++also reuses its assembly buffer. Every mode copies outgoing bytes before
++the next request may reuse storage. Rust retains row fragments in linear
++memory; the JS boundary releases its duplicate after transferring them.
++
++## Build and local validation
++
++The recorded experiment uses Rust 1.90.0 and Node 22.23.3. No Rust packages
++outside the standard library are required.
++
++```sh
++rustup target add wasm32-unknown-unknown --toolchain 1.90.0
++cargo +1.90.0 test --manifest-path optional/task-projection/rust/Cargo.toml
++cargo +1.90.0 build --release --target wasm32-unknown-unknown --manifest-path optional/task-projection/rust/Cargo.toml
++cp optional/task-projection/rust/target/wasm32-unknown-unknown/release/task_projection.wasm optional/task-projection/task_projection.wasm
++npm test
++TASK_LIST_PROJECTION_MODE=rust-reuse node bench/run.mjs projection-example full
++```
++
++Run labels must be new. The fixture, request count, HTTP concurrency and
++endpoint paths remain in `bench/workload.json`. `bench/projection-mixed.mjs`
++adds cold-page, varied-query and independent-connection write workloads.
++Use the same source and compiled module for every comparison mode.
++
++## Integration
++
++Execute `install.sql` transactionally before enabling a mode. It requires
++the task, agent and certification tables used by the full API deployment.
++Its triggers advance a durable generation within the transaction that
++changes any public-row dependency. Direct SQL writes are included; no
++application notification is needed. Conditional `changes()` gates and
++outbox rollback behavior are covered by the projection tests.
++
++Set the `TASK_LIST_PROJECTION_MODE` binding to `js` to use JS assembly. For
++Rust, install a compiled `WebAssembly.Module` with
++`installTaskProjectionModule` from `src/tasks/list-projection.ts` before
++serving requests, then select `rust-reuse`. Node may compile the bytes from
++disk (as `bench/server.ts` does). A Workers entry module should statically
++import the `.wasm` module through its bundler and register that module;
++Workers does not support compiling arbitrary Wasm bytes at runtime.
++The benchmark exercises Wasm on Node's V8, not the deployed D1 service.
++
++Each read checks SQL's generation. Rebuilds bracket the row query with
++generation reads and discard a result if the database changed. Concurrent
++requests for one query/generation share a build; at most four builds run
++at once. Other requests use SQL. An older build cannot replace a more
++recent build of the same query. D1 queries use the primary through the
++existing un-sessioned adapter. A replicated/session adapter needs the same
++primary freshness guarantee before enabling this feature.
++
++Retained fragments and query keys are bounded to 64 pages and 8 MiB of
++logical payload per mode/database, with a 1 MiB per-page limit and LRU
++eviction. These limits are not a bound on process RSS: input/output buffers,
++allocator capacity and Wasm linear memory also consume space. Measured
++memory accompanies benchmark results. Cold or evicted pages rebuild from
++SQL; missing generation infrastructure falls back to SQL. Restart isolates
++after schema migrations or database restore. Disable the mode before
++removing its generation table or triggers.
++
++The SQL path remains available for workloads whose rebuild/invalidations
++cost more than reuse saves. Repeated-query and varied-query measurements
++must be reported separately; local fixture results are not production D1
++latency claims.
+diff --git a/optional/task-projection/install.sql b/optional/task-projection/install.sql
+new file mode 100644
+index 0000000..621d2e4
+--- /dev/null
++++ b/optional/task-projection/install.sql
+@@ -0,0 +1,24 @@
++-- Optional read projection generation. Execute transactionally before enabling
++-- TASK_LIST_PROJECTION_MODE. Every public-row dependency changes the generation
++-- in the same SQL transaction as its write, including external SQL writers.
++CREATE TABLE IF NOT EXISTS task_projection_epoch (
++  singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
++  incarnation TEXT NOT NULL,
++  version INTEGER NOT NULL
++);
++INSERT OR IGNORE INTO task_projection_epoch VALUES (1, lower(hex(randomblob(16))), 0);
++CREATE TRIGGER IF NOT EXISTS task_projection_tasks_i AFTER INSERT ON tasks BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_tasks_u AFTER UPDATE ON tasks BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_tasks_d AFTER DELETE ON tasks BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_agents_i AFTER INSERT ON agents BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_agents_u AFTER UPDATE ON agents BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_agents_d AFTER DELETE ON agents BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_owners_i AFTER INSERT ON owners BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_owners_u AFTER UPDATE ON owners BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_owners_d AFTER DELETE ON owners BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_delegations_i AFTER INSERT ON delegations BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_delegations_u AFTER UPDATE ON delegations BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_delegations_d AFTER DELETE ON delegations BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_credentials_i AFTER INSERT ON owner_webauthn_credentials BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_credentials_u AFTER UPDATE ON owner_webauthn_credentials BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
++CREATE TRIGGER IF NOT EXISTS task_projection_credentials_d AFTER DELETE ON owner_webauthn_credentials BEGIN UPDATE task_projection_epoch SET version=version+1 WHERE singleton=1; END;
+diff --git a/optional/task-projection/rust/Cargo.lock b/optional/task-projection/rust/Cargo.lock
+new file mode 100644
+index 0000000..9233883
+--- /dev/null
++++ b/optional/task-projection/rust/Cargo.lock
+@@ -0,0 +1,7 @@
++# This file is automatically @generated by Cargo.
++# It is not intended for manual editing.
++version = 4
++
++[[package]]
++name = "task_projection"
++version = "0.1.0"
+diff --git a/optional/task-projection/rust/Cargo.toml b/optional/task-projection/rust/Cargo.toml
+new file mode 100644
+index 0000000..ca7389b
+--- /dev/null
++++ b/optional/task-projection/rust/Cargo.toml
+@@ -0,0 +1,14 @@
++[package]
++name = "task_projection"
++version = "0.1.0"
++edition = "2021"
++publish = false
++
++[lib]
++crate-type = ["cdylib"]
++
++[profile.release]
++opt-level = 3
++lto = true
++codegen-units = 1
++panic = "abort"
+diff --git a/optional/task-projection/rust/src/lib.rs b/optional/task-projection/rust/src/lib.rs
+new file mode 100644
+index 0000000..b326dda
+--- /dev/null
++++ b/optional/task-projection/rust/src/lib.rs
+@@ -0,0 +1,79 @@
++//! Per-isolate public-row fragments. SQL, filtering and authorization stay
++//! outside Wasm. All exports are synchronous; no output view may outlive the
++//! next call. The JS boundary copies the output before starting an HTTP send.
++use std::{cell::RefCell, collections::HashMap};
++
++struct Row { bytes: Vec<u8>, expires: Vec<u8>, eligible: bool }
++#[derive(Default)]
++struct Store { input: Vec<u8>, output: Vec<u8>, pages: HashMap<u32, Vec<Row>> }
++thread_local! { static STORE: RefCell<Store> = RefCell::new(Store::default()); }
++
++#[no_mangle]
++pub extern "C" fn input_resize(len: u32) -> *mut u8 {
++    STORE.with(|s| { let mut s = s.borrow_mut(); s.input.resize(len as usize, 0); s.input.as_mut_ptr() })
++}
++fn read_u32(bytes: &[u8], offset: &mut usize) -> Option<u32> {
++    let value = u32::from_le_bytes(bytes.get(*offset..*offset + 4)?.try_into().ok()?);
++    *offset += 4; Some(value)
++}
++fn parse(bytes: &[u8]) -> Option<Vec<Row>> {
++    let mut offset = 0;
++    let count = read_u32(bytes, &mut offset)?;
++    if count > 100 { return None; }
++    let mut rows = Vec::with_capacity(count as usize);
++    for _ in 0..count {
++        let len = read_u32(bytes, &mut offset)? as usize;
++        let expiry_len = read_u32(bytes, &mut offset)? as usize;
++        let eligible = read_u32(bytes, &mut offset)? != 0;
++        let row = bytes.get(offset..offset.checked_add(len)?)?.to_vec(); offset += len;
++        let expires = bytes.get(offset..offset.checked_add(expiry_len)?)?.to_vec(); offset += expiry_len;
++        rows.push(Row { bytes: row, expires, eligible });
++    }
++    if offset != bytes.len() { return None; }
++    Some(rows)
++}
++#[no_mangle]
++pub extern "C" fn put(id: u32, len: u32) -> u32 {
++    STORE.with(|s| {
++        let mut s = s.borrow_mut();
++        let Some(bytes) = s.input.get(..len as usize) else { return 0; };
++        let Some(rows) = parse(bytes) else { return 0; };
++        s.pages.insert(id, rows); 1
++    })
++}
++#[no_mangle]
++pub extern "C" fn remove(id: u32) { STORE.with(|s| { s.borrow_mut().pages.remove(&id); }); }
++#[no_mangle]
++pub extern "C" fn render(id: u32, now_len: u32, reuse: u32) -> *const u8 {
++    STORE.with(|s| {
++        let mut s = s.borrow_mut();
++        let Store { input, output, pages } = &mut *s;
++        if reuse == 0 { *output = Vec::new(); } else { output.clear(); }
++        output.extend_from_slice(b"{\"ok\":true,\"tasks\":[");
++        if let Some(rows) = pages.get(&id) {
++            let now = &input[..now_len as usize];
++            for (index, row) in rows.iter().enumerate() {
++                if index != 0 { output.push(b','); }
++                output.extend_from_slice(&row.bytes);
++                let claimable = row.eligible && (row.expires.is_empty() || row.expires.as_slice() > now);
++                output.extend_from_slice(if claimable { b"true}" } else { b"false}" });
++            }
++        }
++        output.extend_from_slice(b"]}"); output.as_ptr()
++    })
++}
++#[no_mangle]
++pub extern "C" fn output_len() -> u32 { STORE.with(|s| s.borrow().output.len() as u32) }
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    #[test]
++    fn rejects_truncated_or_oversized_payloads() {
++        assert!(parse(&[]).is_none());
++        assert!(parse(&101u32.to_le_bytes()).is_none());
++        assert!(parse(&[1,0,0,0]).is_none());
++        assert!(parse(&[0,0,0,0,1]).is_none());
++        assert_eq!(parse(&[0,0,0,0]).unwrap().len(), 0);
++    }
++}
+diff --git a/packages/api/src/routes/tasks.ts b/packages/api/src/routes/tasks.ts
+index 28f4d90..3feab6f 100644
+--- a/packages/api/src/routes/tasks.ts
++++ b/packages/api/src/routes/tasks.ts
+@@ -38,6 +38,7 @@ import { claimBudget, slashBondForDisputedClaim } from '../tasks/governance.js';
+ import { resolveOpenExpiry } from '../tasks/expiry.js';
+ import { bountyMinimumRefusal } from '../tasks/bounty-minimum.js';
+ import { escrowAvailable } from '../payments/house-wallet.js';
++import { projectedTaskList, type ProjectionMode } from '../tasks/list-projection.js';
+ import { settledStats, settledTasks, logSettledWithoutTx, houseAccountIds, parseCursor, DEFAULT_LIMIT, MAX_LIMIT, DEFAULT_WINDOW_DAYS, MAX_WINDOW_DAYS } from '../tasks/settled.js';
+ import {
+   type Actor, type TaskRow, loadTask, creatorMatches, logPaymentEvent, recordFunnel,
+@@ -303,6 +304,9 @@ tasks.get('/', async (c) => {
+   sql += ` ORDER BY t.created_at DESC LIMIT ? OFFSET ?`;
+   params.push(limit, offset);
+ 
++  const body = await projectedTaskList(db, c.env?.DB ?? db, sql, params,
++    (c.env?.TASK_LIST_PROJECTION_MODE ?? 'off') as ProjectionMode);
++  if (body) return c.body(body, 200, { 'Content-Type': 'application/json' });
+   const rows = await db.all<Record<string, unknown>>(sql, ...params);
+   return c.json({ ok: true, tasks: rows.map(publicTaskShape) });
+ });
+diff --git a/packages/api/src/task-projection.test.ts b/packages/api/src/task-projection.test.ts
+new file mode 100644
+index 0000000..e8d183c
+--- /dev/null
++++ b/packages/api/src/task-projection.test.ts
+@@ -0,0 +1,128 @@
++import { describe, it, expect, afterEach, vi } from 'vitest';
++import Database from 'better-sqlite3';
++import { readFileSync } from 'node:fs';
++import { dirname, resolve } from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { runnerMigrationFiles, RUNNER_LOCAL_STATEMENTS } from './db/migration-list.js';
++import { SQLiteAdapter } from './db/sqlite-adapter.js';
++import { createTestApp } from './test-helpers.js';
++import { clearTaskProjections, installTaskProjectionModule, projectedTaskList, taskProjectionStats } from './tasks/list-projection.js';
++
++const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
++const install = readFileSync(resolve(root, 'optional/task-projection/install.sql'), 'utf8');
++installTaskProjectionModule(new WebAssembly.Module(readFileSync(resolve(root, 'optional/task-projection/task_projection.wasm'))));
++afterEach(() => { vi.useRealTimers(); clearTaskProjections(); });
++function fixture() {
++  const db = new Database(':memory:'); db.pragma('foreign_keys = ON');
++  const migrations = resolve(root, 'packages/api/migrations');
++  for (const name of runnerMigrationFiles(migrations)) db.transaction(() => db.exec(readFileSync(resolve(migrations, name), 'utf8')))();
++  for (const sql of RUNNER_LOCAL_STATEMENTS) db.exec(sql);
++  db.transaction(() => db.exec(install))();
++  for (const id of ['ag_author', 'ag_claimed']) db.prepare("INSERT INTO agents (id,public_key,name,description,capabilities,protocols) VALUES (?,?,?,'fixture','[]','[]')").run(id, Buffer.from(id.padEnd(32, 'x')), id);
++  const insert = db.prepare("INSERT INTO tasks (task_id,creator_agent_id,claimed_by_agent_id,title,description,category,required_capabilities,status,created_at,expires_at,bounty_amount,bounty_network,payment_signature) VALUES (?,'ag_author',?,'A \"title\" ☃',?,?,?,'open','2026-01-01T00:00:00.000Z',?,? ,?,'PRIVATE_SIGNATURE')");
++  for (let i = 0; i < 120; i++) insert.run(`task_${i}`, i % 2 ? 'ag_claimed' : null, 'Newline\nUnicode 😃 <script> ', i % 2 ? 'code' : 'research', i % 2 ? '["code"]' : 'not-json', '2028-01-01T00:00:00.000Z', i % 3 ? '2000000' : null, i % 3 ? 'eip155:8453' : null);
++  return db;
++}
++for (const mode of ['js', 'rust-fresh', 'rust-reuse'] as const) describe(`public projection ${mode}`, () => {
++  it('matches SQL for 120 equal timestamps, filters, pagination and live mutations', async () => {
++    const db = fixture();
++    try {
++      const adapter = new SQLiteAdapter(db);
++      const a = createTestApp(adapter), b = createTestApp(adapter, { TASK_LIST_PROJECTION_MODE: mode });
++      const urls = ['?status=all&limit=100', '?status=open&limit=50', '?status=open&limit=50&offset=50', '?status=open&limit=50&offset=100', '?category=code', '?capability=code', '?creator=ag_author', '?claimer=ag_claimed', '?min_usdc=1.50', '?status=verified', '?status=bad', '?min_usdc=x'];
++      const compare = async () => {
++        for (const q of urls) {
++          const expected = await a.request('/v1/tasks' + q), actual = await b.request('/v1/tasks' + q);
++          expect(actual.status).toBe(expected.status); expect(await actual.json()).toEqual(await expected.json());
++        }
++      };
++      await compare(); await compare();
++      const ids: string[] = [];
++      for (const offset of [0, 50, 100]) ids.push(...(await (await b.request(`/v1/tasks?status=open&limit=50&offset=${offset}`)).json() as any).tasks.map((t: any) => t.task_id));
++      expect(new Set(ids).size).toBe(120); expect(ids.length).toBe(120);
++      db.exec("UPDATE tasks SET status='verified' WHERE task_id='task_0'; DELETE FROM tasks WHERE task_id='task_1'; UPDATE agents SET name='Changed ' || id WHERE id IN ('ag_author','ag_claimed')");
++      await compare(); clearTaskProjections(); await compare();
++      const body = await (await b.request('/v1/tasks?limit=100')).text(); expect(body).not.toContain('PRIVATE_SIGNATURE');
++    } finally { db.close(); }
++  });
++  it('recomputes claimable on expiry without any database write and owns each response buffer', async () => {
++    const db = fixture();
++    try {
++      vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2027-12-31T23:59:59.000Z'));
++      const adapter = new SQLiteAdapter(db), app = createTestApp(adapter, { TASK_LIST_PROJECTION_MODE: mode });
++      const first = await app.request('/v1/tasks?status=open&limit=100');
++      const epoch = db.prepare('SELECT version FROM task_projection_epoch').get();
++      vi.setSystemTime(new Date('2028-01-01T00:00:00.000Z'));
++      const second = await app.request('/v1/tasks?status=open&limit=100');
++      expect((await first.json() as any).tasks.every((t: any) => t.claimable)).toBe(true);
++      expect((await second.json() as any).tasks.every((t: any) => !t.claimable)).toBe(true);
++      expect(db.prepare('SELECT version FROM task_projection_epoch').get()).toEqual(epoch);
++    } finally { db.close(); }
++  });
++  it('bounds retained pages, falls back above the limit, and rejects a changed rebuild', async () => {
++    const db = fixture();
++    try {
++      const adapter = new SQLiteAdapter(db);
++      const sql = 'SELECT * FROM tasks WHERE task_id = ?';
++      for (let i = 0; i < 12; i++) expect(await projectedTaskList(adapter, adapter, sql, [`task_${i}`], mode, 12000, 3)).not.toBeNull();
++      const stats = taskProjectionStats(adapter) as any[];
++      expect(stats[0].pages).toBeLessThanOrEqual(3); expect(stats[0].retainedBytes).toBeLessThanOrEqual(12000); expect(stats[0].evictions).toBeGreaterThan(0);
++      expect(await projectedTaskList(adapter, adapter, sql, ['task_0'], mode, 1, 3)).toBeNull();
++      const all = adapter.all.bind(adapter);
++      adapter.all = async (...args: any[]) => { const rows = await (all as any)(...args); db.exec("UPDATE tasks SET title='new' WHERE task_id='task_2'"); return rows; };
++      clearTaskProjections();
++      expect(await projectedTaskList(adapter, adapter, sql, ['task_2'], mode)).toBeNull();
++    } finally { db.close(); }
++  });
++  it('reflects each certification revocation and the owner display name on the next read', async () => {
++    const db = fixture();
++    try {
++      db.exec("INSERT INTO owners (id,status,display_name) VALUES ('ow_test','active','Original owner')");
++      db.prepare("INSERT INTO owner_webauthn_credentials (id,owner_id,credential_id,public_key,status) VALUES ('cred','ow_test','credid',?,'active')").run(Buffer.from([1,2,3]));
++      db.exec("INSERT INTO action_assertions (id,owner_id,credential_id,action_type,action_hash,authenticator_data,client_data_json,signature,sequence,prev_hash,entry_hash) VALUES ('assert','ow_test','credid','agent.delegate','hash','ad','cdj','sig',1,'prev','entry')");
++      db.exec("INSERT INTO delegations (id,owner_id,agent_id,status,authorizing_assertion_id) VALUES ('del','ow_test','ag_author','active','assert')");
++      db.exec("UPDATE tasks SET creator_kind='owner',creator_owner_id='ow_test',creator_agent_id=NULL WHERE task_id='task_0'");
++      const adapter = new SQLiteAdapter(db), app = createTestApp(adapter, { TASK_LIST_PROJECTION_MODE: mode });
++      const read = async () => (await (await app.request('/v1/tasks?status=open&limit=100')).json() as any).tasks;
++      const readAll = async () => [...await read(), ...(await (await app.request('/v1/tasks?status=open&limit=100&offset=100')).json() as any).tasks];
++      expect((await read()).some((t: any) => t.creator.cert === 'certified_agent')).toBe(true);
++      for (const [table, id] of [['delegations','del'], ['owners','ow_test'], ['owner_webauthn_credentials','cred']]) {
++        db.prepare(`UPDATE ${table} SET status=? WHERE id=?`).run(table === 'owners' ? 'suspended' : 'revoked', id);
++        expect((await read()).filter((t: any) => t.creator.kind === 'agent').every((t: any) => t.creator.cert === 'none')).toBe(true);
++        db.prepare(`UPDATE ${table} SET status='active' WHERE id=?`).run(id);
++        expect((await read()).some((t: any) => t.creator.cert === 'certified_agent')).toBe(true);
++      }
++      db.exec("UPDATE owners SET display_name='Changed owner' WHERE id='ow_test'");
++      expect((await readAll()).find((t: any) => t.task_id === 'task_0').creator.name).toBe('Changed owner');
++    } finally { db.close(); }
++  });
++  it('isolates databases and falls back when the generation table is unavailable', async () => {
++    const first = fixture(), second = fixture();
++    try {
++      second.exec("UPDATE tasks SET title='Different database'");
++      const a = new SQLiteAdapter(first), b = new SQLiteAdapter(second);
++      const sql = "SELECT * FROM tasks WHERE task_id='task_0'";
++      const text = (bytes: Uint8Array | null) => new TextDecoder().decode(bytes!);
++      expect(text(await projectedTaskList(a, a, sql, [], mode))).not.toContain('Different database');
++      expect(text(await projectedTaskList(b, b, sql, [], mode))).toContain('Different database');
++      first.exec('DROP TABLE task_projection_epoch');
++      expect(await projectedTaskList(a, a, sql, [], mode)).toBeNull();
++    } finally { first.close(); second.close(); }
++  });
++});
++it('generation triggers preserve changes(), conditional outbox writes and transaction rollback', async () => {
++  const db = fixture();
++  try {
++    db.exec('CREATE TABLE probe_outbox (id TEXT PRIMARY KEY)');
++    const adapter = new SQLiteAdapter(db);
++    const batch = [ { sql: "UPDATE tasks SET status='claimed' WHERE task_id='task_0' AND status='open'", params: [] },
++      { sql: "INSERT INTO probe_outbox SELECT 'event' WHERE changes()=1", params: [] } ];
++    expect(await adapter.batch(batch)).toEqual([{ changes: 1 }, { changes: 1 }]);
++    expect(await adapter.batch(batch)).toEqual([{ changes: 0 }, { changes: 0 }]);
++    const before = db.prepare('SELECT version FROM task_projection_epoch').get();
++    await expect(adapter.batch([{ sql: "UPDATE tasks SET title='rolled back' WHERE task_id='task_0'", params: [] },
++      { sql: "INSERT INTO probe_outbox VALUES ('event')", params: [] }])).rejects.toThrow();
++    expect(db.prepare('SELECT version FROM task_projection_epoch').get()).toEqual(before);
++    expect(db.prepare("SELECT title FROM tasks WHERE task_id='task_0'").get()).not.toEqual({ title: 'rolled back' });
++  } finally { db.close(); }
++});
+diff --git a/packages/api/src/tasks/list-projection.ts b/packages/api/src/tasks/list-projection.ts
+new file mode 100644
+index 0000000..e11e3cb
+--- /dev/null
++++ b/packages/api/src/tasks/list-projection.ts
+@@ -0,0 +1,177 @@
++import type { DBAdapter } from '../db/adapter.js';
++import { publicTaskShape } from './service.js';
++
++// SQL remains authoritative. This opt-in projection only stores public rows
++// from bounded query pages, not authenticated responses or completed bodies.
++export type ProjectionMode = 'off' | 'js' | 'rust-fresh' | 'rust-reuse';
++type Fragment = { bytes: Uint8Array; expires: Uint8Array; eligible: boolean };
++type Page = { id: number; epoch: string; fragments: Fragment[]; bytes: number };
++const encode = new TextEncoder();
++const PREFIX = encode.encode('{"ok":true,"tasks":[');
++const TRUE = encode.encode('true}');
++const FALSE = encode.encode('false}');
++const SUFFIX = encode.encode(']}');
++const EPOCH_SQL = "SELECT incarnation || ':' || CAST(version AS TEXT) AS epoch FROM task_projection_epoch WHERE singleton = 1";
++let wasmModule: WebAssembly.Module | undefined;
++let states = new WeakMap<object, Map<string, State>>();
++export function installTaskProjectionModule(module: WebAssembly.Module): void { wasmModule = module; }
++export function clearTaskProjections(): void { states = new WeakMap(); }
++
++interface RustExports extends WebAssembly.Exports {
++  memory: WebAssembly.Memory;
++  input_resize(length: number): number;
++  put(id: number, length: number): number;
++  remove(id: number): void;
++  render(id: number, nowLength: number, reuse: number): number;
++  output_len(): number;
++}
++class RustRenderer {
++  private readonly api: RustExports;
++  constructor() {
++    if (!wasmModule) throw new Error('Install the compiled task projection Wasm module before enabling Rust mode');
++    this.api = new WebAssembly.Instance(wasmModule, {}).exports as RustExports;
++  }
++  put(page: Page): void {
++    const size = 4 + page.fragments.reduce((n, f) => n + 12 + f.bytes.length + f.expires.length, 0);
++    const ptr = this.api.input_resize(size);
++    const input = new Uint8Array(this.api.memory.buffer, ptr, size);
++    const data = new DataView(input.buffer, ptr, size);
++    data.setUint32(0, page.fragments.length, true);
++    let cursor = 4;
++    for (const f of page.fragments) {
++      data.setUint32(cursor, f.bytes.length, true);
++      data.setUint32(cursor + 4, f.expires.length, true);
++      data.setUint32(cursor + 8, f.eligible ? 1 : 0, true); cursor += 12;
++      input.set(f.bytes, cursor); cursor += f.bytes.length;
++      input.set(f.expires, cursor); cursor += f.expires.length;
++    }
++    if (!this.api.put(page.id, size)) throw new Error('Invalid projection payload');
++  }
++  remove(id: number): void { this.api.remove(id); }
++  render(id: number, now: Uint8Array, reuse: boolean): Uint8Array<ArrayBuffer> {
++    const input = this.api.input_resize(now.length);
++    new Uint8Array(this.api.memory.buffer, input, now.length).set(now);
++    const output = this.api.render(id, now.length, reuse ? 1 : 0);
++    // Copy before another request can reuse/grow Wasm memory. No borrowed
++    // view escapes into an asynchronous HTTP send.
++    return new Uint8Array(this.api.memory.buffer, output, this.api.output_len()).slice();
++  }
++}
++function later(a: Uint8Array, b: Uint8Array): boolean {
++  // Matches the existing ISO-string comparison, including legacy strings.
++  for (let i = 0; i < Math.min(a.length, b.length); i++) {
++    if (a[i] !== b[i]) return a[i] > b[i];
++  }
++  return a.length > b.length;
++}
++class State {
++  pages = new Map<string, Page>();
++  pending = new Map<string, Promise<Page | null>>();
++  bytes = 0;
++  nextId = 1;
++  buildSerial = 0;
++  latestBuild = new Map<string, number>();
++  buffer = new Uint8Array(0);
++  rust?: RustRenderer;
++  counters = { hits: 0, misses: 0, rebuilds: 0, evictions: 0, oversize: 0, changedDuringBuild: 0, unavailable: 0 };
++  constructor(readonly mode: ProjectionMode, readonly maxBytes: number, readonly maxPages: number) {
++    if (mode.startsWith('rust')) this.rust = new RustRenderer();
++  }
++  remove(key: string): void {
++    const p = this.pages.get(key);
++    if (!p) return;
++    this.bytes -= p.bytes; this.pages.delete(key); this.rust?.remove(p.id);
++  }
++  render(page: Page): Uint8Array<ArrayBuffer> {
++    const now = encode.encode(new Date().toISOString());
++    if (this.rust) return this.rust.render(page.id, now, this.mode === 'rust-reuse');
++    const needed = PREFIX.length + SUFFIX.length + page.fragments.reduce((n, f) => n + f.bytes.length + FALSE.length + 1, 0);
++    if (this.buffer.length < needed) this.buffer = new Uint8Array(needed);
++    let cursor = 0;
++    const append = (bytes: Uint8Array) => { this.buffer.set(bytes, cursor); cursor += bytes.length; };
++    append(PREFIX);
++    for (let i = 0; i < page.fragments.length; i++) {
++      if (i) this.buffer[cursor++] = 44;
++      const f = page.fragments[i]; append(f.bytes);
++      append(f.eligible && (!f.expires.length || later(f.expires, now)) ? TRUE : FALSE);
++    }
++    append(SUFFIX);
++    return this.buffer.slice(0, cursor);
++  }
++}
++function getState(identity: object, mode: ProjectionMode, maxBytes: number, maxPages: number): State {
++  let modes = states.get(identity);
++  if (!modes) { modes = new Map(); states.set(identity, modes); }
++  const key = `${mode}:${maxBytes}:${maxPages}`;
++  let state = modes.get(key);
++  if (!state) { state = new State(mode, maxBytes, maxPages); modes.set(key, state); }
++  return state;
++}
++export function taskProjectionStats(identity: object): unknown {
++  return [...(states.get(identity)?.entries() ?? [])].map(([mode, s]) => ({ mode, ...s.counters,
++    pages: s.pages.size, retainedBytes: s.bytes, outputCapacity: s.buffer.length }));
++}
++export async function projectedTaskList(db: DBAdapter, identity: object, sql: string, params: unknown[],
++  mode: ProjectionMode, maxBytes = 8 * 1024 * 1024, maxPages = 64): Promise<Uint8Array<ArrayBuffer> | null> {
++  if (!['js', 'rust-fresh', 'rust-reuse'].includes(mode)) return null;
++  const state = getState(identity, mode, maxBytes, maxPages);
++  // Read on every request; dropped application notifications cannot cause
++  // stale results. D1's un-sessioned queries use its primary database.
++  let epoch: string | undefined;
++  try { epoch = (await db.get<{ epoch: string }>(EPOCH_SQL))?.epoch; }
++  catch { state.counters.unavailable++; return null; }
++  if (!epoch) return null;
++  const key = JSON.stringify([sql, params]); // Includes filters, page and environment network policy.
++  const existing = state.pages.get(key);
++  if (existing?.epoch === epoch) {
++    state.counters.hits++;
++    state.pages.delete(key); state.pages.set(key, existing);
++    return state.render(existing);
++  }
++  state.counters.misses++;
++  // Bound rebuild work as well as retained data. Different requests continue
++  // through SQL while the bounded number of builds is occupied.
++  const pendingKey = epoch + ':' + key;
++  const prior = state.pending.get(pendingKey);
++  if (prior) { await prior; return projectedTaskList(db, identity, sql, params, mode, maxBytes, maxPages); }
++  if (state.pending.size >= 4) return null;
++  const serial = ++state.buildSerial;
++  state.latestBuild.set(key, serial);
++  const build = (async (): Promise<Page | null> => {
++    const rows = await db.all<Record<string, unknown>>(sql, ...params);
++    let after: string | undefined;
++    try { after = (await db.get<{ epoch: string }>(EPOCH_SQL))?.epoch; }
++    catch { state.counters.unavailable++; return null; }
++    // Bracket row materialization with generation reads. Any committed change
++    // discards this build; it cannot overwrite a newer page.
++    if (after !== epoch || state.latestBuild.get(key) !== serial) { state.counters.changedDuringBuild++; return null; }
++    const fragments = rows.map(row => {
++      const out = publicTaskShape(row); delete out.claimable;
++      return { bytes: encode.encode(JSON.stringify(out).slice(0, -1) + ',"claimable":'),
++        expires: encode.encode(typeof row.expires_at === 'string' ? row.expires_at : ''),
++        eligible: row.status === 'open' && (!row.escrow || row.escrow_status === 'funded') };
++    });
++    const bytes = fragments.reduce((n, f) => n + f.bytes.length + f.expires.length + 12, 4) + encode.encode(key).length;
++    if (bytes > Math.min(maxBytes, 1024 * 1024) || maxPages < 1) { state.counters.oversize++; return null; }
++    state.remove(key);
++    while (state.pages.size >= maxPages || state.bytes + bytes > maxBytes) {
++      state.remove(state.pages.keys().next().value!); state.counters.evictions++;
++    }
++    const page = { id: state.nextId++, epoch: epoch!, fragments, bytes };
++    state.rust?.put(page);
++    // Rust owns its fragments. Do not keep an extra JS copy of public rows.
++    if (state.rust) page.fragments = [];
++    state.pages.set(key, page); state.bytes += bytes; state.counters.rebuilds++;
++    return page;
++  })();
++  state.pending.set(pendingKey, build);
++  try {
++    const page = await build;
++    // Another completed build may evict this page before our continuation.
++    return page && state.pages.get(key) === page ? state.render(page) : null;
++  }
++  finally {
++    state.pending.delete(pendingKey);
++    if (state.latestBuild.get(key) === serial) state.latestBuild.delete(key);
++  }
++}
+diff --git a/packages/api/src/types/index.ts b/packages/api/src/types/index.ts
+index d15c295..8a90d12 100644
+--- a/packages/api/src/types/index.ts
++++ b/packages/api/src/types/index.ts
+@@ -508,6 +508,8 @@ export type Variables = {
+ // ─── App Bindings (for Cloudflare Workers + local) ───
+ 
+ export type Bindings = {
++  /** Optional bounded public task-row projection; SQL remains authoritative. */
++  TASK_LIST_PROJECTION_MODE?: 'off' | 'js' | 'rust-fresh' | 'rust-reuse';
+   DB?: D1Database;
+   ENVIRONMENT?: string;            // 'production' | 'staging' — set per wrangler env (wrangler.toml)
+   HOUSE_ACCOUNT_IDS?: string;      // comma-separated agent (ag_…) / owner (ow_…) ids whose paid tasks are labeled `sponsored`
+diff --git a/packages/api/src/types/wasm.d.ts b/packages/api/src/types/wasm.d.ts
+new file mode 100644
+index 0000000..e25ed80
+--- /dev/null
++++ b/packages/api/src/types/wasm.d.ts
+@@ -0,0 +1,10 @@
++// Minimal host API used by the optional renderer. The API workspace targets
++// ES2022 without the browser DOM library; Node and Workers supply this runtime.
++declare namespace WebAssembly {
++  interface Module {}
++  interface Memory { readonly buffer: ArrayBuffer }
++  interface Exports { [name: string]: unknown }
++  interface Instance { readonly exports: Exports }
++  const Module: { new(bytes: ArrayBuffer | ArrayBufferView): Module };
++  const Instance: { new(module: Module, imports?: object): Instance };
++}

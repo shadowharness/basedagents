@@ -1,0 +1,556 @@
+{
+  "comparisons": [
+    {
+      "name": "optimization-1",
+      "beforeLabel": "baseline-02",
+      "afterLabel": "opt1-01",
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "before_p50": 327.1815270000079,
+          "after_p50": 33.630543999999645,
+          "before_p99": 567.510677000013,
+          "after_p99": 73.28009199999724,
+          "before_p50_range": {
+            "min": 324.9527459999954,
+            "max": 330.2711339999951
+          },
+          "after_p50_range": {
+            "min": 30.934066999998322,
+            "max": 38.34132999999929
+          },
+          "before_p99_range": {
+            "min": 531.9029259999952,
+            "max": 816.1636880000005
+          },
+          "after_p99_range": {
+            "min": 60.86172000000079,
+            "max": 125.9511390000007
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "tasks-verified",
+          "before_p50": 371.6762129999697,
+          "after_p50": 37.27827499999694,
+          "before_p99": 669.4747820000048,
+          "after_p99": 79.44633700000122,
+          "before_p50_range": {
+            "min": 368.3442389999982,
+            "max": 377.4058420000365
+          },
+          "after_p50_range": {
+            "min": 34.18763200000103,
+            "max": 39.70766900000308
+          },
+          "before_p99_range": {
+            "min": 571.2344700000249,
+            "max": 791.3113490000251
+          },
+          "after_p99_range": {
+            "min": 66.41839700000128,
+            "max": 127.19099600000482
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "agent-profile",
+          "before_p50": 3.5400900000240654,
+          "after_p50": 3.69249100000161,
+          "before_p99": 9.12912600004347,
+          "after_p99": 10.184461000004376,
+          "before_p50_range": {
+            "min": 3.508568999997806,
+            "max": 3.560330000007525
+          },
+          "after_p50_range": {
+            "min": 3.592328999999154,
+            "max": 4.596422999995411
+          },
+          "before_p99_range": {
+            "min": 8.75032099999953,
+            "max": 12.389212000009138
+          },
+          "after_p99_range": {
+            "min": 9.403890000001411,
+            "max": 15.486374000000069
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "status",
+          "before_p50": 233.49891600001138,
+          "after_p50": 230.93914800000493,
+          "before_p99": 419.6211400000029,
+          "after_p99": 457.9495600000082,
+          "before_p50_range": {
+            "min": 232.1118589999969,
+            "max": 234.73905599996215
+          },
+          "after_p50_range": {
+            "min": 230.19893800000136,
+            "max": 232.53300899997703
+          },
+          "before_p99_range": {
+            "min": 360.33979499991983,
+            "max": 439.34089099999983
+          },
+          "after_p99_range": {
+            "min": 364.97171899999375,
+            "max": 559.3198410000041
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "chain",
+          "before_p50": 4.406621000031009,
+          "after_p50": 4.4176210000005085,
+          "before_p99": 12.72005599993281,
+          "after_p99": 9.004764000012074,
+          "before_p50_range": {
+            "min": 3.292485999991186,
+            "max": 4.7574660000391304
+          },
+          "after_p50_range": {
+            "min": 3.3272860000142828,
+            "max": 4.886506999988342
+          },
+          "before_p99_range": {
+            "min": 7.683625999954529,
+            "max": 26.757371000014246
+          },
+          "after_p99_range": {
+            "min": 6.528770000004442,
+            "max": 17.82724600000074
+          },
+          "responseIdentical": true
+        }
+      ]
+    },
+    {
+      "name": "optimization-2",
+      "beforeLabel": "opt1-01",
+      "afterLabel": "opt2-01",
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "before_p50": 33.630543999999645,
+          "after_p50": 34.980522000001656,
+          "before_p99": 73.28009199999724,
+          "after_p99": 79.39041400000133,
+          "before_p50_range": {
+            "min": 30.934066999998322,
+            "max": 38.34132999999929
+          },
+          "after_p50_range": {
+            "min": 32.25956500000029,
+            "max": 37.764281000001574
+          },
+          "before_p99_range": {
+            "min": 60.86172000000079,
+            "max": 125.9511390000007
+          },
+          "after_p99_range": {
+            "min": 66.6065189999972,
+            "max": 103.79387099999985
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "tasks-verified",
+          "before_p50": 37.27827499999694,
+          "after_p50": 38.67933400000038,
+          "before_p99": 79.44633700000122,
+          "after_p99": 87.87513200000103,
+          "before_p50_range": {
+            "min": 34.18763200000103,
+            "max": 39.70766900000308
+          },
+          "after_p50_range": {
+            "min": 35.79097300000285,
+            "max": 42.19286199999624
+          },
+          "before_p99_range": {
+            "min": 66.41839700000128,
+            "max": 127.19099600000482
+          },
+          "after_p99_range": {
+            "min": 77.923315,
+            "max": 110.93924900000275
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "agent-profile",
+          "before_p50": 3.69249100000161,
+          "after_p50": 3.711531000000832,
+          "before_p99": 10.184461000004376,
+          "after_p99": 10.764309000005596,
+          "before_p50_range": {
+            "min": 3.592328999999154,
+            "max": 4.596422999995411
+          },
+          "after_p50_range": {
+            "min": 3.649250000002212,
+            "max": 4.562543000000005
+          },
+          "before_p99_range": {
+            "min": 9.403890000001411,
+            "max": 15.486374000000069
+          },
+          "after_p99_range": {
+            "min": 9.530891000002157,
+            "max": 16.15986200000043
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "status",
+          "before_p50": 230.93914800000493,
+          "after_p50": 128.76529599999776,
+          "before_p99": 457.9495600000082,
+          "after_p99": 225.51690899999812,
+          "before_p50_range": {
+            "min": 230.19893800000136,
+            "max": 232.53300899997703
+          },
+          "after_p50_range": {
+            "min": 127.89448400000401,
+            "max": 129.10093999998935
+          },
+          "before_p99_range": {
+            "min": 364.97171899999375,
+            "max": 559.3198410000041
+          },
+          "after_p99_range": {
+            "min": 207.85110599998734,
+            "max": 287.0255169999873
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "chain",
+          "before_p50": 4.4176210000005085,
+          "after_p50": 3.38900699999067,
+          "before_p99": 9.004764000012074,
+          "after_p99": 7.893788999994285,
+          "before_p50_range": {
+            "min": 3.3272860000142828,
+            "max": 4.886506999988342
+          },
+          "after_p50_range": {
+            "min": 3.3765260000072885,
+            "max": 3.4611279999953695
+          },
+          "before_p99_range": {
+            "min": 6.528770000004442,
+            "max": 17.82724600000074
+          },
+          "after_p99_range": {
+            "min": 6.093404000013834,
+            "max": 14.49583899998106
+          },
+          "responseIdentical": true
+        }
+      ]
+    },
+    {
+      "name": "optimization-3",
+      "beforeLabel": "opt2-01",
+      "afterLabel": "opt3-01",
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "before_p50": 34.980522000001656,
+          "after_p50": 35.97129899999982,
+          "before_p99": 79.39041400000133,
+          "after_p99": 73.67906099999891,
+          "before_p50_range": {
+            "min": 32.25956500000029,
+            "max": 37.764281000001574
+          },
+          "after_p50_range": {
+            "min": 33.07069899999988,
+            "max": 40.214318000002095
+          },
+          "before_p99_range": {
+            "min": 66.6065189999972,
+            "max": 103.79387099999985
+          },
+          "after_p99_range": {
+            "min": 63.18687599999976,
+            "max": 152.73175699999956
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "tasks-verified",
+          "before_p50": 38.67933400000038,
+          "after_p50": 38.598135000000184,
+          "before_p99": 87.87513200000103,
+          "after_p99": 92.890247000003,
+          "before_p50_range": {
+            "min": 35.79097300000285,
+            "max": 42.19286199999624
+          },
+          "after_p50_range": {
+            "min": 37.94344600000477,
+            "max": 44.19549199999892
+          },
+          "before_p99_range": {
+            "min": 77.923315,
+            "max": 110.93924900000275
+          },
+          "after_p99_range": {
+            "min": 70.01917099999991,
+            "max": 133.55829099999391
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "agent-profile",
+          "before_p50": 3.711531000000832,
+          "after_p50": 3.53364899999724,
+          "before_p99": 10.764309000005596,
+          "after_p99": 9.920496999999159,
+          "before_p50_range": {
+            "min": 3.649250000002212,
+            "max": 4.562543000000005
+          },
+          "after_p50_range": {
+            "min": 3.452367999998387,
+            "max": 3.808212999996613
+          },
+          "before_p99_range": {
+            "min": 9.530891000002157,
+            "max": 16.15986200000043
+          },
+          "after_p99_range": {
+            "min": 8.768441000000166,
+            "max": 14.2244370000044
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "status",
+          "before_p50": 128.76529599999776,
+          "after_p50": 21.886062999998103,
+          "before_p99": 225.51690899999812,
+          "after_p99": 32.942215999995824,
+          "before_p50_range": {
+            "min": 127.89448400000401,
+            "max": 129.10093999998935
+          },
+          "after_p50_range": {
+            "min": 21.629019999993034,
+            "max": 23.7787299999909
+          },
+          "before_p99_range": {
+            "min": 207.85110599998734,
+            "max": 287.0255169999873
+          },
+          "after_p99_range": {
+            "min": 32.529811000000336,
+            "max": 65.49142800000845
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "chain",
+          "before_p50": 3.38900699999067,
+          "after_p50": 3.2880849999928614,
+          "before_p99": 7.893788999994285,
+          "after_p99": 6.919015999999829,
+          "before_p50_range": {
+            "min": 3.3765260000072885,
+            "max": 3.4611279999953695
+          },
+          "after_p50_range": {
+            "min": 3.2566050000023097,
+            "max": 3.325166000009631
+          },
+          "before_p99_range": {
+            "min": 6.093404000013834,
+            "max": 14.49583899998106
+          },
+          "after_p99_range": {
+            "min": 5.647798000005423,
+            "max": 14.539160999993328
+          },
+          "responseIdentical": true
+        }
+      ]
+    },
+    {
+      "name": "time-control",
+      "beforeLabel": "baseline-control-01",
+      "afterLabel": "optimized-control-01",
+      "endpoints": [
+        {
+          "endpoint": "tasks-open",
+          "before_p50": 336.7628629999963,
+          "after_p50": 35.97193600000173,
+          "before_p99": 694.5845790000021,
+          "after_p99": 73.07052900000053,
+          "before_p50_range": {
+            "min": 325.9100319999998,
+            "max": 407.8564029999834
+          },
+          "after_p50_range": {
+            "min": 34.87072199999966,
+            "max": 41.29165099999955
+          },
+          "before_p99_range": {
+            "min": 512.5558969999984,
+            "max": 1043.6576789999963
+          },
+          "after_p99_range": {
+            "min": 65.41826399999991,
+            "max": 136.15059999999903
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "tasks-verified",
+          "before_p50": 393.06087299995124,
+          "after_p50": 41.41305199999624,
+          "before_p99": 859.5792030000011,
+          "after_p99": 146.08869699999923,
+          "before_p50_range": {
+            "min": 391.64457199996104,
+            "max": 404.848197000043
+          },
+          "after_p50_range": {
+            "min": 37.12611300000572,
+            "max": 46.938968000002205
+          },
+          "before_p99_range": {
+            "min": 767.897770999989,
+            "max": 988.2554259999888
+          },
+          "after_p99_range": {
+            "min": 78.95556999999826,
+            "max": 170.3381920000029
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "agent-profile",
+          "before_p50": 3.5516889999853447,
+          "after_p50": 3.608649999994668,
+          "before_p99": 8.760120999999344,
+          "after_p99": 8.858162000004086,
+          "before_p50_range": {
+            "min": 3.502927999943495,
+            "max": 3.735490999999456
+          },
+          "after_p50_range": {
+            "min": 3.5171680000057677,
+            "max": 5.259792000011657
+          },
+          "before_p99_range": {
+            "min": 8.29131400003098,
+            "max": 10.148500000010245
+          },
+          "after_p99_range": {
+            "min": 8.398635999998078,
+            "max": 31.522355000008247
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "status",
+          "before_p50": 236.54902799997944,
+          "after_p50": 21.64841900000465,
+          "before_p99": 411.8546089999145,
+          "after_p99": 35.450969000012265,
+          "before_p50_range": {
+            "min": 234.41491799999494,
+            "max": 238.90558000002056
+          },
+          "after_p50_range": {
+            "min": 21.616857999993954,
+            "max": 24.89458399999421
+          },
+          "before_p99_range": {
+            "min": 381.4980290000094,
+            "max": 503.4655929999426
+          },
+          "after_p99_range": {
+            "min": 32.58108899999934,
+            "max": 45.68751099999645
+          },
+          "responseIdentical": true
+        },
+        {
+          "endpoint": "chain",
+          "before_p50": 3.3349660000531003,
+          "after_p50": 3.293005000014091,
+          "before_p99": 6.6870920000365,
+          "after_p99": 5.907441999996081,
+          "before_p50_range": {
+            "min": 3.2686860000249,
+            "max": 3.5286489999853075
+          },
+          "after_p50_range": {
+            "min": 3.264804999998887,
+            "max": 3.3066450000042096
+          },
+          "before_p99_range": {
+            "min": 6.380448000039905,
+            "max": 12.084886999917217
+          },
+          "after_p99_range": {
+            "min": 5.6009179999964545,
+            "max": 25.040586000002804
+          },
+          "responseIdentical": true
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "label": "baseline",
+      "command": "npm test",
+      "output": "tests/baseline.log",
+      "passedFiles": 97,
+      "passedTests": 1705,
+      "sourceSha256": "b6a12defffecacf7cd02a8e3b574ce04ce43b8d7acd35166e9579f52da670ab5",
+      "publishedSha256": "eb0c1f40729a1e9127407ff1daf6d42e5b7e1cec2a7f525332a91448364620eb",
+      "transformation": "ANSI colour escapes removed; test output text retained"
+    },
+    {
+      "label": "optimization-1",
+      "command": "npm test",
+      "output": "tests/optimization-1.log",
+      "passedFiles": 98,
+      "passedTests": 1706,
+      "sourceSha256": "9383716edb645cf335286f64028e2bdbbea377b80ead0752c4547cc10d03616b",
+      "publishedSha256": "072c877f62da802ff9643ca8e94f868b681707bdf3414c21c1a6c9cd5be3fee0",
+      "transformation": "ANSI colour escapes removed; test output text retained"
+    },
+    {
+      "label": "optimization-2",
+      "command": "npm test",
+      "output": "tests/optimization-2.log",
+      "passedFiles": 98,
+      "passedTests": 1706,
+      "sourceSha256": "d391bb2e567e2532622b7ec4e8260712bbb6af87547ec4703ddfbbd6fe9f9665",
+      "publishedSha256": "68c7c3b31fa02ef83ae941e169121d0dbbda9f4270cae195f193788419428d7a",
+      "transformation": "ANSI colour escapes removed; test output text retained"
+    },
+    {
+      "label": "optimization-3",
+      "command": "npm test",
+      "output": "tests/optimization-3.log",
+      "passedFiles": 98,
+      "passedTests": 1707,
+      "sourceSha256": "563439197dbe179cf961f83d9f7bca42ced3a7b0ef6f3b41a7aab4f03b244a53",
+      "publishedSha256": "14b53d6e05748ba320082dead7dda0d5e4175efc930dbcf66f56e54109d26e07",
+      "transformation": "ANSI colour escapes removed; test output text retained"
+    }
+  ],
+  "rawLatencySamplesVerified": 60000,
+  "performanceScope": "Fixed synthetic Node/SQLite localhost workload. Five batches of 400 per endpoint per run; each run has a separate 400-request profile pass."
+}

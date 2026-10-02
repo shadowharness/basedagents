@@ -1,0 +1,37 @@
+{
+  "projectionMode": "js",
+  "cpuMicroseconds": {
+    "user": 2417654,
+    "system": 346670
+  },
+  "elapsedMs": 2480.873345,
+  "memoryBefore": {
+    "rss": 207564800,
+    "heapTotal": 62951424,
+    "heapUsed": 40652296,
+    "external": 5338902,
+    "arrayBuffers": 794896
+  },
+  "memoryAfter": {
+    "rss": 208289792,
+    "heapTotal": 57356288,
+    "heapUsed": 31603424,
+    "external": 5207537,
+    "arrayBuffers": 664251
+  },
+  "projection": [
+    {
+      "mode": "js:8388608:64",
+      "hits": 5038,
+      "misses": 2,
+      "rebuilds": 2,
+      "evictions": 0,
+      "oversize": 0,
+      "changedDuringBuild": 0,
+      "unavailable": 0,
+      "pages": 2,
+      "retainedBytes": 365076,
+      "outputCapacity": 195472
+    }
+  ]
+}

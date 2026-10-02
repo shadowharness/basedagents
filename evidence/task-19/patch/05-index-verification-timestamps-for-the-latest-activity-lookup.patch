@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ShadowHarness <contact@shadowharness.com>
+Date: Sat, 3 Oct 2026 01:04:19 +0900
+Subject: [PATCH] Index verification timestamps for the latest activity lookup
+
+---
+ packages/api/migrations/0049_verifications_created.sql | 3 +++
+ packages/api/src/test-helpers.ts                       | 1 +
+ 2 files changed, 4 insertions(+)
+ create mode 100644 packages/api/migrations/0049_verifications_created.sql
+
+diff --git a/packages/api/migrations/0049_verifications_created.sql b/packages/api/migrations/0049_verifications_created.sql
+new file mode 100644
+index 0000000..738db7d
+--- /dev/null
++++ b/packages/api/migrations/0049_verifications_created.sql
+@@ -0,0 +1,3 @@
++-- The status endpoint needs only the latest timestamp. Read it from the
++-- leading index entry instead of scanning and sorting the verification log.
++CREATE INDEX IF NOT EXISTS idx_verifications_created ON verifications(created_at DESC);
+diff --git a/packages/api/src/test-helpers.ts b/packages/api/src/test-helpers.ts
+index ace3474..881e288 100644
+--- a/packages/api/src/test-helpers.ts
++++ b/packages/api/src/test-helpers.ts
+@@ -140,6 +140,7 @@ ALTER TABLE tasks ADD COLUMN expires_at TEXT;
+ ALTER TABLE tasks ADD COLUMN expired_at TEXT;
+ CREATE INDEX IF NOT EXISTS idx_tasks_open_expires ON tasks(status, expires_at);
+ CREATE INDEX IF NOT EXISTS idx_tasks_status_created ON tasks(status, created_at DESC);
++CREATE INDEX IF NOT EXISTS idx_verifications_created ON verifications(created_at DESC);
+ `.trim();
+ 
+ /**

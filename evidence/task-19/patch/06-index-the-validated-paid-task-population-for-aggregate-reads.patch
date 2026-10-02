@@ -1,0 +1,77 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ShadowHarness <contact@shadowharness.com>
+Date: Sat, 3 Oct 2026 01:08:03 +0900
+Subject: [PATCH] Index the validated paid-task population for aggregate reads
+
+---
+ .../api/migrations/0050_paid_totals_index.sql | 13 +++++++++++
+ packages/api/src/routes/tasks-settled.test.ts | 23 +++++++++++++++++++
+ packages/api/src/test-helpers.ts              |  1 +
+ 3 files changed, 37 insertions(+)
+ create mode 100644 packages/api/migrations/0050_paid_totals_index.sql
+
+diff --git a/packages/api/migrations/0050_paid_totals_index.sql b/packages/api/migrations/0050_paid_totals_index.sql
+new file mode 100644
+index 0000000..afe6544
+--- /dev/null
++++ b/packages/api/migrations/0050_paid_totals_index.sql
+@@ -0,0 +1,13 @@
++-- Index the existing paidTotals population, including its exact transaction
++-- hash validation. This materializes eligibility at write time while leaving
++-- the read predicate and amount conversion unchanged. If that predicate is
++-- broadened later, SQLite falls back to another eligible access path.
++CREATE INDEX IF NOT EXISTS idx_tasks_paid_totals
++ON tasks(payment_status, bounty_network, settled_at, bounty_amount)
++WHERE payment_status = 'settled'
++  AND bounty_network IN ('eip155:8453')
++  AND settled_at IS NOT NULL
++  AND COALESCE(escrow_status, '') != 'refunded'
++  AND (length(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, ''))) = 66
++    AND substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 1, 2) = '0x'
++    AND NOT (lower(substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 3)) GLOB '*[^0-9a-f]*'));
+diff --git a/packages/api/src/routes/tasks-settled.test.ts b/packages/api/src/routes/tasks-settled.test.ts
+index 285703d..e30afb9 100644
+--- a/packages/api/src/routes/tasks-settled.test.ts
++++ b/packages/api/src/routes/tasks-settled.test.ts
+@@ -106,6 +106,29 @@ beforeEach(() => {
+ afterEach(() => { vi.useRealTimers(); });
+ 
+ describe('GET /v1/tasks/settled — the spec fixture', () => {
++  it('keeps totals current as an existing settlement enters and leaves the eligible population', async () => {
++    await seedSettled({ task_id: 'task_changing', bounty_amount: '3000000' });
++    const totals = async () => {
++      const { body } = await get('/v1/tasks/settled');
++      return [body.stats.tasks_paid_all_time, body.stats.usdc_paid_all_time];
++    };
++    expect(await totals()).toEqual([1, '3.00']);
++    await db.run("UPDATE tasks SET payment_tx_hash = 'bad' WHERE task_id = 'task_changing'");
++    expect(await totals()).toEqual([0, '0.00']);
++    await db.run('UPDATE tasks SET escrow_release_tx_hash = ? WHERE task_id = ?', TX(2), 'task_changing');
++    expect(await totals()).toEqual([1, '3.00']);
++    await db.run("UPDATE tasks SET escrow_status = 'refunded' WHERE task_id = 'task_changing'");
++    expect(await totals()).toEqual([0, '0.00']);
++    await db.run("UPDATE tasks SET escrow_status = NULL, bounty_network = 'eip155:84532' WHERE task_id = 'task_changing'");
++    expect(await totals()).toEqual([0, '0.00']);
++    await db.run("UPDATE tasks SET bounty_network = 'eip155:8453', bounty_amount = '4000000', settled_at = NULL WHERE task_id = 'task_changing'");
++    expect(await totals()).toEqual([0, '0.00']);
++    await db.run("UPDATE tasks SET settled_at = '2026-09-20T12:00:00.000Z' WHERE task_id = 'task_changing'");
++    expect(await totals()).toEqual([1, '4.00']);
++    await db.run("UPDATE tasks SET payment_status = 'pending' WHERE task_id = 'task_changing'");
++    expect(await totals()).toEqual([0, '0.00']);
++  });
++
+   it('reproduces the Metrics table "Today" column to the second', async () => {
+     await seedFixture();
+     const { res, body } = await get('/v1/tasks/settled');
+diff --git a/packages/api/src/test-helpers.ts b/packages/api/src/test-helpers.ts
+index 881e288..0e67b98 100644
+--- a/packages/api/src/test-helpers.ts
++++ b/packages/api/src/test-helpers.ts
+@@ -141,6 +141,7 @@ ALTER TABLE tasks ADD COLUMN expired_at TEXT;
+ CREATE INDEX IF NOT EXISTS idx_tasks_open_expires ON tasks(status, expires_at);
+ CREATE INDEX IF NOT EXISTS idx_tasks_status_created ON tasks(status, created_at DESC);
+ CREATE INDEX IF NOT EXISTS idx_verifications_created ON verifications(created_at DESC);
++CREATE INDEX IF NOT EXISTS idx_tasks_paid_totals ON tasks(payment_status, bounty_network, settled_at, bounty_amount) WHERE payment_status = 'settled' AND bounty_network IN ('eip155:8453') AND settled_at IS NOT NULL AND COALESCE(escrow_status, '') != 'refunded' AND (length(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, ''))) = 66 AND substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 1, 2) = '0x' AND NOT (lower(substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 3)) GLOB '*[^0-9a-f]*'));
+ `.trim();
+ 
+ /**

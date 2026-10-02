@@ -1,0 +1,40 @@
+[
+  {
+    "method": "all",
+    "sql": "SELECT c.*, a.name as agent_name, a.comment as agent_comment\n       FROM chain c LEFT JOIN agents a ON c.agent_id = a.id\n       ORDER BY c.sequence DESC LIMIT 20",
+    "count": 400,
+    "totalMs": 135.8655880000515,
+    "maxMs": 2.0387879999980214,
+    "params": [],
+    "plan": [
+      {
+        "id": 6,
+        "parent": 0,
+        "notused": 216,
+        "detail": "SCAN c"
+      },
+      {
+        "id": 8,
+        "parent": 0,
+        "notused": 46,
+        "detail": "SEARCH a USING INDEX sqlite_autoindex_agents_1 (id=?) LEFT-JOIN"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "sql": "SELECT COUNT(*) as count FROM chain",
+    "count": 400,
+    "totalMs": 16.147980000001553,
+    "maxMs": 0.3057639999969979,
+    "params": [],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN chain USING COVERING INDEX idx_chain_agent"
+      }
+    ]
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-10-02T19:56:23.265Z",
+  "upstream": "13cd578b05a85a6640bd6748b71a58e3135fe276",
+  "appliedPatches": [
+    {
+      "patch": "patch/01-add-reproducible-localhost-endpoint-profiling-harness.patch",
+      "sha256": "c0b3d992163364224f525443b1422692bbfd481877718aa7719562d2a55d1b6c",
+      "expectedTree": "59fda727a00ed53813f5e0f8560d3e33d2de5dc0",
+      "actualTree": "59fda727a00ed53813f5e0f8560d3e33d2de5dc0",
+      "passed": true
+    },
+    {
+      "patch": "patch/02-close-benchmark-server-when-its-driver-disconnects.patch",
+      "sha256": "0a3bab7f2ac27a196f1df34a866b8f72baabfbfd416fc859bfd2205c3cfec540",
+      "expectedTree": "cc7fdd5c13dc491fb30d0d29b54022067e5b81df",
+      "actualTree": "cc7fdd5c13dc491fb30d0d29b54022067e5b81df",
+      "passed": true
+    },
+    {
+      "patch": "patch/03-summarize-endpoint-variance-and-cpu-and-sql-profiles.patch",
+      "sha256": "c6362b277176ff36eca4127b868dba711919d0e537fd6fd25d36c24a953c3651",
+      "expectedTree": "a31bb32c56ddffbad608a14a8c0ad52b5fc5cf30",
+      "actualTree": "a31bb32c56ddffbad608a14a8c0ad52b5fc5cf30",
+      "passed": true
+    },
+    {
+      "patch": "patch/04-index-task-state-and-creation-time-for-ordered-listings.patch",
+      "sha256": "0d29809bfec6d8d47331f441c3bc92af468f04f4cb89d5da126f1e24ee3094b9",
+      "expectedTree": "4baf7f9567af1a2b62398b6972168e3aa2c68b41",
+      "actualTree": "4baf7f9567af1a2b62398b6972168e3aa2c68b41",
+      "passed": true
+    },
+    {
+      "patch": "patch/05-index-verification-timestamps-for-the-latest-activity-lookup.patch",
+      "sha256": "26372da2ef1a433abd9fd3cbe7cb97ceb898c8fe78aa9245482299e015c9d2bb",
+      "expectedTree": "eb0cf31c527e2314f70c399e67cb5cb51b4f6e4c",
+      "actualTree": "eb0cf31c527e2314f70c399e67cb5cb51b4f6e4c",
+      "passed": true
+    },
+    {
+      "patch": "patch/06-index-the-validated-paid-task-population-for-aggregate-reads.patch",
+      "sha256": "4b30e59803214981795bcb3070e217ef9775d646a752856a89f056093708429e",
+      "expectedTree": "7bbf51892ad14d6414f0ad7e02b4d748e6a60eb0",
+      "actualTree": "7bbf51892ad14d6414f0ad7e02b4d748e6a60eb0",
+      "passed": true
+    }
+  ],
+  "finalTree": "7bbf51892ad14d6414f0ad7e02b4d748e6a60eb0",
+  "allContentMatchesMeasuredSource": true,
+  "command": "git checkout --detach <pinned-upstream>; git am patch/*.patch",
+  "passed": true
+}

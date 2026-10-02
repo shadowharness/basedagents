@@ -1,0 +1,832 @@
+{
+  "metadata": {
+    "at": "2026-10-02T16:05:01.635Z",
+    "mode": "full",
+    "upstreamHead": "8ed657493b6796c9533b858a8e5158b983ab3484",
+    "platform": "linux",
+    "arch": "arm64",
+    "node": "v22.23.3",
+    "cpu": "Neoverse-N1",
+    "availableParallelism": 2,
+    "workload": {
+      "schema": 1,
+      "dataset": {
+        "agents": 2000,
+        "tasks": 50000,
+        "verifications": 100000
+      },
+      "concurrency": 4,
+      "warmupRequests": 120,
+      "measuredRequests": 400,
+      "runs": 5,
+      "profileRequests": 400,
+      "endpoints": [
+        {
+          "name": "tasks-open",
+          "path": "/v1/tasks?status=open&limit=100"
+        },
+        {
+          "name": "tasks-verified",
+          "path": "/v1/tasks?status=verified&limit=100"
+        },
+        {
+          "name": "agent-profile",
+          "path": "/v1/agents/Benchmark-0001"
+        },
+        {
+          "name": "status",
+          "path": "/v1/status"
+        },
+        {
+          "name": "chain",
+          "path": "/v1/chain"
+        }
+      ]
+    },
+    "workloadSha256": "55f33155142fa300dc88b152221632e14f7f6a9a2d8e298665760120b7f9e6bd",
+    "sourceSha256": {
+      "bench/server.ts": "73102f0a0e90de37bf0b3d98a2ad5fa18ef661e5955d627a5252f6c151d5b7e0",
+      "bench/run.mjs": "901887b3c8b5a338825e7accdf792bc882910a0d7239de0ad484f44cce3fc7ef",
+      "packages/api/src/index.ts": "b0d381d85bf22b69506e35c9ff68ed918039a1b858358e591131ab90a9a6eec7",
+      "packages/api/src/db/sqlite-adapter.ts": "cac56a7b9c7adf10cef3d56275a5049df6f03cabf6a8cb802a303f9b9d36079c",
+      "packages/api/src/tasks/service.ts": "d66365168ce0d92beb583be2f337aca797babfc8e3b00f2a7cf23173854e2dc9",
+      "packages/api/src/tasks/settled.ts": "9320f8ac9d3cd4ef8090470ad0ef018a37d9e50cf572ea44da369d948a2fead9"
+    }
+  },
+  "complete": {
+    "completedAt": "2026-10-02T16:08:45.966Z",
+    "endpoints": 5,
+    "requestsFailed": 0
+  },
+  "endpoints": [
+    {
+      "name": "tasks-open",
+      "responseSha256": "8a86d51d61d6ffa0d3712b26374e7b4db50d0a013c486ef77f649b7d519259e9",
+      "medianP50": 33.630543999999645,
+      "medianP99": 73.28009199999724,
+      "p50Range": {
+        "min": 30.934066999998322,
+        "max": 38.34132999999929
+      },
+      "p99Range": {
+        "min": 60.86172000000079,
+        "max": 125.9511390000007
+      },
+      "throughputRange": {
+        "min": 87.90499453930218,
+        "max": 109.64085478054089
+      },
+      "sqlTotalMs": 2334.913851999998,
+      "queries": [
+        {
+          "sql": "SELECT t.*, a.name AS creator_name,\n      cl.name AS claimer_name,\n      ow.display_name AS creator_owner_name,\n      EXISTS(SELECT 1 FROM delegations d\n    JOIN owners o ON o.id = d.owner_id AND o.status = 'active'\n    JOIN owner_webauthn_credentials c ON c.owner_id = o.id AND c.status = 'active'\n    WHERE d.agent_id = t.creator_agent_id AND d.status = 'active') AS creator_certified,\n      EXISTS(SELECT 1 FROM owners o\n    JOIN owner_webauthn_credentials c ON c.owner_id = o.id AND c.status = 'active'\n    WHERE o.id = t.creator_owner_id AND o.status = 'active') AS creator_owner_certified FROM tasks t LEFT JOIN agents a ON a.id = t.creator_agent_id LEFT JOIN agents cl ON cl.id = t.claimed_by_agent_id LEFT JOIN owners ow ON ow.id = t.creator_owner_id WHERE 1=1 AND t.status = ? ORDER BY t.created_at DESC LIMIT ? OFFSET ?",
+          "count": 400,
+          "totalMs": 2334.913851999998,
+          "perRequestMs": 5.837284629999995,
+          "plan": [
+            {
+              "id": 17,
+              "parent": 0,
+              "notused": 61,
+              "detail": "SEARCH t USING INDEX idx_tasks_status_created (status=?)"
+            },
+            {
+              "id": 24,
+              "parent": 0,
+              "notused": 46,
+              "detail": "SEARCH a USING INDEX sqlite_autoindex_agents_1 (id=?) LEFT-JOIN"
+            },
+            {
+              "id": 32,
+              "parent": 0,
+              "notused": 46,
+              "detail": "SEARCH cl USING INDEX sqlite_autoindex_agents_1 (id=?) LEFT-JOIN"
+            },
+            {
+              "id": 40,
+              "parent": 0,
+              "notused": 46,
+              "detail": "SEARCH ow USING INDEX sqlite_autoindex_owners_1 (id=?) LEFT-JOIN"
+            },
+            {
+              "id": 120,
+              "parent": 0,
+              "notused": 0,
+              "detail": "CORRELATED SCALAR SUBQUERY 1"
+            },
+            {
+              "id": 128,
+              "parent": 120,
+              "notused": 216,
+              "detail": "SCAN c"
+            },
+            {
+              "id": 132,
+              "parent": 120,
+              "notused": 46,
+              "detail": "SEARCH o USING INDEX sqlite_autoindex_owners_1 (id=?)"
+            },
+            {
+              "id": 139,
+              "parent": 120,
+              "notused": 46,
+              "detail": "SEARCH d USING INDEX sqlite_autoindex_delegations_2 (owner_id=? AND agent_id=?)"
+            },
+            {
+              "id": 161,
+              "parent": 0,
+              "notused": 0,
+              "detail": "CORRELATED SCALAR SUBQUERY 2"
+            },
+            {
+              "id": 168,
+              "parent": 161,
+              "notused": 46,
+              "detail": "SEARCH o USING INDEX sqlite_autoindex_owners_1 (id=?)"
+            },
+            {
+              "id": 176,
+              "parent": 161,
+              "notused": 61,
+              "detail": "SEARCH c USING INDEX idx_owner_webauthn_owner (owner_id=?)"
+            }
+          ]
+        }
+      ],
+      "cpuSelfMs": [
+        [
+          "all file:///opt/case/fork/packages/api/src/db/sqlite-adapter.ts:2",
+          1593.9770000000028
+        ],
+        [
+          "publicTaskShape file:///opt/case/fork/packages/api/src/tasks/service.ts:7",
+          1351.838
+        ],
+        [
+          "all :0",
+          625.1409999999987
+        ],
+        [
+          "json file:///opt/case/fork/node_modules/hono/dist/cjs/context.js:397",
+          558.2479999999973
+        ],
+        [
+          "(garbage collector) :0",
+          353.8560000000004
+        ],
+        [
+          "Statement :0",
+          187.29199999999975
+        ],
+        [
+          "(anonymous) :0",
+          152.6410000000002
+        ],
+        [
+          "encode node:internal/encoding:351",
+          98.15200000000038
+        ],
+        [
+          "encodeUtf8String :0",
+          93.33200000000015
+        ],
+        [
+          "(idle) :0",
+          92.52900000000014
+        ],
+        [
+          "toUSVString node:internal/deps/undici/undici:1657",
+          92.50900000000007
+        ],
+        [
+          "writev :0",
+          73.12499999999997
+        ],
+        [
+          "post node:inspector:118",
+          65.391
+        ],
+        [
+          "(anonymous) file:///opt/case/fork/packages/api/src/routes/tasks.ts:5",
+          54.40099999999997
+        ],
+        [
+          "run :0",
+          45.041999999999994
+        ]
+      ]
+    },
+    {
+      "name": "tasks-verified",
+      "responseSha256": "0adcb7c2e5d3e7d1f673ee1358ab72e0bd5e132d5a5fedf7dfe8c1a393012f60",
+      "medianP50": 37.27827499999694,
+      "medianP99": 79.44633700000122,
+      "p50Range": {
+        "min": 34.18763200000103,
+        "max": 39.70766900000308
+      },
+      "p99Range": {
+        "min": 66.41839700000128,
+        "max": 127.19099600000482
+      },
+      "throughputRange": {
+        "min": 82.85154850635718,
+        "max": 100.31145465315548
+      },
+      "sqlTotalMs": 2134.3843050000432,
+      "queries": [
+        {
+          "sql": "SELECT t.*, a.name AS creator_name,\n      cl.name AS claimer_name,\n      ow.display_name AS creator_owner_name,\n      EXISTS(SELECT 1 FROM delegations d\n    JOIN owners o ON o.id = d.owner_id AND o.status = 'active'\n    JOIN owner_webauthn_credentials c ON c.owner_id = o.id AND c.status = 'active'\n    WHERE d.agent_id = t.creator_agent_id AND d.status = 'active') AS creator_certified,\n      EXISTS(SELECT 1 FROM owners o\n    JOIN owner_webauthn_credentials c ON c.owner_id = o.id AND c.status = 'active'\n    WHERE o.id = t.creator_owner_id AND o.status = 'active') AS creator_owner_certified FROM tasks t LEFT JOIN agents a ON a.id = t.creator_agent_id LEFT JOIN agents cl ON cl.id = t.claimed_by_agent_id LEFT JOIN owners ow ON ow.id = t.creator_owner_id WHERE 1=1 AND t.status = ? ORDER BY t.created_at DESC LIMIT ? OFFSET ?",
+          "count": 400,
+          "totalMs": 2134.3843050000432,
+          "perRequestMs": 5.335960762500108,
+          "plan": [
+            {
+              "id": 17,
+              "parent": 0,
+              "notused": 61,
+              "detail": "SEARCH t USING INDEX idx_tasks_status_created (status=?)"
+            },
+            {
+              "id": 24,
+              "parent": 0,
+              "notused": 46,
+              "detail": "SEARCH a USING INDEX sqlite_autoindex_agents_1 (id=?) LEFT-JOIN"
+            },
+            {
+              "id": 32,
+              "parent": 0,
+              "notused": 46,
+              "detail": "SEARCH cl USING INDEX sqlite_autoindex_agents_1 (id=?) LEFT-JOIN"
+            },
+            {
+              "id": 40,
+              "parent": 0,
+              "notused": 46,
+              "detail": "SEARCH ow USING INDEX sqlite_autoindex_owners_1 (id=?) LEFT-JOIN"
+            },
+            {
+              "id": 120,
+              "parent": 0,
+              "notused": 0,
+              "detail": "CORRELATED SCALAR SUBQUERY 1"
+            },
+            {
+              "id": 128,
+              "parent": 120,
+              "notused": 216,
+              "detail": "SCAN c"
+            },
+            {
+              "id": 132,
+              "parent": 120,
+              "notused": 46,
+              "detail": "SEARCH o USING INDEX sqlite_autoindex_owners_1 (id=?)"
+            },
+            {
+              "id": 139,
+              "parent": 120,
+              "notused": 46,
+              "detail": "SEARCH d USING INDEX sqlite_autoindex_delegations_2 (owner_id=? AND agent_id=?)"
+            },
+            {
+              "id": 161,
+              "parent": 0,
+              "notused": 0,
+              "detail": "CORRELATED SCALAR SUBQUERY 2"
+            },
+            {
+              "id": 168,
+              "parent": 161,
+              "notused": 46,
+              "detail": "SEARCH o USING INDEX sqlite_autoindex_owners_1 (id=?)"
+            },
+            {
+              "id": 176,
+              "parent": 161,
+              "notused": 61,
+              "detail": "SEARCH c USING INDEX idx_owner_webauthn_owner (owner_id=?)"
+            }
+          ]
+        }
+      ],
+      "cpuSelfMs": [
+        [
+          "all file:///opt/case/fork/packages/api/src/db/sqlite-adapter.ts:2",
+          1418.038999999998
+        ],
+        [
+          "publicTaskShape file:///opt/case/fork/packages/api/src/tasks/service.ts:7",
+          1360.829999999994
+        ],
+        [
+          "all :0",
+          602.2399999999968
+        ],
+        [
+          "json file:///opt/case/fork/node_modules/hono/dist/cjs/context.js:397",
+          511.9409999999984
+        ],
+        [
+          "(garbage collector) :0",
+          326.42300000000006
+        ],
+        [
+          "encode node:internal/encoding:351",
+          115.48600000000037
+        ],
+        [
+          "Statement :0",
+          112.47000000000011
+        ],
+        [
+          "encodeUtf8String :0",
+          106.04500000000033
+        ],
+        [
+          "(anonymous) :0",
+          105.61000000000027
+        ],
+        [
+          "toUSVString node:internal/deps/undici/undici:1657",
+          99.39200000000018
+        ],
+        [
+          "writev :0",
+          96.94000000000003
+        ],
+        [
+          "post node:inspector:118",
+          69.555
+        ],
+        [
+          "sanitizeDisplayName file:///opt/case/fork/packages/api/src/lib/display-name.ts:2",
+          52.94299999999996
+        ],
+        [
+          "consoleCall :0",
+          46.40999999999998
+        ],
+        [
+          "(anonymous) file:///opt/case/fork/packages/api/src/routes/tasks.ts:5",
+          46.1029999999999
+        ]
+      ]
+    },
+    {
+      "name": "agent-profile",
+      "responseSha256": "884d94f42955a2a57e7862b8bd16f0199d186b96f8637c8d928a578197960020",
+      "medianP50": 3.69249100000161,
+      "medianP99": 10.184461000004376,
+      "p50Range": {
+        "min": 3.592328999999154,
+        "max": 4.596422999995411
+      },
+      "p99Range": {
+        "min": 9.403890000001411,
+        "max": 15.486374000000069
+      },
+      "throughputRange": {
+        "min": 766.2945539673975,
+        "max": 984.5958768930226
+      },
+      "sqlTotalMs": 159.39741999988473,
+      "queries": [
+        {
+          "sql": "SELECT verifier_id, result, coherence_score, created_at\n     FROM verifications\n     WHERE target_id = ?\n     ORDER BY created_at DESC\n     LIMIT 10",
+          "count": 400,
+          "totalMs": 53.41562199994223,
+          "perRequestMs": 0.13353905499985558,
+          "plan": [
+            {
+              "id": 5,
+              "parent": 0,
+              "notused": 61,
+              "detail": "SEARCH verifications USING INDEX idx_verifications_target (target_id=?)"
+            },
+            {
+              "id": 25,
+              "parent": 0,
+              "notused": 0,
+              "detail": "USE TEMP B-TREE FOR ORDER BY"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT * FROM agents WHERE id = ?",
+          "count": 400,
+          "totalMs": 43.201677999932144,
+          "perRequestMs": 0.10800419499983036,
+          "plan": [
+            {
+              "id": 3,
+              "parent": 0,
+              "notused": 39,
+              "detail": "SEARCH agents USING INDEX sqlite_autoindex_agents_1 (id=?)"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT * FROM agents WHERE name = ? COLLATE NOCASE",
+          "count": 400,
+          "totalMs": 41.64302799998404,
+          "perRequestMs": 0.10410756999996011,
+          "plan": [
+            {
+              "id": 3,
+              "parent": 0,
+              "notused": 39,
+              "detail": "SEARCH agents USING INDEX idx_agents_name_unique (name=?)"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT COUNT(rating) AS n, AVG(rating) AS avg FROM tasks WHERE claimed_by_agent_id = ? AND rating IS NOT NULL",
+          "count": 400,
+          "totalMs": 21.137092000026314,
+          "perRequestMs": 0.052842730000065785,
+          "plan": [
+            {
+              "id": 4,
+              "parent": 0,
+              "notused": 61,
+              "detail": "SEARCH tasks USING INDEX idx_tasks_claimer_status (claimed_by_agent_id=?)"
+            }
+          ]
+        }
+      ],
+      "cpuSelfMs": [
+        [
+          "Statement :0",
+          116.07100000000014
+        ],
+        [
+          "post node:inspector:118",
+          71.778
+        ],
+        [
+          "(garbage collector) :0",
+          27.892999999999997
+        ],
+        [
+          "get :0",
+          27.865999999999996
+        ],
+        [
+          "all :0",
+          26.55900000000001
+        ],
+        [
+          "get file:///opt/case/fork/packages/api/src/db/sqlite-adapter.ts:2",
+          16.550000000000004
+        ],
+        [
+          "writev :0",
+          12.793999999999999
+        ],
+        [
+          "run :0",
+          12.271999999999997
+        ],
+        [
+          "consoleCall :0",
+          10.520000000000003
+        ],
+        [
+          "prepare file:///opt/case/fork/node_modules/better-sqlite3/lib/methods/wrappers.js:4",
+          10.353
+        ],
+        [
+          "writeBuffer :0",
+          9.408000000000001
+        ],
+        [
+          "(idle) :0",
+          8.349
+        ],
+        [
+          "(program) :0",
+          8.309999999999999
+        ],
+        [
+          "all file:///opt/case/fork/packages/api/src/db/sqlite-adapter.ts:2",
+          7.547
+        ],
+        [
+          "nextTick node:internal/process/task_queues:111",
+          7.423
+        ]
+      ]
+    },
+    {
+      "name": "status",
+      "responseSha256": "5e4ea1c19ad40c196a69233fc71752a83660fc980155074112841b423bd35576",
+      "medianP50": 230.93914800000493,
+      "medianP99": 457.9495600000082,
+      "p50Range": {
+        "min": 230.19893800000136,
+        "max": 232.53300899997703
+      },
+      "p99Range": {
+        "min": 364.97171899999375,
+        "max": 559.3198410000041
+      },
+      "throughputRange": {
+        "min": 16.149290167936982,
+        "max": 16.82028707318005
+      },
+      "sqlTotalMs": 26460.423114000674,
+      "queries": [
+        {
+          "sql": "SELECT created_at FROM verifications ORDER BY created_at DESC LIMIT 1",
+          "count": 400,
+          "totalMs": 12741.497893000138,
+          "perRequestMs": 31.853744732500346,
+          "plan": [
+            {
+              "id": 4,
+              "parent": 0,
+              "notused": 216,
+              "detail": "SCAN verifications"
+            },
+            {
+              "id": 15,
+              "parent": 0,
+              "notused": 0,
+              "detail": "USE TEMP B-TREE FOR ORDER BY"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT COUNT(*) AS n, SUM(CAST(t.bounty_amount AS INTEGER)) AS atomic FROM tasks t WHERE t.payment_status = 'settled' AND t.bounty_network IN ('eip155:8453') AND t.settled_at IS NOT NULL\n  AND COALESCE(t.escrow_status, '') != 'refunded' AND (length(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash, ''))) = 66 AND substr(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash, '')), 1, 2) = '0x' AND NOT (lower(substr(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash, '')), 3)) GLOB '*[^0-9a-f]*'))",
+          "count": 400,
+          "totalMs": 10905.800040000351,
+          "perRequestMs": 27.264500100000877,
+          "plan": [
+            {
+              "id": 4,
+              "parent": 0,
+              "notused": 60,
+              "detail": "SEARCH t USING INDEX idx_tasks_payment_settled (payment_status=? AND settled_at>?)"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT status, COUNT(*) as count FROM tasks GROUP BY status",
+          "count": 400,
+          "totalMs": 1590.8041489998286,
+          "perRequestMs": 3.9770103724995716,
+          "plan": [
+            {
+              "id": 6,
+              "parent": 0,
+              "notused": 207,
+              "detail": "SCAN tasks USING COVERING INDEX idx_tasks_status"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT COUNT(*) as count FROM verifications",
+          "count": 400,
+          "totalMs": 719.536601000058,
+          "perRequestMs": 1.798841502500145,
+          "plan": [
+            {
+              "id": 4,
+              "parent": 0,
+              "notused": 0,
+              "detail": "SCAN verifications USING COVERING INDEX idx_verifications_verifier"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT name, registered_at FROM agents ORDER BY registered_at DESC LIMIT 1",
+          "count": 400,
+          "totalMs": 346.15192599990405,
+          "perRequestMs": 0.8653798149997601,
+          "plan": [
+            {
+              "id": 4,
+              "parent": 0,
+              "notused": 216,
+              "detail": "SCAN agents"
+            },
+            {
+              "id": 16,
+              "parent": 0,
+              "notused": 0,
+              "detail": "USE TEMP B-TREE FOR ORDER BY"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT status, COUNT(*) as count FROM agents GROUP BY status",
+          "count": 400,
+          "totalMs": 123.88006100006169,
+          "perRequestMs": 0.3097001525001542,
+          "plan": [
+            {
+              "id": 6,
+              "parent": 0,
+              "notused": 208,
+              "detail": "SCAN agents USING COVERING INDEX idx_agents_status"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT MAX(sequence) as height, entry_hash as last_hash FROM chain ORDER BY sequence DESC LIMIT 1",
+          "count": 400,
+          "totalMs": 32.752444000332616,
+          "perRequestMs": 0.08188111000083154,
+          "plan": [
+            {
+              "id": 5,
+              "parent": 0,
+              "notused": 216,
+              "detail": "SEARCH chain"
+            }
+          ]
+        }
+      ],
+      "cpuSelfMs": [
+        [
+          "get :0",
+          24635.261000022732
+        ],
+        [
+          "all :0",
+          1643.5419999999945
+        ],
+        [
+          "Statement :0",
+          150.06900000000027
+        ],
+        [
+          "post node:inspector:118",
+          85.886
+        ],
+        [
+          "(idle) :0",
+          28.086999999999996
+        ],
+        [
+          "get file:///opt/case/fork/packages/api/src/db/sqlite-adapter.ts:2",
+          27.707000000000008
+        ],
+        [
+          "(anonymous) file:///opt/case/fork/packages/api/src/index.ts:2",
+          27.430999999999997
+        ],
+        [
+          "writev :0",
+          27.043999999999997
+        ],
+        [
+          "consoleCall :0",
+          23.025999999999996
+        ],
+        [
+          "all file:///opt/case/fork/packages/api/src/db/sqlite-adapter.ts:2",
+          22.757000000000016
+        ],
+        [
+          "writeBuffer :0",
+          22.170000000000012
+        ],
+        [
+          "(garbage collector) :0",
+          20.592000000000006
+        ],
+        [
+          "prepare file:///opt/case/fork/node_modules/better-sqlite3/lib/methods/wrappers.js:4",
+          20.426
+        ],
+        [
+          "runMicrotasks :0",
+          18.827000000000005
+        ],
+        [
+          "adapter.<computed> file:///opt/case/fork/bench/server.ts:2",
+          15.076999999999996
+        ]
+      ]
+    },
+    {
+      "name": "chain",
+      "responseSha256": "9ef9525ef0e2451c1ee898c3f37ecff636d44e5f94a4183e2af2eaa381430ed5",
+      "medianP50": 4.4176210000005085,
+      "medianP99": 9.004764000012074,
+      "p50Range": {
+        "min": 3.3272860000142828,
+        "max": 4.886506999988342
+      },
+      "p99Range": {
+        "min": 6.528770000004442,
+        "max": 17.82724600000074
+      },
+      "throughputRange": {
+        "min": 675.3232607417128,
+        "max": 1067.346207572513
+      },
+      "sqlTotalMs": 163.21873000025516,
+      "queries": [
+        {
+          "sql": "SELECT c.*, a.name as agent_name, a.comment as agent_comment\n       FROM chain c LEFT JOIN agents a ON c.agent_id = a.id\n       ORDER BY c.sequence DESC LIMIT 20",
+          "count": 400,
+          "totalMs": 145.03671600003145,
+          "perRequestMs": 0.36259179000007863,
+          "plan": [
+            {
+              "id": 6,
+              "parent": 0,
+              "notused": 216,
+              "detail": "SCAN c"
+            },
+            {
+              "id": 8,
+              "parent": 0,
+              "notused": 46,
+              "detail": "SEARCH a USING INDEX sqlite_autoindex_agents_1 (id=?) LEFT-JOIN"
+            }
+          ]
+        },
+        {
+          "sql": "SELECT COUNT(*) as count FROM chain",
+          "count": 400,
+          "totalMs": 18.182014000223717,
+          "perRequestMs": 0.04545503500055929,
+          "plan": [
+            {
+              "id": 4,
+              "parent": 0,
+              "notused": 0,
+              "detail": "SCAN chain USING COVERING INDEX idx_chain_agent"
+            }
+          ]
+        }
+      ],
+      "cpuSelfMs": [
+        [
+          "post node:inspector:118",
+          74.011
+        ],
+        [
+          "all file:///opt/case/fork/packages/api/src/db/sqlite-adapter.ts:2",
+          63.42899999999993
+        ],
+        [
+          "Statement :0",
+          51.779999999999966
+        ],
+        [
+          "(idle) :0",
+          49.397999999999975
+        ],
+        [
+          "consoleCall :0",
+          38.98699999999998
+        ],
+        [
+          "all :0",
+          36.99799999999999
+        ],
+        [
+          "run :0",
+          31.95600000000001
+        ],
+        [
+          "json file:///opt/case/fork/node_modules/hono/dist/cjs/context.js:397",
+          29.544000000000022
+        ],
+        [
+          "(anonymous) :0",
+          29.113999999999997
+        ],
+        [
+          "writev :0",
+          27.755000000000003
+        ],
+        [
+          "(garbage collector) :0",
+          22.415000000000006
+        ],
+        [
+          "writeBuffer :0",
+          14.143999999999998
+        ],
+        [
+          "(program) :0",
+          13.612000000000004
+        ],
+        [
+          "encode node:internal/encoding:351",
+          10.892999999999997
+        ],
+        [
+          "get :0",
+          9.922999999999998
+        ]
+      ]
+    }
+  ]
+}

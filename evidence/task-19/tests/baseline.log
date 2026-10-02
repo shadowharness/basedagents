@@ -1,0 +1,1056 @@
+
+> pretest
+> npm run build:dist --workspace=packages/keyring
+
+
+> @basedagents/keyring@0.6.10 build:dist
+> rm -rf dist && tsc -p tsconfig.build.json && node scripts/bundle-mcp-vendor.mjs
+
+vendored MCP SDK v1.27.1 stdio slice → dist/mcp/sdk-vendor.js (690 KB, 191 inputs, externals: zod + node builtins)
+
+> test
+> npm run test --workspaces --if-present
+
+
+> @basedagents/api@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /opt/case/fork/packages/api
+
+stderr | src/routes/tasks.test.ts > Task Marketplace > claim-delivery timer (claim_expires_at) > arms on claim, clears on deliver, re-arms on a revision request; exposed on public reads
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+stderr | src/routes/tasks.test.ts > Task Marketplace > optional ratings (D11) > an accept whose rating cannot be saved still succeeds, and says the rating was not saved
+[tasks] rating write failed for task_XfRfQet9rdH0ChbTR0DXJ after the accept: Error: D1 unavailable
+    at SQLiteAdapter.<anonymous> (/opt/case/fork/packages/api/src/routes/tasks.test.ts:564:58)
+    at SQLiteAdapter.run (file:///opt/case/fork/node_modules/@vitest/spy/dist/index.js:332:34)
+    at settleRatingAfterAccept (/opt/case/fork/packages/api/src/tasks/service.ts:644:26)
+    at handleAccept (/opt/case/fork/packages/api/src/routes/tasks.ts:910:25)
+    at dispatch (file:///opt/case/fork/node_modules/hono/dist/compose.js:22:17)
+    at /opt/case/fork/packages/api/src/middleware/auth.ts:157:3
+    at dispatch (file:///opt/case/fork/node_modules/hono/dist/compose.js:22:17)
+    at /opt/case/fork/packages/api/src/test-helpers.ts:331:5
+    at dispatch (file:///opt/case/fork/node_modules/hono/dist/compose.js:22:17)
+    at file:///opt/case/fork/node_modules/hono/dist/hono-base.js:308:25
+
+stderr | src/routes/tasks.test.ts > Task Marketplace > optional ratings (D11) > an accept that cannot remove a dispute-time rating says so; accepting again removes it
+[tasks] rating write failed for task_Z56I1oykaUqbX0rcF8Ct8 after the accept: Error: D1 unavailable
+    at SQLiteAdapter.<anonymous> (/opt/case/fork/packages/api/src/routes/tasks.test.ts:586:88)
+    at SQLiteAdapter.run (file:///opt/case/fork/node_modules/@vitest/spy/dist/index.js:332:34)
+    at settleRatingAfterAccept (/opt/case/fork/packages/api/src/tasks/service.ts:637:16)
+    at handleAccept (/opt/case/fork/packages/api/src/routes/tasks.ts:910:25)
+    at dispatch (file:///opt/case/fork/node_modules/hono/dist/compose.js:22:17)
+    at /opt/case/fork/packages/api/src/middleware/auth.ts:157:3
+    at dispatch (file:///opt/case/fork/node_modules/hono/dist/compose.js:22:17)
+    at /opt/case/fork/packages/api/src/test-helpers.ts:331:5
+    at dispatch (file:///opt/case/fork/node_modules/hono/dist/compose.js:22:17)
+    at file:///opt/case/fork/node_modules/hono/dist/hono-base.js:308:25
+
+ ✓ src/routes/tasks.test.ts (90 tests) 3094ms
+ ✓ src/control/ladder.test.ts (36 tests) 906ms
+stderr | src/payments/payments.test.ts > x402 Payment Integration (sign-at-accept) > Payments disabled (production default) > a free task still works and reports payment_status none
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+stderr | src/payments/payments.test.ts > x402 Payment Integration (sign-at-accept) > Declaring a bounty (payments enabled) > also rejects the legacy X-PAYMENT-SIGNATURE header at creation
+[payments] X-PAYMENT-SIGNATURE is deprecated; send PAYMENT-SIGNATURE
+
+stderr | src/payments/payments.test.ts > x402 Payment Integration (sign-at-accept) > Accepting a paid deliverable > accepts the deprecated X-PAYMENT-SIGNATURE header name
+[payments] X-PAYMENT-SIGNATURE is deprecated; send PAYMENT-SIGNATURE
+
+stderr | src/payments/payments.test.ts > x402 Payment Integration (sign-at-accept) > Settlement outcomes after acceptance > terminal settle failure → payment failed with no retry; the buyer may re-sign
+[payments] task_SUcSggjmFqfkwJQMkLZwU: invalid_exact_evm_payload_signature
+
+stderr | src/payments/payments.test.ts > x402 Payment Integration (sign-at-accept) > Settlement outcomes after acceptance > an unreadable stored payload after our broadcast is handed to a human, not re-signed
+[payments] task_C4cXfe1LBlMRJpi53zhps: stored payload unreadable after broadcast — manual reconciliation required
+
+ ✓ src/payments/payments.test.ts (54 tests) 1922ms
+ ✓ src/control/routes.test.ts (24 tests) 469ms
+stderr | src/control/tasks.test.ts > Owner task routes > composes an unpaid task as the owner; public reads show a human creator and no owner id
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+stderr | src/control/tasks.test.ts > Owner task routes > escrow: deposit at post, release on accept, refund on cancel > funds an unfunded task again via POST /v1/owner/tasks/:id/fund
+[payments] task_9Xg9j69MlGcJSvz8ldJHF: invalid_exact_evm_payload_signature
+
+stdout | src/control/tasks.test.ts > Owner task routes > dispute freezes auto-accept; cancel needs a dispute first; dispute→cancel counts against the deliverer
+[payments] disabled: TASK_PAYMENTS_ENABLED is not '1'
+
+ ✓ src/control/tasks.test.ts (28 tests) 1138ms
+stderr | src/payments/settle.test.ts > payments/settle.ts > outcome table > rejected duplicate_settlement → settled (inferred) with the reported tx
+[payments] task_ZN5EEFxDqEYzetykaD5fh: settlement inferred from duplicate_settlement (tx 0xabababababababababababababababababababababababababababababababab) — reconcile on-chain
+
+stderr | src/payments/settle.test.ts > payments/settle.ts > outcome table > rejected duplicate_settlement without a tx keeps the tx recorded by an earlier pending answer
+[payments] task_rxBxIGSIoA9yUXWnDidm8: settlement inferred from duplicate_settlement (tx 0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd) — reconcile on-chain
+
+stderr | src/payments/settle.test.ts > payments/settle.ts > outcome table > rejected nonce_already_used on the FIRST attempt → terminal nonce_conflict (no retry, buyer notified)
+[payments] task_6SSSYAGAIIoVfWTFy2Aco: nonce_conflict
+
+stderr | src/payments/settle.test.ts > payments/settle.ts > outcome table > rejected nonce_already_used on a SECOND attempt → settled (inferred nonce_used): it was our own landing
+[payments] task_HBsq388GsOoMCoDaoKqmZ: settlement inferred from nonce_used (tx unknown) — reconcile on-chain
+
+stderr | src/payments/settle.test.ts > payments/settle.ts > outcome table > rejected …recipient_mismatch → terminal: failed with no retry, buyer notified
+[payments] task_XzUyg4UpusHTBBs1Y0jZU: invalid_exact_evm_payload_recipient_mismatch
+
+stderr | src/payments/settle.test.ts > payments/settle.ts > outcome table > unavailable billing → failed with last_settle_error=facilitator_billing and retry in 3600000ms
+[payments] task_NXPMNIMcON3yzSMgGAGiC: facilitator_billing
+
+stderr | src/payments/settle.test.ts > payments/settle.ts > outcome table > unavailable auth → failed with last_settle_error=facilitator_auth and retry in 3600000ms
+[payments] task_aUforcKTsbICJdcO1rgB5: facilitator_auth
+
+ ✓ src/payments/settle.test.ts (49 tests) 956ms
+stderr | src/cron/tasks.test.ts > cron/tasks.ts runTaskCron > 5. unknown-outcome cap > a broadcast failed row still retrying 24 h after its authorization expired is handed to a human
+[payments] task_aSocYyrgMdw8WyGGt3Pgt: settlement outcome unknown 24h after expiry — manual reconciliation required
+
+stderr | src/cron/tasks.test.ts > cron/tasks.ts runTaskCron > 5. unknown-outcome cap > the cap fires exactly at the 24 h mark and not before
+[payments] task_zAlz6jLQiJdjcZoxfqfBP: settlement outcome unknown 24h after expiry — manual reconciliation required
+
+stderr | src/cron/tasks.test.ts > cron/tasks.ts runTaskCron > 6. per-row isolation > a DB error on one auto-accept row does not stop the loop: the other due row is still accepted
+[cron] auto-accept failed for task_zR5CZoo5Z1reJkXwDK5oC: Error: simulated D1 failure
+    at SQLiteAdapter.<anonymous> (/opt/case/fork/packages/api/src/cron/tasks.test.ts:661:82)
+    at SQLiteAdapter.run (file:///opt/case/fork/node_modules/@vitest/spy/dist/index.js:332:34)
+    at autoAcceptGate (/opt/case/fork/packages/api/src/tasks/service.ts:569:24)
+    at Module.runTaskCron (/opt/case/fork/packages/api/src/cron/tasks.ts:76:19)
+    at /opt/case/fork/packages/api/src/cron/tasks.test.ts:665:23
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+stderr | src/cron/tasks.test.ts > cron/tasks.ts runTaskCron > 6. per-row isolation > a task whose deliverer row vanished is still auto-accepted (chain entry is best-effort) alongside a healthy one
+[tasks] chain entry failed for task_1DVdE2U8N2qhZvv0Pxs25: Error: chain: agent ag_DrW79cqHi8V1KHZgXzBanKcbeGcSCQ78JeozSoKSWuiB not found
+    at taskChainEntry (/opt/case/fork/packages/api/src/tasks/service.ts:282:21)
+    at afterAccept (/opt/case/fork/packages/api/src/tasks/service.ts:785:15)
+    at Module.runTaskCron (/opt/case/fork/packages/api/src/cron/tasks.ts:80:7)
+    at /opt/case/fork/packages/api/src/cron/tasks.test.ts:681:23
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+stderr | src/cron/tasks.test.ts > cron/tasks.ts runTaskCron > 6. per-row isolation > a task whose deliverer row vanished is still auto-accepted (chain entry is best-effort) alongside a healthy one
+[events] persist failed (task.verified -> ag_DrW79cqHi8V1KHZgXzBanKcbeGcSCQ78JeozSoKSWuiB): SqliteError: FOREIGN KEY constraint failed
+    at SQLiteAdapter.run (/opt/case/fork/packages/api/src/db/sqlite-adapter.ts:21:41)
+    at recordEvent (/opt/case/fork/packages/api/src/events/service.ts:72:14)
+    at afterAccept (/opt/case/fork/packages/api/src/tasks/service.ts:790:11)
+    at Module.runTaskCron (/opt/case/fork/packages/api/src/cron/tasks.ts:80:7)
+    at /opt/case/fork/packages/api/src/cron/tasks.test.ts:681:23
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20 {
+  code: 'SQLITE_CONSTRAINT_FOREIGNKEY'
+}
+
+stderr | src/cron/tasks.test.ts > cron/tasks.ts runTaskCron > 6. per-row isolation > a DB error inside one settle attempt does not stop the settle pass
+[cron] settle failed for task_3Zik0nmqRYebZJdLGDHX7: Error: simulated D1 failure
+    at SQLiteAdapter.<anonymous> (/opt/case/fork/packages/api/src/cron/tasks.test.ts:699:106)
+    at SQLiteAdapter.run (file:///opt/case/fork/node_modules/@vitest/spy/dist/index.js:332:34)
+    at settleTask (/opt/case/fork/packages/api/src/payments/settle.ts:173:25)
+    at Module.runTaskCron (/opt/case/fork/packages/api/src/cron/tasks.ts:208:25)
+    at /opt/case/fork/packages/api/src/cron/tasks.test.ts:703:23
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+stderr | src/cron/tasks.test.ts > cron/tasks.ts runTaskCron > 6. per-row isolation > all five passes run in one tick and the summary reflects each
+[payments] task_F6phCLiyertbMklITJcz6: settlement outcome unknown 24h after expiry — manual reconciliation required
+
+ ✓ src/cron/tasks.test.ts (31 tests) 752ms
+ ✓ src/control/approvals.test.ts (15 tests) 585ms
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > POST /v1/tasks with a bounty > with the signed deposit: verifies, creates the task, settles the deposit into escrow, funded + claimable
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > POST /v1/tasks with a bounty > a deposit the chain rejects for good → unfunded; the buyer can cancel, or fund again via POST /fund
+[payments] task_8qGzyDwGThhCqbcpoKqnI: invalid_exact_evm_payload_signature
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > POST /v1/tasks with a bounty > cancelling an unfunded escrow task voids it with nothing to refund
+[payments] task_6oAzSWIX0jQxFNoosqNlH: invalid_exact_evm_payload_signature
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > a release the facilitator cannot settle right now stays releasing and is retried by the cron with the SAME authorization
+[escrow] task_krrO39o5eSWV0DPw4TnaQ: release leg transient (facilitator_server: 502) — attempt 1
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > a release the chain rejects for good drops back to funded and the cron re-signs a fresh authorization
+[payments] task_TRJGbEIzxIdx7laK70HFH: invalid_exact_evm_token_name_mismatch
+[escrow] task_TRJGbEIzxIdx7laK70HFH: release leg terminal (invalid_exact_evm_token_name_mismatch) — attempt 1; back to funded, the cron re-signs
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > gives up after the attempt cap and reports it for a human
+[payments] task_5j0gDZwnA0RVX9bPKcPbY: invalid_exact_evm_token_name_mismatch
+[escrow] task_5j0gDZwnA0RVX9bPKcPbY: release leg terminal (invalid_exact_evm_token_name_mismatch) — attempt 1; back to funded, the cron re-signs
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > gives up after the attempt cap and reports it for a human
+[payments] task_5j0gDZwnA0RVX9bPKcPbY: invalid_exact_evm_token_name_mismatch
+[escrow] task_5j0gDZwnA0RVX9bPKcPbY: release leg terminal (invalid_exact_evm_token_name_mismatch) — attempt 2; back to funded, the cron re-signs
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > gives up after the attempt cap and reports it for a human
+[payments] task_5j0gDZwnA0RVX9bPKcPbY: invalid_exact_evm_token_name_mismatch
+[escrow] task_5j0gDZwnA0RVX9bPKcPbY: release leg terminal (invalid_exact_evm_token_name_mismatch) — attempt 3; back to funded, the cron re-signs
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > gives up after the attempt cap and reports it for a human
+[payments] task_5j0gDZwnA0RVX9bPKcPbY: invalid_exact_evm_token_name_mismatch
+[escrow] task_5j0gDZwnA0RVX9bPKcPbY: release leg terminal (invalid_exact_evm_token_name_mismatch) — attempt 4; back to funded, the cron re-signs
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > gives up after the attempt cap and reports it for a human
+[payments] task_5j0gDZwnA0RVX9bPKcPbY: invalid_exact_evm_token_name_mismatch
+[escrow] task_5j0gDZwnA0RVX9bPKcPbY: release leg terminal (invalid_exact_evm_token_name_mismatch) — attempt 5; back to funded, the cron re-signs
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > gives up after the attempt cap and reports it for a human
+[escrow] task_5j0gDZwnA0RVX9bPKcPbY: release gave up after 5 attempts — manual reconciliation required
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > an accept whose signing is impossible (house key gone) still records acceptance; the sweep releases later
+[escrow] task_gKTCE8mzGAnNhWFBMlzaa: cannot release — house wallet/payments not configured; the cron retries
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > accepting a delivered escrow task > a rotated house key cannot move an older deposit: the leg is refused and reported
+[escrow] task_RM5tv1dtan80BlzeJLHCs: deposit is held by 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 but the configured house wallet is 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 — manual release required
+
+stderr | src/payments/escrow.test.ts > Escrow (Tasks P1) > cancelling a funded escrow task > a refund that fails transiently is retried by the cron; accepted work cannot be cancelled
+[escrow] task_QkWQOyzEe0wDBdThsoegY: refund leg transient (facilitator_network: x) — attempt 1
+
+ ✓ src/payments/escrow.test.ts (26 tests) 1292ms
+ ✓ src/mcp/oauth.test.ts (31 tests) 378ms
+ ✓ src/routes/messages.test.ts (33 tests) 1184ms
+stderr | src/control/agent-testing/fulfillment.test.ts > claims, allowlist and briefs (spec §10.4, §7.3, §11) > only approved workers can claim; the brief is claimant-only and revoked on cancel
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+ ✓ src/control/agent-testing/fulfillment.test.ts (17 tests) 1949ms
+ ✓ src/control/agent-testing/lifecycle.test.ts (18 tests) 1476ms
+ ✓ src/control/store.test.ts (23 tests) 162ms
+ ✓ src/routes/board.test.ts (29 tests) 837ms
+ ✓ src/routes/verify.test.ts (20 tests) 727ms
+ ✓ src/routes/agents.test.ts (32 tests) 948ms
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > accepts an anonymous report, stores it, and notifies email + Slack
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > accepts an anonymous report, stores it, and notifies email + Slack
+--> POST /v1/feedback 201 10ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > records the signing agent
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > records the signing agent
+--> POST /v1/feedback 201 18ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > rejects a bad signature instead of silently going anonymous
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > rejects a bad signature instead of silently going anonymous
+--> POST /v1/feedback 401 2ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > validates the body: task scope needs taskId, unknown fields are refused
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > validates the body: task scope needs taskId, unknown fields are refused
+--> POST /v1/feedback 400 4ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > validates the body: task scope needs taskId, unknown fields are refused
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > validates the body: task scope needs taskId, unknown fields are refused
+--> POST /v1/feedback 400 2ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > validates the body: task scope needs taskId, unknown fields are refused
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > validates the body: task scope needs taskId, unknown fields are refused
+--> POST /v1/feedback 400 3ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > redacts secrets before storing
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > redacts secrets before storing
+--> POST /v1/feedback 201 2ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+--> POST /v1/feedback 201 2ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+--> POST /v1/feedback 201 2ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+--> POST /v1/feedback 429 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > limits anonymous reports to 5 an hour per IP, with Retry-After
+--> POST /v1/feedback 201 5ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > Idempotency-Key: a retry returns the first response; a different body is 422
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > Idempotency-Key: a retry returns the first response; a different body is 422
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > Idempotency-Key: a retry returns the first response; a different body is 422
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > Idempotency-Key: a retry returns the first response; a different body is 422
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > Idempotency-Key: a retry returns the first response; a different body is 422
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > Idempotency-Key: a retry returns the first response; a different body is 422
+--> POST /v1/feedback 422 0ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > Idempotency-Key: a retry returns the first response; a different body is 422
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > Idempotency-Key: a retry returns the first response; a different body is 422
+--> POST /v1/feedback 400 0ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+--> POST /v1/feedback 201 2ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+--> POST /v1/feedback 429 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a replay is served even after the limit is reached, and costs nothing
+--> POST /v1/feedback 201 0ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > concurrent requests with one key reserve it once: the second waits (409), then replays
+<-- POST /v1/feedback
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > concurrent requests with one key reserve it once: the second waits (409), then replays
+--> POST /v1/feedback 409 2ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > concurrent requests with one key reserve it once: the second waits (409), then replays
+--> POST /v1/feedback 201 4ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a write that fails releases the key, so the retry files the report
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a write that fails releases the key, so the retry files the report
+--> POST /v1/feedback 500 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a write that fails releases the key, so the retry files the report
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a write that fails releases the key, so the retry files the report
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a write that fails releases the key, so the retry files the report
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a write that fails releases the key, so the retry files the report
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > identifier fields must be identifiers (they are relayed as-is)
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > identifier fields must be identifiers (they are relayed as-is)
+--> POST /v1/feedback 400 2ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > identifier fields must be identifiers (they are relayed as-is)
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > identifier fields must be identifiers (they are relayed as-is)
+--> POST /v1/feedback 400 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > identifier fields must be identifiers (they are relayed as-is)
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > identifier fields must be identifiers (they are relayed as-is)
+--> POST /v1/feedback 400 2ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a channel that failed is retried alone; the one that worked is not re-sent
+<-- POST /v1/feedback
+
+stderr | src/routes/feedback.test.ts > POST /v1/feedback > a channel that failed is retried alone; the one that worked is not re-sent
+[feedback] slack notify failed: HTTP 500
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > a channel that failed is retried alone; the one that worked is not re-sent
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > stores silently when no notification channel is configured
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > stores silently when no notification channel is configured
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > the cron retries a notification that failed
+<-- POST /v1/feedback
+
+stderr | src/routes/feedback.test.ts > POST /v1/feedback > the cron retries a notification that failed
+[feedback] slack notify failed: HTTP 500
+
+stdout | src/routes/feedback.test.ts > POST /v1/feedback > the cron retries a notification that failed
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > request ids + telemetry > every response carries X-Request-Id; signed traffic and errors are counted per day
+<-- GET /v1/health
+
+stdout | src/routes/feedback.test.ts > request ids + telemetry > every response carries X-Request-Id; signed traffic and errors are counted per day
+--> GET /v1/health 200 3ms
+
+stdout | src/routes/feedback.test.ts > request ids + telemetry > every response carries X-Request-Id; signed traffic and errors are counted per day
+<-- GET /v1/tasks/task_missing
+
+stdout | src/routes/feedback.test.ts > request ids + telemetry > every response carries X-Request-Id; signed traffic and errors are counted per day
+--> GET /v1/tasks/task_missing 404 1ms
+
+stdout | src/routes/feedback.test.ts > request ids + telemetry > every response carries X-Request-Id; signed traffic and errors are counted per day
+<-- GET /v1/agents/ag_FqLpTv9cEZEwiofaiZmCajWRk5WnGdHjEf9SVt6zWC3Y/events
+
+stdout | src/routes/feedback.test.ts > request ids + telemetry > every response carries X-Request-Id; signed traffic and errors are counted per day
+--> GET /v1/agents/ag_FqLpTv9cEZEwiofaiZmCajWRk5WnGdHjEf9SVt6zWC3Y/events 200 6ms
+
+stderr | src/routes/feedback.test.ts > daily digest > a digest that failed is retried every 30 minutes, then given up
+[feedback] email notify failed: resend down
+
+stderr | src/routes/feedback.test.ts > daily digest > a digest that failed is retried every 30 minutes, then given up
+[feedback] email notify failed: down
+
+stderr | src/routes/feedback.test.ts > daily digest > a digest that failed is retried every 30 minutes, then given up
+[feedback] email notify failed: down
+
+stderr | src/routes/feedback.test.ts > daily digest > a digest that failed is retried every 30 minutes, then given up
+[feedback] email notify failed: down
+
+stderr | src/routes/feedback.test.ts > daily digest > a digest that failed is retried every 30 minutes, then given up
+[feedback] email notify failed: down
+
+stderr | src/routes/feedback.test.ts > daily digest > a digest that failed is retried every 30 minutes, then given up
+[feedback] email notify failed: down
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- POST /v1/feedback
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> POST /v1/feedback 201 1ms
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- GET /v1/owner/admin/feedback?status=open
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> GET /v1/owner/admin/feedback?status=open 200 6ms
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- GET /v1/owner/admin/feedback
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> GET /v1/owner/admin/feedback 404 0ms
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- GET /v1/owner/admin/feedback
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> GET /v1/owner/admin/feedback 401 0ms
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- POST /v1/owner/admin/feedback/fb_cy2zazkhikrqRPuZIo9WB
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> POST /v1/owner/admin/feedback/fb_cy2zazkhikrqRPuZIo9WB 200 1ms
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- POST /v1/owner/admin/feedback/fb_nope
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> POST /v1/owner/admin/feedback/fb_nope 404 1ms
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- GET /v1/owner/admin/feedback?status=wont_fix&limit=2
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> GET /v1/owner/admin/feedback?status=wont_fix&limit=2 200 2ms
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- GET /v1/owner/admin/feedback?status=wont_fix&limit=2&before=2026-09-20T00%3A00%3A00.000Z%7Cfb_t2
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> GET /v1/owner/admin/feedback?status=wont_fix&limit=2&before=2026-09-20T00%3A00%3A00.000Z%7Cfb_t2 200 1ms
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- GET /v1/owner/me
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> GET /v1/owner/me 200 1ms
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+<-- GET /v1/owner/me
+
+stdout | src/routes/feedback.test.ts > operator triage (/v1/owner/admin/feedback) > lists and updates feedback for an admin; 404 for anyone else; /me says who is admin
+--> GET /v1/owner/me 200 1ms
+
+ ✓ src/routes/feedback.test.ts (20 tests) 720ms
+ ✓ src/security-fixes.test.ts (35 tests) 479ms
+stderr | src/routes/claim-governance.test.ts > claim governance > bounds concurrent claims by the global budget, and human acceptance raises it while auto-acceptance does not
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+stdout | src/routes/claim-governance.test.ts > claim governance > bond slots raise the budget; an expired claim slashes the bond
+[payments] disabled: TASK_PAYMENTS_ENABLED is not '1'
+
+ ✓ src/routes/claim-governance.test.ts (10 tests) 581ms
+ ✓ src/control/billing.test.ts (10 tests) 319ms
+stderr | src/routes/board-moderation.test.ts > Board moderation + delivery > board.reply webhook > unsafe webhook URL is skipped at fire time (SSRF re-check)
+[webhook] blocked delivery to unsafe URL (event: board.reply)
+
+ ✓ src/routes/board-moderation.test.ts (17 tests) 612ms
+ ✓ src/tasks-schema.test.ts (15 tests) 452ms
+ ✓ src/payments/x402.test.ts (33 tests) 45ms
+ ✓ src/control/recovery.test.ts (8 tests) 275ms
+stderr | src/e2e/smoke.test.ts > E2E Smoke — Full Agent Lifecycle > complete agent lifecycle: create task → claim → deliver → verify → reputation
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+ ✓ src/e2e/smoke.test.ts (5 tests) 429ms
+ ✓ src/mcp/handler.test.ts (17 tests) 167ms
+ ✓ src/payments/cdp-facilitator.test.ts (39 tests) 195ms
+stderr | src/control/agent-testing/demo.e2e.test.ts > full journey: buyer → paid order → 3 fixture submissions (one product failure) → reviewed → published report → export → retest → repeat
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+ ✓ src/control/agent-testing/demo.e2e.test.ts (2 tests) 599ms
+   ✓ full journey: buyer → paid order → 3 fixture submissions (one product failure) → reviewed → published report → export → retest → repeat  512ms
+ ✓ src/routes/tasks-settled.test.ts (16 tests) 421ms
+ ✓ src/routes/register.test.ts (16 tests) 497ms
+stderr | src/routes/tasks-expiry.test.ts > open-task expiry (0047) > stamps the default 7-day window at post and returns it
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+stdout | src/routes/tasks-expiry.test.ts > open-task expiry (0047) > the cron sweeps a lapsed open task to expired, tells the creator, and it is terminal
+[payments] disabled: TASK_PAYMENTS_ENABLED is not '1'
+
+stderr | src/routes/tasks-expiry.test.ts > open-task expiry (0047) > voids a declared bounty and starts (or defers) an escrow refund on expiry
+[escrow] task_expiry_escrow: cannot refund — house wallet/payments not configured; the cron retries
+
+ ✓ src/routes/tasks-expiry.test.ts (10 tests) 417ms
+stdout | src/routes/front-door.test.ts > GET / content negotiation > Accept: text/markdown returns the skill, with Vary and an ETag
+<-- GET /
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > Accept: text/markdown returns the skill, with Vary and an ETag
+--> GET / 200 8ms
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > If-None-Match round-trip returns 304 with no body
+<-- GET /
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > If-None-Match round-trip returns 304 with no body
+--> GET / 200 3ms
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > If-None-Match round-trip returns 304 with no body
+<-- GET /
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > If-None-Match round-trip returns 304 with no body
+--> GET / 304 2ms
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > Accept: application/json returns the service descriptor
+<-- GET /
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > Accept: application/json returns the service descriptor
+--> GET / 200 2ms
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > a browser (text/html) still gets the redirect to the site
+<-- GET /
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > a browser (text/html) still gets the redirect to the site
+--> GET / 301 1ms
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > */* (curl default) keeps the legacy API root document
+<-- GET /
+
+stdout | src/routes/front-door.test.ts > GET / content negotiation > */* (curl default) keeps the legacy API root document
+--> GET / 200 2ms
+
+stdout | src/routes/front-door.test.ts > descriptor > GET /.well-known/basedagents.json equals the static copies on the site and console
+<-- GET /.well-known/basedagents.json
+
+stdout | src/routes/front-door.test.ts > descriptor > GET /.well-known/basedagents.json equals the static copies on the site and console
+--> GET /.well-known/basedagents.json 200 1ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > GET /v1/health
+<-- GET /v1/health
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > GET /v1/health
+--> GET /v1/health 200 1ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > GET /v1/openapi.json is the OpenAPI document
+<-- GET /v1/openapi.json
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > GET /v1/openapi.json is the OpenAPI document
+--> GET /v1/openapi.json 200 3ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+<-- GET /v1/health
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+--> GET /v1/health 200 2ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+<-- POST /v1/register/init
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+--> POST /v1/register/init 400 4ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+<-- POST /v1/register/init
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+--> POST /v1/register/init 400 0ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+<-- POST /v1/register/init
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+--> POST /v1/register/init 400 1ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+<-- POST /v1/register/init
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+--> POST /v1/register/init 400 1ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+<-- POST /v1/register/init
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+--> POST /v1/register/init 400 1ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+<-- POST /v1/register/init
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > every response names the latest skill version, rate-limited ones included
+--> POST /v1/register/init 429 0ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > a public GET without its own Cache-Control gets a revalidate default and an ETag
+<-- GET /v1/tasks
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > a public GET without its own Cache-Control gets a revalidate default and an ETag
+--> GET /v1/tasks 200 4ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > a public GET without its own Cache-Control gets a revalidate default and an ETag
+<-- GET /v1/tasks
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > a public GET without its own Cache-Control gets a revalidate default and an ETag
+--> GET /v1/tasks 304 2ms
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > a credentialed GET is private
+<-- GET /v1/tasks
+
+stdout | src/routes/front-door.test.ts > /v1 aliases and headers > a credentialed GET is private
+--> GET /v1/tasks 200 2ms
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+<-- GET /v1/tasks?status=open
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+--> GET /v1/tasks?status=open 200 2ms
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+<-- GET /v1/tasks?status=open&min_usdc=0.5
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+--> GET /v1/tasks?status=open&min_usdc=0.5 200 1ms
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+<-- GET /v1/tasks?status=open&min_usdc=1.00
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+--> GET /v1/tasks?status=open&min_usdc=1.00 200 1ms
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+<-- GET /v1/tasks?status=open&min_usdc=5
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+--> GET /v1/tasks?status=open&min_usdc=5 200 2ms
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+<-- GET /v1/tasks?status=open&min_usdc=5.000001
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > filters by bounty floor in atomic units, legacy decimal rows included; free tasks drop out
+--> GET /v1/tasks?status=open&min_usdc=5.000001 200 1ms
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > a malformed or empty value is a 400, not a silently ignored filter
+<-- GET /v1/tasks?min_usdc=1.2345678
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > a malformed or empty value is a 400, not a silently ignored filter
+--> GET /v1/tasks?min_usdc=1.2345678 400 1ms
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > a malformed or empty value is a 400, not a silently ignored filter
+<-- GET /v1/tasks?min_usdc=
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > a malformed or empty value is a 400, not a silently ignored filter
+--> GET /v1/tasks?min_usdc= 400 1ms
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > a malformed or empty value is a 400, not a silently ignored filter
+<-- GET /v1/tasks?min_usdc=abc
+
+stdout | src/routes/front-door.test.ts > GET /v1/tasks?min_usdc > a malformed or empty value is a 400, not a silently ignored filter
+--> GET /v1/tasks?min_usdc=abc 400 1ms
+
+stdout | src/routes/front-door.test.ts > GET /.well-known/x402 networks > production advertises only Base mainnet, matching the manifest
+<-- GET /.well-known/x402
+
+stdout | src/routes/front-door.test.ts > GET /.well-known/x402 networks > production advertises only Base mainnet, matching the manifest
+[payments] disabled: TASK_PAYMENTS_ENABLED is not '1'
+
+stdout | src/routes/front-door.test.ts > GET /.well-known/x402 networks > production advertises only Base mainnet, matching the manifest
+--> GET /.well-known/x402 200 1ms
+
+stdout | src/routes/front-door.test.ts > GET /.well-known/x402 networks > advertises the live minimum bounty for agent and console posters
+<-- GET /.well-known/x402
+
+stdout | src/routes/front-door.test.ts > GET /.well-known/x402 networks > advertises the live minimum bounty for agent and console posters
+--> GET /.well-known/x402 200 1ms
+
+stdout | src/routes/front-door.test.ts > GET /.well-known/x402 networks > advertises the live minimum bounty for agent and console posters
+<-- GET /.well-known/x402
+
+stdout | src/routes/front-door.test.ts > GET /.well-known/x402 networks > advertises the live minimum bounty for agent and console posters
+--> GET /.well-known/x402 200 4ms
+
+stdout | src/routes/front-door.test.ts > GET /.well-known/x402 networks > other environments also advertise Base Sepolia for testing
+<-- GET /.well-known/x402
+
+stdout | src/routes/front-door.test.ts > GET /.well-known/x402 networks > other environments also advertise Base Sepolia for testing
+--> GET /.well-known/x402 200 1ms
+
+ ✓ src/routes/front-door.test.ts (28 tests) 168ms
+ ✓ src/wallets/bind.test.ts (14 tests) 143ms
+ ✓ src/control/webauthn.test.ts (20 tests) 48ms
+ ✓ src/mcp/oauth-store.test.ts (17 tests) 71ms
+ ✓ src/control/certification.test.ts (11 tests) 42ms
+stderr | src/control/agent-testing/privacy.test.ts > untrusted worker text stays data (spec §14.1, §20.4) > prompt-injection strings in evidence cannot change budgets, brief limits or review state
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+ ✓ src/control/agent-testing/privacy.test.ts (9 tests) 1197ms
+     ✓ public task list, detail, settled feed, status and catalog leak no briefs, targets, customer or order ids  333ms
+ ✓ src/reputation/calculator.test.ts (12 tests) 250ms
+ ✓ src/crypto/index.test.ts (37 tests) 101ms
+ ✓ src/control/agent-testing/public-intake.test.ts (8 tests) 584ms
+stderr | src/routes/events.test.ts > Agent Inbox (agent_events) > fan-out matches webhook-less agents (the bug fix) > a matching agent with NO webhook_url still gets task.available in its inbox
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+ ✓ src/routes/events.test.ts (9 tests) 427ms
+stderr | src/payments/house-wallet.test.ts > payments/house-wallet.ts > env switch (fail closed) > needs a valid house key
+[escrow] house wallet disabled: ESCROW_WALLET_PRIVATE_KEY must be 64 hex characters (32 bytes), optionally 0x-prefixed
+
+ ✓ src/payments/house-wallet.test.ts (11 tests) 138ms
+ ✓ src/payments/index.test.ts (20 tests) 110ms
+ ✓ src/reputation/eigentrust.test.ts (6 tests) 141ms
+ ✓ src/board-schema.test.ts (9 tests) 59ms
+ ✓ src/skills/resolver.test.ts (14 tests) 161ms
+ ✓ src/control/agent-testing/reports.test.ts (4 tests) 18ms
+stdout | src/routes/tasks-analytics.test.ts > Task lifecycle analytics (PostHog) > captures nothing when the action is refused
+[payments] disabled: TASK_PAYMENTS_ENABLED is not '1'
+
+ ✓ src/routes/tasks-analytics.test.ts (6 tests) 357ms
+ ✓ src/routes/openapi.test.ts (9 tests) 47ms
+ ✓ src/routes/funnel.test.ts (7 tests) 71ms
+ ✓ src/payments/cdp-jwt.test.ts (6 tests) 87ms
+ ✓ src/mcp/board-post.test.ts (4 tests) 71ms
+stderr | src/lib/posthog.test.ts > lib/posthog > is a no-op without a token and never throws
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+stderr | src/lib/posthog.test.ts > lib/posthog > pins a client whose construction throws to null instead of throwing
+[posthog] client construction failed — analytics are OFF for this isolate: Error: bad client config
+    at new PostHog (/opt/case/fork/packages/api/src/lib/posthog.test.ts:20:54)
+    at Module.getPostHog (/opt/case/fork/packages/api/src/lib/posthog.ts:62:14)
+    at /opt/case/fork/packages/api/src/lib/posthog.test.ts:77:12
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20
+    at new Promise (<anonymous>)
+
+stderr | src/lib/posthog.test.ts > lib/posthog > a throwing client constructor never breaks the request (capture path)
+[posthog] client construction failed — analytics are OFF for this isolate: Error: bad client config
+    at new PostHog (/opt/case/fork/packages/api/src/lib/posthog.test.ts:20:54)
+    at getPostHog (/opt/case/fork/packages/api/src/lib/posthog.ts:62:14)
+    at Module.captureServerEvent (/opt/case/fork/packages/api/src/lib/posthog.ts:98:20)
+    at Array.<anonymous> (/opt/case/fork/packages/api/src/lib/posthog.test.ts:40:11)
+    at Hono.#dispatch (file:///opt/case/fork/node_modules/hono/dist/hono-base.js:295:38)
+    at Hono.fetch (file:///opt/case/fork/node_modules/hono/dist/hono-base.js:332:26)
+    at Hono.request (file:///opt/case/fork/node_modules/hono/dist/hono-base.js:351:17)
+    at /opt/case/fork/packages/api/src/lib/posthog.test.ts:100:27
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+
+stderr | src/lib/posthog.test.ts > lib/posthog > a throwing client constructor never masks the error response (exception path)
+[posthog] client construction failed — analytics are OFF for this isolate: Error: bad client config
+    at new PostHog (/opt/case/fork/packages/api/src/lib/posthog.test.ts:20:54)
+    at getPostHog (/opt/case/fork/packages/api/src/lib/posthog.ts:62:14)
+    at Module.captureServerException (/opt/case/fork/packages/api/src/lib/posthog.ts:119:20)
+    at Hono.errorHandler (/opt/case/fork/packages/api/src/lib/posthog.test.ts:47:11)
+    at Hono.#handleError (file:///opt/case/fork/node_modules/hono/dist/hono-base.js:275:19)
+    at Hono.#dispatch (file:///opt/case/fork/node_modules/hono/dist/hono-base.js:299:33)
+    at Hono.fetch (file:///opt/case/fork/node_modules/hono/dist/hono-base.js:332:26)
+    at Hono.request (file:///opt/case/fork/node_modules/hono/dist/hono-base.js:351:17)
+    at /opt/case/fork/packages/api/src/lib/posthog.test.ts:119:27
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+
+ ✓ src/lib/posthog.test.ts (8 tests) 55ms
+stderr | src/lib/webhooks.test.ts > fireWebhook > blocks delivery to non-HTTPS URLs (fire-time SSRF re-validation)
+[webhook] blocked delivery to unsafe URL (event: verification.received)
+
+stderr | src/lib/webhooks.test.ts > fireWebhook > blocks delivery to private/metadata addresses
+[webhook] blocked delivery to unsafe URL (event: verification.received)
+
+stderr | src/lib/webhooks.test.ts > fireWebhook > blocks delivery to private/metadata addresses
+[webhook] blocked delivery to unsafe URL (event: verification.received)
+
+stderr | src/lib/webhooks.test.ts > fireWebhook > blocks delivery to private/metadata addresses
+[webhook] blocked delivery to unsafe URL (event: verification.received)
+
+stderr | src/lib/webhooks.test.ts > fireWebhook > blocks delivery to private/metadata addresses
+[webhook] blocked delivery to unsafe URL (event: verification.received)
+
+stderr | src/lib/webhooks.test.ts > fireWebhook > does not throw on network error (fire-and-forget)
+[webhook] delivery failed to https://example.com/hook (event: verification.received): Error: Network error
+    at /opt/case/fork/packages/api/src/lib/webhooks.test.ts:76:33
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)
+    at file:///opt/case/fork/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64
+
+ ✓ src/lib/webhooks.test.ts (12 tests) 20ms
+ ✓ src/control/registration-gate.test.ts (3 tests) 279ms
+ ✓ src/mcp/migration.test.ts (5 tests) 22ms
+ ✓ src/routes/chain.test.ts (2 tests) 108ms
+ ✓ src/mcp/worker.test.ts (4 tests) 37ms
+ ✓ src/mcp/email.test.ts (4 tests) 8ms
+ ✓ src/routes/patch-rename-skeleton.test.ts (2 tests) 122ms
+ ✓ src/lib/rate-limiter.test.ts (2 tests) 38ms
+ ✓ src/lib/skeleton.test.ts (9 tests) 9ms
+ ✓ src/lib/ids.test.ts (4 tests) 138ms
+
+ Test Files  64 passed (64)
+      Tests  1125 passed (1125)
+   Start at  15:31:11
+   Duration  63.10s (transform 4.03s, setup 1.07s, import 20.41s, tests 30.11s, environment 9ms)
+
+
+> basedagents@0.9.6 test
+> vitest run
+
+
+ RUN  v4.1.11 /opt/case/fork/packages/sdk
+
+ ✓ src/client.test.ts (54 tests) 193ms
+ ✓ src/cli/tasks.test.ts (45 tests) 177ms
+ ✓ src/cli/front-door.test.ts (25 tests) 20130ms
+     ✓ keeps watching an accepted bounty until the transfer settles  20007ms
+ ✓ src/cli/keypair.test.ts (26 tests) 77ms
+ ✓ src/cli/wallet.test.ts (12 tests) 214ms
+ ✓ src/crypto.test.ts (31 tests) 208ms
+ ✓ src/cli/feedback.test.ts (8 tests) 1265ms
+     ✓ retries a 5xx with the same Idempotency-Key, never a 4xx  1007ms
+ ✓ src/wallet-bind.test.ts (4 tests) 79ms
+
+ Test Files  8 passed (8)
+      Tests  205 passed (205)
+   Start at  15:32:15
+   Duration  25.60s (transform 741ms, setup 0ms, import 1.51s, tests 22.34s, environment 1ms)
+
+
+> @basedagents/web@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /opt/case/fork/packages/web
+
+ ✓ src/lib/registryStatus.test.ts (3 tests) 28ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  15:32:41
+   Duration  264ms (transform 58ms, setup 0ms, import 66ms, tests 28ms, environment 0ms)
+
+
+> @basedagents/console@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /opt/case/fork/packages/console
+
+ ✓ src/lib/wallet.test.ts (14 tests) 28ms
+ ✓ src/lib/webauthn.test.ts (9 tests) 14ms
+ ✓ src/lib/ceremony.test.ts (9 tests) 13ms
+ ✓ src/lib/intent.test.ts (4 tests) 7ms
+ ✓ src/lib/money.test.ts (5 tests) 12ms
+ ✓ src/components/TaskBits.test.ts (4 tests) 7ms
+ ✓ src/lib/seal.test.ts (3 tests) 80ms
+
+ Test Files  7 passed (7)
+      Tests  48 passed (48)
+   Start at  15:32:41
+   Duration  1.77s (transform 311ms, setup 0ms, import 493ms, tests 161ms, environment 1ms)
+
+
+> @basedagents/mcp@0.7.2 test
+> vitest run
+
+
+ RUN  v4.1.11 /opt/case/fork/packages/mcp
+
+stderr | test/tasks.test.ts > task marketplace against the real API > unpaid lifecycle: revision → re-delivery → dispute → cancel > create_task without a bounty is open with payment_status none
+[posthog] POSTHOG_PROJECT_TOKEN is not set — product analytics and error tracking are OFF. Set it (and optionally POSTHOG_HOST) in .env / the Worker vars for this environment.
+
+ ✓ test/tasks.test.ts (41 tests) 3241ms
+ ✓ test/board-and-messaging.test.ts (19 tests) 2041ms
+
+ Test Files  2 passed (2)
+      Tests  60 passed (60)
+   Start at  15:32:44
+   Duration  7.72s (transform 1.03s, setup 0ms, import 2.07s, tests 5.28s, environment 0ms)
+
+
+> @basedagents/keyring@0.6.10 test
+> vitest run
+
+
+ RUN  v4.1.11 /opt/case/fork/packages/keyring
+
+ ✓ src/keyring.test.ts (77 tests) 1750ms
+ ✓ src/provisioner/provisioner.test.ts (43 tests) 1359ms
+ ✓ src/events.test.ts (24 tests) 604ms
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > runs the injected provisioner for the row agent and resolves with the minted id
+▶ Vercel: automatic setup for ag_TestAgent — a browser window may open here (first time only)…
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > runs the injected provisioner for the row agent and resolves with the minted id
+✓ Vercel connected → ag_TestAgent
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > maps "Unknown identity" to a plain-words reason the console can show
+▶ Vercel: automatic setup for ag_TestAgent — a browser window may open here (first time only)…
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > maps "Unknown identity" to a plain-words reason the console can show
+✗ Vercel: That agent is not set up on this computer — run the setup command here first.
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > refuses providers without a recipe, without ever invoking the provisioner
+✗ Railway: automatic setup for "railway" is not available yet — paste a token on the card instead
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > rotate rows run the rotate runner against the row credential and resolve with it
+▶ Vercel: rotating the key for ag_TestAgent…
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > rotate rows run the rotate runner against the row credential and resolve with it
+✓ Vercel: key rotated — the old one is gone at the provider.
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > a failed rotation resolves with the plain-words reason
+▶ Supabase: rotating the key for ag_TestAgent…
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > a failed rotation resolves with the plain-words reason
+✗ Supabase: rotate it in the Supabase dashboard
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > dispatches the provision run with the row provider (supabase included)
+▶ Supabase: automatic setup for ag_TestAgent — a browser window may open here (first time only)…
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > dispatches the provision run with the row provider (supabase included)
+✓ Supabase connected → ag_TestAgent
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > remove rows run the remove runner against the row (credential, agent) and resolve with the credential
+▶ Vercel: removing the key from ag_TestAgent…
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > remove rows run the remove runner against the row (credential, agent) and resolve with the credential
+✓ Vercel: removed — access revoked and the key destroyed at the provider.
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > a failed removal resolves with the plain-words reason
+▶ Vercel: removing the key from ag_TestAgent…
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > a failed removal resolves with the plain-words reason
+✗ Vercel: vault locked by another process
+
+stdout | src/cli/sync.test.ts > based sync — provision-kind connections (console Connect button) > never routes a sealed row through the provisioner
+✗ Vercel: Sealed box too short
+
+stdout | src/cli/sync.test.ts > console revocation orders — the kill switch's local half > runs the local kill and confirms with the counts the console will show
+✓ Kill switch (from the console): Claude Code — 2 grant(s) revoked, 1 provider key(s) burned, 1 burn failure(s).
+  ⚠ 1 ambient path(s) outside Keyring can still act as you — run `based doctor`:
+    • Vercel CLI login — vercel logout
+
+stdout | src/cli/sync.test.ts > console revocation orders — the kill switch's local half > an agent that never lived here confirms honestly with zeros and a note
+· Kill switch: Claude Code is not set up on this computer — nothing to drop here.
+
+stdout | src/cli/sync.test.ts > console revocation orders — the kill switch's local half > any other kill failure leaves the order unconfirmed for the next round
+✗ Kill switch for Claude Code: vault locked by another process (will retry)
+
+ ✓ src/cli/sync.test.ts (24 tests) 376ms
+ ✓ src/store.test.ts (21 tests) 249ms
+ ✓ src/control-grant.test.ts (8 tests) 353ms
+ ✓ src/mcp/broker.test.ts (10 tests) 442ms
+ ✓ src/crypto.test.ts (16 tests) 470ms
+ ✓ src/cli/control-client.test.ts (5 tests) 78ms
+ ✓ src/webauthn-verify.test.ts (7 tests) 180ms
+ ✓ src/cloud/passport.test.ts (5 tests) 122ms
+ ✓ src/sweep.test.ts (6 tests) 19ms
+ ✓ src/cli/providers.test.ts (7 tests) 11ms
+remove this thing? [y/N] n (non-interactive default)
+benign setup step? [y/N] y (non-interactive default)
+ ✓ src/cli/prompt.test.ts (1 test) 5ms
+
+ Test Files  14 passed (14)
+      Tests  254 passed (254)
+   Start at  15:32:52
+   Duration  9.95s (transform 773ms, setup 0ms, import 1.58s, tests 6.02s, environment 2ms)
+
+
+> @basedagents/recipes@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /opt/case/fork/packages/recipes
+
+ ✓ src/index.test.ts (10 tests) 10ms
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  15:33:02
+   Duration  261ms (transform 60ms, setup 0ms, import 78ms, tests 10ms, environment 0ms)
+
+
+> @basedagents/github-action@0.1.0 test
+> echo ok
+
+ok

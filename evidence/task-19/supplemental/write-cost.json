@@ -1,0 +1,377 @@
+{
+  "schema": 1,
+  "purpose": "Supplemental index write and storage cost; not endpoint performance evidence",
+  "runtime": {
+    "node": "v22.23.3",
+    "sqlite": "3.49.2"
+  },
+  "sourceCounts": {
+    "agents": 2000,
+    "tasks": 50000,
+    "verifications": 100000
+  },
+  "rounds": 5,
+  "transactionSize": 1000,
+  "journalMode": "WAL",
+  "synchronous": "NORMAL",
+  "note": "Four databases cloned from the same baseline. Five rounds rotate variant order. Each timed transaction commits 1000 operations. Repeated rounds grow each database equally; these are synthetic write costs, not production throughput.",
+  "results": [
+    {
+      "level": 0,
+      "applied": [],
+      "initialAllocation": {
+        "pageCount": 20688,
+        "pageSize": 4096
+      },
+      "indexedAllocation": {
+        "pageCount": 20688,
+        "pageSize": 4096
+      },
+      "samples": [
+        {
+          "round": 0,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 24.688580999999886,
+          "verificationInsertMs": 7.608625000000302,
+          "taskStateUpdateMs": 86.00350700000035,
+          "paidEligibilityUpdateMs": 76.28505300000006
+        },
+        {
+          "round": 1,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 20.79780699999992,
+          "verificationInsertMs": 6.725173000000723,
+          "taskStateUpdateMs": 115.49527399999988,
+          "paidEligibilityUpdateMs": 500.9735959999998
+        },
+        {
+          "round": 2,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 24.626580000000104,
+          "verificationInsertMs": 6.46364899999935,
+          "taskStateUpdateMs": 176.660398,
+          "paidEligibilityUpdateMs": 512.6890769999991
+        },
+        {
+          "round": 3,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 21.35477499999979,
+          "verificationInsertMs": 6.4917700000005425,
+          "taskStateUpdateMs": 196.75651600000128,
+          "paidEligibilityUpdateMs": 468.6991089999992
+        },
+        {
+          "round": 4,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 21.53013699999974,
+          "verificationInsertMs": 6.361087999999654,
+          "taskStateUpdateMs": 197.57912700000088,
+          "paidEligibilityUpdateMs": 468.17078200000105
+        }
+      ],
+      "finalAllocation": {
+        "pageCount": 21518,
+        "pageSize": 4096
+      },
+      "finalBytes": 88137728,
+      "summary": {
+        "taskInsertMs": {
+          "median": 21.53013699999974,
+          "min": 20.79780699999992,
+          "max": 24.688580999999886
+        },
+        "verificationInsertMs": {
+          "median": 6.4917700000005425,
+          "min": 6.361087999999654,
+          "max": 7.608625000000302
+        },
+        "taskStateUpdateMs": {
+          "median": 176.660398,
+          "min": 86.00350700000035,
+          "max": 197.57912700000088
+        },
+        "paidEligibilityUpdateMs": {
+          "median": 468.6991089999992,
+          "min": 76.28505300000006,
+          "max": 512.6890769999991
+        }
+      }
+    },
+    {
+      "level": 1,
+      "applied": [
+        {
+          "name": "0048_tasks_status_created.sql",
+          "sha256": "996e56fbaed1b07da090d500a40796dae8c1e76917404cb72d89c2b91f2851d9",
+          "elapsedMs": 52.45008400000006
+        }
+      ],
+      "initialAllocation": {
+        "pageCount": 20688,
+        "pageSize": 4096
+      },
+      "indexedAllocation": {
+        "pageCount": 21191,
+        "pageSize": 4096
+      },
+      "samples": [
+        {
+          "round": 0,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 24.426176999999825,
+          "verificationInsertMs": 6.886015000000043,
+          "taskStateUpdateMs": 88.84614599999986,
+          "paidEligibilityUpdateMs": 83.07642699999997
+        },
+        {
+          "round": 1,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 22.51843100000042,
+          "verificationInsertMs": 6.533690000000206,
+          "taskStateUpdateMs": 148.21196599999985,
+          "paidEligibilityUpdateMs": 524.9847669999999
+        },
+        {
+          "round": 2,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 22.013224000000264,
+          "verificationInsertMs": 6.298006999999416,
+          "taskStateUpdateMs": 146.90686800000003,
+          "paidEligibilityUpdateMs": 518.6025579999987
+        },
+        {
+          "round": 3,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 21.880301999999574,
+          "verificationInsertMs": 6.137083999999959,
+          "taskStateUpdateMs": 115.26607200000035,
+          "paidEligibilityUpdateMs": 548.9638969999996
+        },
+        {
+          "round": 4,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 22.85335599999962,
+          "verificationInsertMs": 7.577224999999089,
+          "taskStateUpdateMs": 188.59488299999975,
+          "paidEligibilityUpdateMs": 517.7874270000011
+        }
+      ],
+      "finalAllocation": {
+        "pageCount": 22116,
+        "pageSize": 4096
+      },
+      "finalBytes": 90587136,
+      "summary": {
+        "taskInsertMs": {
+          "median": 22.51843100000042,
+          "min": 21.880301999999574,
+          "max": 24.426176999999825
+        },
+        "verificationInsertMs": {
+          "median": 6.533690000000206,
+          "min": 6.137083999999959,
+          "max": 7.577224999999089
+        },
+        "taskStateUpdateMs": {
+          "median": 146.90686800000003,
+          "min": 88.84614599999986,
+          "max": 188.59488299999975
+        },
+        "paidEligibilityUpdateMs": {
+          "median": 518.6025579999987,
+          "min": 83.07642699999997,
+          "max": 548.9638969999996
+        }
+      }
+    },
+    {
+      "level": 2,
+      "applied": [
+        {
+          "name": "0048_tasks_status_created.sql",
+          "sha256": "996e56fbaed1b07da090d500a40796dae8c1e76917404cb72d89c2b91f2851d9",
+          "elapsedMs": 52.77720899999986
+        },
+        {
+          "name": "0049_verifications_created.sql",
+          "sha256": "d47aafa96afc6452016e12db2befb309c7fc0855c3b0e8b94e20d0caf823abe1",
+          "elapsedMs": 95.88812299999972
+        }
+      ],
+      "initialAllocation": {
+        "pageCount": 20688,
+        "pageSize": 4096
+      },
+      "indexedAllocation": {
+        "pageCount": 21999,
+        "pageSize": 4096
+      },
+      "samples": [
+        {
+          "round": 0,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 22.340028000000075,
+          "verificationInsertMs": 7.468102999999701,
+          "taskStateUpdateMs": 93.0001629999997,
+          "paidEligibilityUpdateMs": 113.15888200000018
+        },
+        {
+          "round": 1,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 23.285640999999487,
+          "verificationInsertMs": 8.216754000000037,
+          "taskStateUpdateMs": 167.51959199999965,
+          "paidEligibilityUpdateMs": 519.6024529999995
+        },
+        {
+          "round": 2,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 22.393589000000247,
+          "verificationInsertMs": 6.98009699999966,
+          "taskStateUpdateMs": 132.72307200000068,
+          "paidEligibilityUpdateMs": 515.7591190000003
+        },
+        {
+          "round": 3,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 25.4033500000005,
+          "verificationInsertMs": 6.98389700000007,
+          "taskStateUpdateMs": 195.74458200000117,
+          "paidEligibilityUpdateMs": 533.9428100000005
+        },
+        {
+          "round": 4,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 30.64178300000094,
+          "verificationInsertMs": 9.470650999999634,
+          "taskStateUpdateMs": 189.0889299999999,
+          "paidEligibilityUpdateMs": 524.590322
+        }
+      ],
+      "finalAllocation": {
+        "pageCount": 23007,
+        "pageSize": 4096
+      },
+      "finalBytes": 94236672,
+      "summary": {
+        "taskInsertMs": {
+          "median": 23.285640999999487,
+          "min": 22.340028000000075,
+          "max": 30.64178300000094
+        },
+        "verificationInsertMs": {
+          "median": 7.468102999999701,
+          "min": 6.98009699999966,
+          "max": 9.470650999999634
+        },
+        "taskStateUpdateMs": {
+          "median": 167.51959199999965,
+          "min": 93.0001629999997,
+          "max": 195.74458200000117
+        },
+        "paidEligibilityUpdateMs": {
+          "median": 519.6024529999995,
+          "min": 113.15888200000018,
+          "max": 533.9428100000005
+        }
+      }
+    },
+    {
+      "level": 3,
+      "applied": [
+        {
+          "name": "0048_tasks_status_created.sql",
+          "sha256": "996e56fbaed1b07da090d500a40796dae8c1e76917404cb72d89c2b91f2851d9",
+          "elapsedMs": 70.533774
+        },
+        {
+          "name": "0049_verifications_created.sql",
+          "sha256": "d47aafa96afc6452016e12db2befb309c7fc0855c3b0e8b94e20d0caf823abe1",
+          "elapsedMs": 107.01299699999981
+        },
+        {
+          "name": "0050_paid_totals_index.sql",
+          "sha256": "607b3dcfd0879e2aa037e512655aa2944f4e438c3161babc359b27aa0cfb014e",
+          "elapsedMs": 43.16963600000008
+        }
+      ],
+      "initialAllocation": {
+        "pageCount": 20688,
+        "pageSize": 4096
+      },
+      "indexedAllocation": {
+        "pageCount": 22075,
+        "pageSize": 4096
+      },
+      "samples": [
+        {
+          "round": 0,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 24.466018000000076,
+          "verificationInsertMs": 8.6464390000001,
+          "taskStateUpdateMs": 175.36618100000032,
+          "paidEligibilityUpdateMs": 527.0619959999995
+        },
+        {
+          "round": 1,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 22.20518600000014,
+          "verificationInsertMs": 6.95565600000009,
+          "taskStateUpdateMs": 155.90547199999946,
+          "paidEligibilityUpdateMs": 558.3451869999999
+        },
+        {
+          "round": 2,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 22.445990000000165,
+          "verificationInsertMs": 7.640105999999832,
+          "taskStateUpdateMs": 154.6765349999996,
+          "paidEligibilityUpdateMs": 565.3051230000001
+        },
+        {
+          "round": 3,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 21.635098999999173,
+          "verificationInsertMs": 7.1458590000002005,
+          "taskStateUpdateMs": 148.3832480000001,
+          "paidEligibilityUpdateMs": 555.3507859999991
+        },
+        {
+          "round": 4,
+          "operationsPerTransaction": 1000,
+          "taskInsertMs": 28.8506780000007,
+          "verificationInsertMs": 12.063927000001058,
+          "taskStateUpdateMs": 178.16641900000104,
+          "paidEligibilityUpdateMs": 578.5967869999986
+        }
+      ],
+      "finalAllocation": {
+        "pageCount": 23084,
+        "pageSize": 4096
+      },
+      "finalBytes": 94552064,
+      "summary": {
+        "taskInsertMs": {
+          "median": 22.445990000000165,
+          "min": 21.635098999999173,
+          "max": 28.8506780000007
+        },
+        "verificationInsertMs": {
+          "median": 7.640105999999832,
+          "min": 6.95565600000009,
+          "max": 12.063927000001058
+        },
+        "taskStateUpdateMs": {
+          "median": 155.90547199999946,
+          "min": 148.3832480000001,
+          "max": 178.16641900000104
+        },
+        "paidEligibilityUpdateMs": {
+          "median": 558.3451869999999,
+          "min": 527.0619959999995,
+          "max": 578.5967869999986
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "status": "operational",
+  "version": "0.1.0",
+  "agents": {
+    "total": 2000,
+    "active": 1800,
+    "pending": 200,
+    "suspended": 0
+  },
+  "chain": {
+    "height": 2000,
+    "last_hash": "53b776e44c4a7eb43d936020ae1a8ff0e39e5cfe7d60e77fefc6ade38168ba54"
+  },
+  "verifications": {
+    "total": 100000,
+    "last_at": "2026-01-02T03:46:39.000Z"
+  },
+  "last_registration": {
+    "name": "Benchmark-1999",
+    "at": "2026-01-01T00:33:19.000Z"
+  },
+  "tasks": {
+    "open": 10000,
+    "claimed": 10000,
+    "submitted": 10000,
+    "verified": 10000,
+    "cancelled": 10000,
+    "expired": 0,
+    "paid": 5000,
+    "paid_usdc_total": "5000.00"
+  },
+  "payments": "disabled",
+  "escrow": "disabled"
+}

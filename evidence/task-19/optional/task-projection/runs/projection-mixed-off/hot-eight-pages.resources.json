@@ -1,0 +1,23 @@
+{
+  "projectionMode": "off",
+  "cpuMicroseconds": {
+    "user": 4265883,
+    "system": 755119
+  },
+  "elapsedMs": 4672.530629000001,
+  "memoryBefore": {
+    "rss": 176566272,
+    "heapTotal": 68104192,
+    "heapUsed": 48003944,
+    "external": 6307113,
+    "arrayBuffers": 1764067
+  },
+  "memoryAfter": {
+    "rss": 174637056,
+    "heapTotal": 63348736,
+    "heapUsed": 46855768,
+    "external": 7133090,
+    "arrayBuffers": 2590004
+  },
+  "projection": []
+}

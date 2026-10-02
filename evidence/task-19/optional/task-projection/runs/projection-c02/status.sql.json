@@ -1,0 +1,120 @@
+[
+  {
+    "method": "all",
+    "sql": "SELECT status, COUNT(*) as count FROM tasks GROUP BY status",
+    "count": 400,
+    "totalMs": 1348.0265719999807,
+    "maxMs": 6.652771000000939,
+    "params": [],
+    "plan": [
+      {
+        "id": 6,
+        "parent": 0,
+        "notused": 207,
+        "detail": "SCAN tasks USING COVERING INDEX idx_tasks_status"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "sql": "SELECT COUNT(*) AS n, SUM(CAST(t.bounty_amount AS INTEGER)) AS atomic FROM tasks t WHERE t.payment_status = 'settled' AND t.bounty_network IN ('eip155:8453') AND t.settled_at IS NOT NULL\n  AND COALESCE(t.escrow_status, '') != 'refunded' AND (length(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash, ''))) = 66 AND substr(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash, '')), 1, 2) = '0x' AND NOT (lower(substr(COALESCE(NULLIF(t.escrow_release_tx_hash, ''), NULLIF(t.payment_tx_hash, '')), 3)) GLOB '*[^0-9a-f]*'))",
+    "count": 400,
+    "totalMs": 344.9500250000856,
+    "maxMs": 3.582609000004595,
+    "params": [],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 60,
+        "detail": "SEARCH t USING INDEX idx_tasks_paid_totals (payment_status=? AND bounty_network=? AND settled_at>?)"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "sql": "SELECT name, registered_at FROM agents ORDER BY registered_at DESC LIMIT 1",
+    "count": 400,
+    "totalMs": 242.8154579998809,
+    "maxMs": 1.7517039999947883,
+    "params": [],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 216,
+        "detail": "SCAN agents"
+      },
+      {
+        "id": 16,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "method": "all",
+    "sql": "SELECT status, COUNT(*) as count FROM agents GROUP BY status",
+    "count": 400,
+    "totalMs": 93.59689299999445,
+    "maxMs": 1.7004639999940991,
+    "params": [],
+    "plan": [
+      {
+        "id": 6,
+        "parent": 0,
+        "notused": 208,
+        "detail": "SCAN agents USING COVERING INDEX idx_agents_status"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "sql": "SELECT COUNT(*) as count FROM verifications",
+    "count": 400,
+    "totalMs": 93.26491899994289,
+    "maxMs": 0.8970120000012685,
+    "params": [],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SCAN verifications USING COVERING INDEX idx_verifications_created"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "sql": "SELECT MAX(sequence) as height, entry_hash as last_hash FROM chain ORDER BY sequence DESC LIMIT 1",
+    "count": 400,
+    "totalMs": 22.383937000013248,
+    "maxMs": 0.9156119999970542,
+    "params": [],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 216,
+        "detail": "SEARCH chain"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "sql": "SELECT created_at FROM verifications ORDER BY created_at DESC LIMIT 1",
+    "count": 400,
+    "totalMs": 21.694646000032662,
+    "maxMs": 3.3375660000019707,
+    "params": [],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 207,
+        "detail": "SCAN verifications USING COVERING INDEX idx_verifications_created"
+      }
+    ]
+  }
+]

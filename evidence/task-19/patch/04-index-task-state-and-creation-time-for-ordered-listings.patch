@@ -1,0 +1,105 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ShadowHarness <contact@shadowharness.com>
+Date: Sat, 3 Oct 2026 00:56:02 +0900
+Subject: [PATCH] Index task state and creation time for ordered listings
+
+---
+ .../migrations/0048_tasks_status_created.sql  |  3 +
+ packages/api/src/task-list-index.test.ts      | 65 +++++++++++++++++++
+ packages/api/src/test-helpers.ts              |  1 +
+ 3 files changed, 69 insertions(+)
+ create mode 100644 packages/api/migrations/0048_tasks_status_created.sql
+ create mode 100644 packages/api/src/task-list-index.test.ts
+
+diff --git a/packages/api/migrations/0048_tasks_status_created.sql b/packages/api/migrations/0048_tasks_status_created.sql
+new file mode 100644
+index 0000000..a75272b
+--- /dev/null
++++ b/packages/api/migrations/0048_tasks_status_created.sql
+@@ -0,0 +1,3 @@
++-- Browse one lifecycle state in newest-first order without sorting every
++-- matching task (including its large payload and joined display fields).
++CREATE INDEX IF NOT EXISTS idx_tasks_status_created ON tasks(status, created_at DESC);
+diff --git a/packages/api/src/task-list-index.test.ts b/packages/api/src/task-list-index.test.ts
+new file mode 100644
+index 0000000..2f57a40
+--- /dev/null
++++ b/packages/api/src/task-list-index.test.ts
+@@ -0,0 +1,65 @@
++import { describe, it, expect } from 'vitest';
++import Database from 'better-sqlite3';
++import { readFileSync } from 'node:fs';
++import { dirname, join } from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { migrationFilesBefore, RUNNER_LOCAL_STATEMENTS } from './db/migration-list.js';
++import { SQLiteAdapter } from './db/sqlite-adapter.js';
++import { createTestApp } from './test-helpers.js';
++
++const migrations = join(dirname(fileURLToPath(import.meta.url)), '../migrations');
++const name = '0048_tasks_status_created.sql';
++const sql = readFileSync(join(migrations, name), 'utf8');
++
++describe('task listing on an existing database after the ordered index migration', () => {
++  it('preserves filters, pagination and responses through updates and a repeated migration', async () => {
++    const sqlite = new Database(':memory:');
++    sqlite.pragma('foreign_keys = ON');
++    try {
++      for (const file of migrationFilesBefore(migrations, name)) {
++        sqlite.transaction(() => sqlite.exec(readFileSync(join(migrations, file), 'utf8')))();
++      }
++      for (const statement of RUNNER_LOCAL_STATEMENTS) sqlite.exec(statement);
++      for (const id of ['ag_creator', 'ag_claimer']) {
++        sqlite.prepare("INSERT INTO agents (id, public_key, name, description, capabilities, protocols) VALUES (?, ?, ?, 'index fixture', ?, ?)")
++          .run(id, Buffer.from(id.padEnd(32, 'x')), id, '["code"]', '["https"]');
++      }
++      const insert = sqlite.prepare(`INSERT INTO tasks
++        (task_id, creator_agent_id, claimed_by_agent_id, title, description, category,
++         required_capabilities, status, created_at, bounty_amount, bounty_network)
++        VALUES (?, 'ag_creator', ?, ?, 'index migration fixture', ?, ?, ?, ?, ?, ?)`);
++      for (let i = 0; i < 60; i++) {
++        insert.run(`task_index_${i}`, i % 2 ? 'ag_claimer' : null, `Task ${i}`,
++          i % 2 ? 'code' : 'research', i % 2 ? '["code"]' : '["testing"]',
++          ['open', 'claimed', 'submitted', 'verified', 'cancelled', 'expired'][i % 6],
++          new Date(Date.UTC(2026, 0, 1) + i * 1000).toISOString(), i % 3 ? '2000000' : null,
++          i % 3 ? 'eip155:8453' : null);
++      }
++      const app = createTestApp(new SQLiteAdapter(sqlite));
++      const queries = ['', '?status=all', '?status=open', '?status=verified', '?status=expired',
++        '?status=open&limit=3&offset=2', '?status=all&category=code', '?capability=testing',
++        '?creator=ag_creator', '?claimer=ag_claimer', '?min_usdc=1.50',
++        '?status=all&category=code&min_usdc=1.50&limit=2&offset=1', '?status=not-a-status'];
++      const snapshot = async () => Promise.all(queries.map(async query => {
++        const response = await app.request('/v1/tasks' + query);
++        return { status: response.status, body: await response.json() };
++      }));
++      const before = await snapshot();
++      expect((before[2].body as { tasks: unknown[] }).tasks).toHaveLength(10);
++      expect(before.at(-1)?.status).toBe(400);
++      sqlite.exec(sql);
++      expect(await snapshot()).toEqual(before);
++      // Check that the index stays correct when rows move between states and
++      // dates, without relying on an unspecified ordering for equal dates.
++      sqlite.exec("UPDATE tasks SET status = 'verified', created_at = '2027-01-01T00:00:00.000Z' WHERE task_id = 'task_index_0'");
++      sqlite.exec("DELETE FROM tasks WHERE task_id = 'task_index_6'");
++      const indexedAfterMutation = await snapshot();
++      sqlite.exec('DROP INDEX idx_tasks_status_created');
++      expect(await snapshot()).toEqual(indexedAfterMutation);
++      sqlite.exec(sql);
++      sqlite.exec(sql);
++      expect(await snapshot()).toEqual(indexedAfterMutation);
++      expect(sqlite.pragma('foreign_key_check')).toEqual([]);
++    } finally { sqlite.close(); }
++  });
++});
+diff --git a/packages/api/src/test-helpers.ts b/packages/api/src/test-helpers.ts
+index 96af36a..ace3474 100644
+--- a/packages/api/src/test-helpers.ts
++++ b/packages/api/src/test-helpers.ts
+@@ -139,6 +139,7 @@ CREATE INDEX IF NOT EXISTS idx_wallet_bindings_agent ON agent_wallet_bindings(ag
+ ALTER TABLE tasks ADD COLUMN expires_at TEXT;
+ ALTER TABLE tasks ADD COLUMN expired_at TEXT;
+ CREATE INDEX IF NOT EXISTS idx_tasks_open_expires ON tasks(status, expires_at);
++CREATE INDEX IF NOT EXISTS idx_tasks_status_created ON tasks(status, created_at DESC);
+ `.trim();
+ 
+ /**

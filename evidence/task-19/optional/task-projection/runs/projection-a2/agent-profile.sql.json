@@ -1,0 +1,80 @@
+[
+  {
+    "method": "all",
+    "sql": "SELECT verifier_id, result, coherence_score, created_at\n     FROM verifications\n     WHERE target_id = ?\n     ORDER BY created_at DESC\n     LIMIT 10",
+    "count": 400,
+    "totalMs": 55.990838000085205,
+    "maxMs": 0.4365260000049602,
+    "params": [
+      "ag_benchmark_00001"
+    ],
+    "plan": [
+      {
+        "id": 5,
+        "parent": 0,
+        "notused": 61,
+        "detail": "SEARCH verifications USING INDEX idx_verifications_target (target_id=?)"
+      },
+      {
+        "id": 25,
+        "parent": 0,
+        "notused": 0,
+        "detail": "USE TEMP B-TREE FOR ORDER BY"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "sql": "SELECT * FROM agents WHERE id = ?",
+    "count": 400,
+    "totalMs": 46.48596299995552,
+    "maxMs": 1.7297039999975823,
+    "params": [
+      "Benchmark-0001"
+    ],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 39,
+        "detail": "SEARCH agents USING INDEX sqlite_autoindex_agents_1 (id=?)"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "sql": "SELECT * FROM agents WHERE name = ? COLLATE NOCASE",
+    "count": 400,
+    "totalMs": 43.79996000001847,
+    "maxMs": 0.739770000000135,
+    "params": [
+      "Benchmark-0001"
+    ],
+    "plan": [
+      {
+        "id": 3,
+        "parent": 0,
+        "notused": 39,
+        "detail": "SEARCH agents USING INDEX idx_agents_name_unique (name=?)"
+      }
+    ]
+  },
+  {
+    "method": "get",
+    "sql": "SELECT COUNT(rating) AS n, AVG(rating) AS avg FROM tasks WHERE claimed_by_agent_id = ? AND rating IS NOT NULL",
+    "count": 400,
+    "totalMs": 22.220121000085783,
+    "maxMs": 0.33840500000223983,
+    "params": [
+      "ag_benchmark_00001"
+    ],
+    "plan": [
+      {
+        "id": 4,
+        "parent": 0,
+        "notused": 61,
+        "detail": "SEARCH tasks USING INDEX idx_tasks_claimer_status (claimed_by_agent_id=?)"
+      }
+    ]
+  }
+]

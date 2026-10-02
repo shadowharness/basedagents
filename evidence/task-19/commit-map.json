@@ -1,0 +1,63 @@
+{
+  "upstream": "13cd578b05a85a6640bd6748b71a58e3135fe276",
+  "measuredHead": "5313ddd37678307c86397c1ebaa218d6acc15255",
+  "publicHead": "90ff97a22c77f8cd7f6eba8c5fd7833eabb5570b",
+  "branch": "perf/task-19-public",
+  "note": "Public author and committer identity is ShadowHarness. Every source tree is byte-identical to its measured revision; metadata changes do not change code or tests.",
+  "mapping": [
+    {
+      "measuredCommit": "9d7b83f866e1ce705a308296c9cbbb4624a29acf",
+      "publicCommit": "9d7b83f866e1ce705a308296c9cbbb4624a29acf",
+      "tree": "59fda727a00ed53813f5e0f8560d3e33d2de5dc0",
+      "subject": "Add reproducible localhost endpoint profiling harness",
+      "contentIdentical": true,
+      "patch": "patch/01-add-reproducible-localhost-endpoint-profiling-harness.patch",
+      "type": "benchmark-harness"
+    },
+    {
+      "measuredCommit": "dfeb123c7a4c1d04d1a54087ffcc175b8a81f4d8",
+      "publicCommit": "53d5650be3a3e4d395bc372b712ec13f964562af",
+      "tree": "cc7fdd5c13dc491fb30d0d29b54022067e5b81df",
+      "subject": "Close benchmark server when its driver disconnects",
+      "contentIdentical": true,
+      "patch": "patch/02-close-benchmark-server-when-its-driver-disconnects.patch",
+      "type": "benchmark-harness"
+    },
+    {
+      "measuredCommit": "48e51d2a9083d3c95c2a39a9f759b522a8a5bcb1",
+      "publicCommit": "abb1ce3641d19a82244bc64cdc1873437f1f95bd",
+      "tree": "a31bb32c56ddffbad608a14a8c0ad52b5fc5cf30",
+      "subject": "Summarize endpoint variance and CPU and SQL profiles",
+      "contentIdentical": true,
+      "patch": "patch/03-summarize-endpoint-variance-and-cpu-and-sql-profiles.patch",
+      "type": "benchmark-harness"
+    },
+    {
+      "measuredCommit": "8ed657493b6796c9533b858a8e5158b983ab3484",
+      "publicCommit": "ef510f14f9155e7a971cb318897bbf9423476561",
+      "tree": "4baf7f9567af1a2b62398b6972168e3aa2c68b41",
+      "subject": "Index task state and creation time for ordered listings",
+      "contentIdentical": true,
+      "patch": "patch/04-index-task-state-and-creation-time-for-ordered-listings.patch",
+      "type": "optimization"
+    },
+    {
+      "measuredCommit": "167983b5faae1da46e0327a204a07866a239e285",
+      "publicCommit": "2f4988b0f2434fca87dc96752b0e1fa1ed874282",
+      "tree": "eb0cf31c527e2314f70c399e67cb5cb51b4f6e4c",
+      "subject": "Index verification timestamps for the latest activity lookup",
+      "contentIdentical": true,
+      "patch": "patch/05-index-verification-timestamps-for-the-latest-activity-lookup.patch",
+      "type": "optimization"
+    },
+    {
+      "measuredCommit": "5313ddd37678307c86397c1ebaa218d6acc15255",
+      "publicCommit": "90ff97a22c77f8cd7f6eba8c5fd7833eabb5570b",
+      "tree": "7bbf51892ad14d6414f0ad7e02b4d748e6a60eb0",
+      "subject": "Index the validated paid-task population for aggregate reads",
+      "contentIdentical": true,
+      "patch": "patch/06-index-the-validated-paid-task-population-for-aggregate-reads.patch",
+      "type": "optimization"
+    }
+  ]
+}

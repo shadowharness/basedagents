@@ -1,0 +1,10 @@
+{
+  "basePublicCommit": "90ff97a22c77f8cd7f6eba8c5fd7833eabb5570b",
+  "measuredCommit": "3db101e6040287271ed94e2a6ae2d488d21cb5bf",
+  "publicCommit": "4a98f4c5b38b18ec7b2d57e0ce2efc4275af88e8",
+  "tree": "a0eb7a53117d1babdf1b7759b79ee30c6ee266ff",
+  "contentIdentical": true,
+  "moduleSha256": "b48a8cd5f107a11e1f0aed3e451a01ac5dec0acbb06e52c6eda77f9a772c0f3c",
+  "patch": "projection.patch",
+  "note": "One optional commit atop the three formal optimizations; its final source tree is identical to the tested and measured implementation."
+}

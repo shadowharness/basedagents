@@ -1,0 +1,14 @@
+{
+  "mode": "js",
+  "node": "v22.23.3",
+  "cpu": "Neoverse-N1",
+  "availableParallelism": 2,
+  "commit": "3db101e6040287271ed94e2a6ae2d488d21cb5bf",
+  "scriptSha256": "88120ab31df8ae142d5b6a54db0d54abc0f0029d5f5fdf6bb9a63ffe2bda72d2",
+  "serverSha256": "45c7867ce66915db03cd6a5cae674c7e4f0043408c9fe6d97cef342ce3cc0dd3",
+  "dataset": {
+    "agents": 2000,
+    "tasks": 50000,
+    "verifications": 100000
+  }
+}

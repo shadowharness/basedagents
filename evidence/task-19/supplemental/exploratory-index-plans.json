@@ -1,0 +1,38 @@
+{
+  "purpose": "Query-plan exploration only; no performance claims or benchmark timings.",
+  "sqlite": "3.50.4",
+  "baseline": [
+    [
+      4,
+      0,
+      61,
+      "SEARCH t USING INDEX idx_tasks_payment_settled (payment_status=? AND settled_at>?)"
+    ]
+  ],
+  "variants": [
+    {
+      "name": "amount-only",
+      "sql": "CREATE INDEX candidate ON tasks(bounty_amount) WHERE payment_status = 'settled' AND bounty_network IN ('eip155:8453') AND settled_at IS NOT NULL\n  AND COALESCE(escrow_status, '') != 'refunded' AND (length(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, ''))) = 66 AND substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 1, 2) = '0x' AND NOT (lower(substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 3)) GLOB '*[^0-9a-f]*'))",
+      "plan": [
+        [
+          4,
+          0,
+          61,
+          "SEARCH t USING INDEX idx_tasks_payment_settled (payment_status=? AND settled_at>?)"
+        ]
+      ]
+    },
+    {
+      "name": "search-and-amount",
+      "sql": "CREATE INDEX candidate ON tasks(payment_status, bounty_network, settled_at, bounty_amount) WHERE payment_status = 'settled' AND bounty_network IN ('eip155:8453') AND settled_at IS NOT NULL\n  AND COALESCE(escrow_status, '') != 'refunded' AND (length(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, ''))) = 66 AND substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 1, 2) = '0x' AND NOT (lower(substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 3)) GLOB '*[^0-9a-f]*'))",
+      "plan": [
+        [
+          4,
+          0,
+          61,
+          "SEARCH t USING INDEX candidate (payment_status=? AND bounty_network=? AND settled_at>?)"
+        ]
+      ]
+    }
+  ]
+}
