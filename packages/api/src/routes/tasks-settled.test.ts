@@ -106,6 +106,29 @@ beforeEach(() => {
 afterEach(() => { vi.useRealTimers(); });
 
 describe('GET /v1/tasks/settled — the spec fixture', () => {
+  it('keeps totals current as an existing settlement enters and leaves the eligible population', async () => {
+    await seedSettled({ task_id: 'task_changing', bounty_amount: '3000000' });
+    const totals = async () => {
+      const { body } = await get('/v1/tasks/settled');
+      return [body.stats.tasks_paid_all_time, body.stats.usdc_paid_all_time];
+    };
+    expect(await totals()).toEqual([1, '3.00']);
+    await db.run("UPDATE tasks SET payment_tx_hash = 'bad' WHERE task_id = 'task_changing'");
+    expect(await totals()).toEqual([0, '0.00']);
+    await db.run('UPDATE tasks SET escrow_release_tx_hash = ? WHERE task_id = ?', TX(2), 'task_changing');
+    expect(await totals()).toEqual([1, '3.00']);
+    await db.run("UPDATE tasks SET escrow_status = 'refunded' WHERE task_id = 'task_changing'");
+    expect(await totals()).toEqual([0, '0.00']);
+    await db.run("UPDATE tasks SET escrow_status = NULL, bounty_network = 'eip155:84532' WHERE task_id = 'task_changing'");
+    expect(await totals()).toEqual([0, '0.00']);
+    await db.run("UPDATE tasks SET bounty_network = 'eip155:8453', bounty_amount = '4000000', settled_at = NULL WHERE task_id = 'task_changing'");
+    expect(await totals()).toEqual([0, '0.00']);
+    await db.run("UPDATE tasks SET settled_at = '2026-09-20T12:00:00.000Z' WHERE task_id = 'task_changing'");
+    expect(await totals()).toEqual([1, '4.00']);
+    await db.run("UPDATE tasks SET payment_status = 'pending' WHERE task_id = 'task_changing'");
+    expect(await totals()).toEqual([0, '0.00']);
+  });
+
   it('reproduces the Metrics table "Today" column to the second', async () => {
     await seedFixture();
     const { res, body } = await get('/v1/tasks/settled');

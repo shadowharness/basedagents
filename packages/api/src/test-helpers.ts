@@ -141,6 +141,7 @@ ALTER TABLE tasks ADD COLUMN expired_at TEXT;
 CREATE INDEX IF NOT EXISTS idx_tasks_open_expires ON tasks(status, expires_at);
 CREATE INDEX IF NOT EXISTS idx_tasks_status_created ON tasks(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_verifications_created ON verifications(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tasks_paid_totals ON tasks(payment_status, bounty_network, settled_at, bounty_amount) WHERE payment_status = 'settled' AND bounty_network IN ('eip155:8453') AND settled_at IS NOT NULL AND COALESCE(escrow_status, '') != 'refunded' AND (length(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, ''))) = 66 AND substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 1, 2) = '0x' AND NOT (lower(substr(COALESCE(NULLIF(escrow_release_tx_hash, ''), NULLIF(payment_tx_hash, '')), 3)) GLOB '*[^0-9a-f]*'));
 `.trim();
 
 /**
