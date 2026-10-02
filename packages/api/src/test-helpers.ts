@@ -139,6 +139,7 @@ CREATE INDEX IF NOT EXISTS idx_wallet_bindings_agent ON agent_wallet_bindings(ag
 ALTER TABLE tasks ADD COLUMN expires_at TEXT;
 ALTER TABLE tasks ADD COLUMN expired_at TEXT;
 CREATE INDEX IF NOT EXISTS idx_tasks_open_expires ON tasks(status, expires_at);
+CREATE INDEX IF NOT EXISTS idx_tasks_status_created ON tasks(status, created_at DESC);
 `.trim();
 
 /**
