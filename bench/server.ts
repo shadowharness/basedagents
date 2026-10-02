@@ -77,6 +77,8 @@ globalThis.fetch = (async () => { throw new Error('Benchmark server external fet
 const session = new inspector.Session(); session.connect();
 const post = (method: string, params: object = {}) => new Promise<any>((resolve, reject) => session.post(method as any, params, (error, result) => error ? reject(error) : resolve(result)));
 const server = serve({ fetch: req => app.fetch(req, env), hostname: '127.0.0.1', port: 0 }, info => process.send?.({ type: 'ready', port: info.port, dataset: workload.dataset }));
+// Do not retain an orphan HTTP server if the measurement driver exits.
+process.on('disconnect', () => server.close(() => { session.disconnect(); sqlite.close(); process.exit(1); }));
 process.on('message', async (message: any) => {
   try {
     if (message.type === 'profile-start') {
