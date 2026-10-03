@@ -1,0 +1,289 @@
+{
+  "node": "v22.23.3",
+  "scope": "Projection only, synthetic promise DB, 100 public rows, stable epoch, all expiry checks live",
+  "records": [
+    {
+      "mode": "js",
+      "bodyBytes": 166321,
+      "responseSha256": "958086b1e33ce817e57729136deaa74e446f33fe089031242bc4cdab4bdf5424",
+      "batches": [
+        {
+          "count": 10000,
+          "elapsedMs": 455.04689499999995,
+          "cpuMicroseconds": {
+            "user": 416359,
+            "system": 66885
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 464.979912,
+          "cpuMicroseconds": {
+            "user": 399100,
+            "system": 97712
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 426.38825799999995,
+          "cpuMicroseconds": {
+            "user": 418446,
+            "system": 36401
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 406.42994299999987,
+          "cpuMicroseconds": {
+            "user": 397516,
+            "system": 34881
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 484.684025,
+          "cpuMicroseconds": {
+            "user": 411055,
+            "system": 102633
+          }
+        }
+      ]
+    },
+    {
+      "mode": "rust-reuse",
+      "bodyBytes": 166321,
+      "responseSha256": "958086b1e33ce817e57729136deaa74e446f33fe089031242bc4cdab4bdf5424",
+      "batches": [
+        {
+          "count": 10000,
+          "elapsedMs": 294.72035700000015,
+          "cpuMicroseconds": {
+            "user": 330711,
+            "system": 8484
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 325.768227,
+          "cpuMicroseconds": {
+            "user": 323886,
+            "system": 27182
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 293.50138000000015,
+          "cpuMicroseconds": {
+            "user": 307377,
+            "system": 24696
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 283.2961190000001,
+          "cpuMicroseconds": {
+            "user": 293965,
+            "system": 16889
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 274.4426360000002,
+          "cpuMicroseconds": {
+            "user": 292178,
+            "system": 10494
+          }
+        }
+      ]
+    },
+    {
+      "mode": "rust-u128",
+      "bodyBytes": 166321,
+      "responseSha256": "958086b1e33ce817e57729136deaa74e446f33fe089031242bc4cdab4bdf5424",
+      "batches": [
+        {
+          "count": 10000,
+          "elapsedMs": 92.75560299999961,
+          "cpuMicroseconds": {
+            "user": 114813,
+            "system": 6964
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 77.0089050000006,
+          "cpuMicroseconds": {
+            "user": 87403,
+            "system": 0
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 77.05014599999959,
+          "cpuMicroseconds": {
+            "user": 94807,
+            "system": 1967
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 74.53103100000044,
+          "cpuMicroseconds": {
+            "user": 83078,
+            "system": 0
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 75.86268999999993,
+          "cpuMicroseconds": {
+            "user": 87643,
+            "system": 0
+          }
+        }
+      ]
+    },
+    {
+      "mode": "rust-u128",
+      "bodyBytes": 166321,
+      "responseSha256": "958086b1e33ce817e57729136deaa74e446f33fe089031242bc4cdab4bdf5424",
+      "batches": [
+        {
+          "count": 10000,
+          "elapsedMs": 80.56847500000003,
+          "cpuMicroseconds": {
+            "user": 91132,
+            "system": 0
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 83.35291300000063,
+          "cpuMicroseconds": {
+            "user": 85511,
+            "system": 0
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 99.95830300000034,
+          "cpuMicroseconds": {
+            "user": 83522,
+            "system": 574
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 125.26493299999947,
+          "cpuMicroseconds": {
+            "user": 94510,
+            "system": 2064
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 84.01400300000023,
+          "cpuMicroseconds": {
+            "user": 82167,
+            "system": 0
+          }
+        }
+      ]
+    },
+    {
+      "mode": "rust-reuse",
+      "bodyBytes": 166321,
+      "responseSha256": "958086b1e33ce817e57729136deaa74e446f33fe089031242bc4cdab4bdf5424",
+      "batches": [
+        {
+          "count": 10000,
+          "elapsedMs": 502.42666999999983,
+          "cpuMicroseconds": {
+            "user": 300687,
+            "system": 37958
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 305.1907020000008,
+          "cpuMicroseconds": {
+            "user": 297922,
+            "system": 10932
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 326.8535609999999,
+          "cpuMicroseconds": {
+            "user": 306889,
+            "system": 45377
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 295.69725000000017,
+          "cpuMicroseconds": {
+            "user": 299845,
+            "system": 25277
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 288.21114600000055,
+          "cpuMicroseconds": {
+            "user": 301577,
+            "system": 7253
+          }
+        }
+      ]
+    },
+    {
+      "mode": "js",
+      "bodyBytes": 166321,
+      "responseSha256": "958086b1e33ce817e57729136deaa74e446f33fe089031242bc4cdab4bdf5424",
+      "batches": [
+        {
+          "count": 10000,
+          "elapsedMs": 394.80010200000015,
+          "cpuMicroseconds": {
+            "user": 403130,
+            "system": 2804
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 392.2441859999999,
+          "cpuMicroseconds": {
+            "user": 402432,
+            "system": 0
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 425.21820300000036,
+          "cpuMicroseconds": {
+            "user": 463914,
+            "system": 11410
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 414.43945300000087,
+          "cpuMicroseconds": {
+            "user": 433980,
+            "system": 5203
+          }
+        },
+        {
+          "count": 10000,
+          "elapsedMs": 504.9976659999993,
+          "cpuMicroseconds": {
+            "user": 475154,
+            "system": 69112
+          }
+        }
+      ]
+    }
+  ],
+  "checksum": 37500000
+}

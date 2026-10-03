@@ -1,0 +1,18 @@
+[
+  {
+    "method": "get",
+    "sql": "SELECT incarnation || ':' || CAST(version AS TEXT) AS epoch FROM task_projection_epoch WHERE singleton = 1",
+    "count": 400,
+    "totalMs": 43.57650899996224,
+    "maxMs": 3.002320999999938,
+    "params": [],
+    "plan": [
+      {
+        "id": 2,
+        "parent": 0,
+        "notused": 33,
+        "detail": "SEARCH task_projection_epoch USING INTEGER PRIMARY KEY (rowid=?)"
+      }
+    ]
+  }
+]

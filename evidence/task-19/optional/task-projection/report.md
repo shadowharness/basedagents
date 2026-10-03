@@ -1,3 +1,5 @@
+> **Developer follow-up, 3 October 2026:** [Extended Rust/u128 processing and shared ETag reuse](../../post-submission/README.md) — the post-submission verification checkpoint, with source and raw measurements.
+
 # Optional public task fragments: JS and Rust/Wasm comparison
 
 On the indexed SQL baseline, retaining public-row fragments reduces repeated row materialization and JSON encoding. The fixed repeated-list workload's p50 improves by 3.65× and 3.82× with JS and 3.90× and 3.80× with Rust/reused output (open and verified lists respectively). These ratios compare the same instrumented source, fixture and complete HTTP responses.
@@ -21,7 +23,7 @@ Execution order is A/B/C0/C1/C1/C0/B/A, with five batches of 400 requests per en
 
 CPU usage and RSS are observations from separate 400-request profiler passes. RSS is process memory, not only retained fragments; logical payload limits do not bound allocator or Wasm capacity. Quantiles are recomputed from raw timings, with a median across ten batches for each mode.
 
-The large measured gain is reuse of public-row work. Rust/reuse versus JS changes open-list p50 from 10.47 to 9.81 ms and verified-list p50 from 10.10 to 10.17 ms, with overlapping batch ranges. Switching only Rust output allocation likewise does not consistently improve both endpoints. The CPU observations are retained, but these data do not establish an additional Rust-specific endpoint latency gain. Both implementations and the allocation experiment are supplied so that further workloads can discriminate that contribution.
+This initial Rust experiment covers fragment assembly and output-buffer allocation. Rust/reuse versus JS changes open-list p50 from 10.47 to 9.81 ms and verified-list p50 from 10.10 to 10.17 ms, with the batch ranges shown above. These measurements describe that implementation boundary. The [post-submission developer follow-up](../../post-submission/README.md) extends Rust's role to u128 key, generation, expiry and page management, and measures isolated page processing at 42.58 µs for JS versus 8.20 µs for the extended Rust implementation (5.20×). It also identifies and improves repeated hashing in the shared HTTP response path. Both experiments retain their own source, workload and raw measurements.
 
 ## Varied and updating workloads
 

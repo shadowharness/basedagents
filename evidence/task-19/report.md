@@ -1,3 +1,5 @@
+> **Developer follow-up, 3 October 2026:** [Extended Rust/u128 processing and shared ETag reuse](post-submission/README.md) — the post-submission verification checkpoint, with source and raw measurements.
+
 # BasedAgents API: three measured index optimizations
 
 Three indexed read paths reduce the fixed-workload p50 from 327.18 to 35.97 ms (open tasks), 371.68 to 38.60 ms (verified tasks), and 233.50 to 21.89 ms (status): approximately 9.1×, 9.6× and 10.7×. Paired profiles, 60,000 request timings, later controls and full tests establish the contribution of each of three independent commits.

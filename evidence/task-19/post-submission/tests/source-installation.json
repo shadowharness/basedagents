@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "verifiedAt": "2026-10-03T02:43:10.175Z",
+  "baseCommit": "157e94143b75afb736921631952940c6ef897713",
+  "procedure": [
+    "Apply the original optional task-projection patch to a clean checkout",
+    "Install the follow-up source overlay",
+    "Compare installed files with the source overlay and measured working copy",
+    "Compare all six HTTP runs runtime source hashes and workload hash"
+  ],
+  "passed": true,
+  "overlayFiles": [
+    {
+      "file": "bench/projection-inner.ts",
+      "sha256": "4a1fb931b81cefe515bffa2ddf53ef84bf3112bf017f51f7fd3c3960070e79ee"
+    },
+    {
+      "file": "bench/projection-mixed.mjs",
+      "sha256": "f061592aecfd61efadc99b2215c1c5a8d12db81aa9f83456f8168df6efc63308"
+    },
+    {
+      "file": "bench/run.mjs",
+      "sha256": "3b421731c9af0fb1ad26124c83d66cf3f668bee0539436c8b776b8facba88902"
+    },
+    {
+      "file": "bench/server.ts",
+      "sha256": "45c7867ce66915db03cd6a5cae674c7e4f0043408c9fe6d97cef342ce3cc0dd3"
+    },
+    {
+      "file": "bench/workload.json",
+      "sha256": "9472b3c0227097dfa6a91d9c7bbd026964bcf5e16bf628ba1a8764adbbe6e493"
+    },
+    {
+      "file": "optional/task-projection/install.sql",
+      "sha256": "1c5dffa6a6efb6a2f6577c589f739a2f2d3fe69f0f184e4e44a0d5959f5354ed"
+    },
+    {
+      "file": "optional/task-projection/rust/Cargo.toml",
+      "sha256": "4850de1184e2fc19f31c5ffdfc5309a10bb7ecb03edae64079205f7140f9840d"
+    },
+    {
+      "file": "optional/task-projection/rust/src/lib.rs",
+      "sha256": "52709ae13f967c6d98466f0573bd92ec95ec04f521f2b93d01e72e9cedd4bdfb"
+    },
+    {
+      "file": "optional/task-projection/task_projection.wasm",
+      "sha256": "5181681cb7fa9e6795febb3903db4ee88d8302e2a54c6ad65de0d4beb94eabb9"
+    },
+    {
+      "file": "packages/api/src/db/sqlite-adapter.ts",
+      "sha256": "0cebc9aaca2ede0287863c92cf5a711de83a0fc3fc323fa3dfb0034e711a3b2d"
+    },
+    {
+      "file": "packages/api/src/index.ts",
+      "sha256": "5ebc1e13e47b59930b96a797c964a3714d980366475536971aa40ee25352ed98"
+    },
+    {
+      "file": "packages/api/src/routes/tasks.ts",
+      "sha256": "c332c5af832ff2f3105f9eac30435b64f43dac72c306c8d667ff12e5f2bf1958"
+    },
+    {
+      "file": "packages/api/src/task-projection.test.ts",
+      "sha256": "d74ab91cc66b6e389f4e2a1536aae8f95cb23e9efeea910f3e3bab6e7f6404e7"
+    },
+    {
+      "file": "packages/api/src/tasks/list-projection.ts",
+      "sha256": "3df79cdadfd30adff3ad3b9be879c45242dc78a2da03b82529be2a647073ee00"
+    },
+    {
+      "file": "packages/api/src/tasks/service.ts",
+      "sha256": "9a64c6de9cab075ba5ddf78ba4c498dba28e0f1ad220441daee265d8836cd35f"
+    },
+    {
+      "file": "packages/api/src/tasks/settled.ts",
+      "sha256": "9b3b65d76a3b468684da8091757b56723db26be9172a1e3077e8e1e76ea3aebf"
+    },
+    {
+      "file": "packages/api/src/types/index.ts",
+      "sha256": "a9e11a7cf3fd2afe434080107ca681005e9ab10f4ac6ad2979a50f6a9adf5549"
+    },
+    {
+      "file": "packages/web/public/skill.md",
+      "sha256": "aff242c43035136195b942634b1b63e238a840d6e04462d7fa878b46be5cd701"
+    }
+  ],
+  "runCount": 6,
+  "runtimeSourceHashesPerRun": 9
+}

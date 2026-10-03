@@ -1,0 +1,1019 @@
+diff --git a/bench/projection-inner.ts b/bench/projection-inner.ts
+new file mode 100644
+index 0000000..2f3abc9
+--- /dev/null
++++ b/bench/projection-inner.ts
+@@ -0,0 +1,44 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import { createHash } from 'node:crypto';
++import { performance } from 'node:perf_hooks';
++import { projectedTaskList, installTaskProjectionModule, clearTaskProjections, type ProjectionMode } from '../packages/api/src/tasks/list-projection.js';
++const root = process.cwd();
++installTaskProjectionModule(new WebAssembly.Module(fs.readFileSync(path.join(root, 'optional/task-projection/task_projection.wasm'))));
++const result = JSON.parse(fs.readFileSync(path.resolve(root, '../runs/follow-js-a/tasks-open.response.json'), 'utf8'));
++const rows = result.tasks.map((t: any, i: number) => ({ ...t,
++  task_id: t.task_id, creator_agent_id: 'ag_benchmark', creator_kind: 'agent',
++  required_capabilities: '["code"]', status: 'open', expires_at: '2099-01-01T00:00:00.000Z',
++  created_at: `2026-01-01T00:00:${String(i % 60).padStart(2,'0')}.000Z`,
++}));
++// Isolate the projection itself. DB promises remain but perform no SQL or I/O.
++// The real SQL + network path is measured separately by the unchanged HTTP driver.
++const db = { get: async () => ({ epoch: 'ffffffffffffffffffffffffffffffff:9007199254740993' }), all: async () => rows } as any;
++const sql = 'SELECT public task page WHERE status = ? LIMIT ? OFFSET ?';
++const params = ['open', 100, 0];
++const records: any[] = [];
++let expected: string | undefined, checksum = 0;
++async function main() {
++for (const mode of ['js','rust-reuse','rust-u128','rust-u128','rust-reuse','js'] as ProjectionMode[]) {
++  clearTaskProjections();
++  const first = (await projectedTaskList(db, db, sql, params, mode))!;
++  const hash = createHash('sha256').update(first).digest('hex');
++  if (expected && hash !== expected) throw Error('Body mismatch');
++  expected = hash;
++  for (let i=0;i<2000;i++) await projectedTaskList(db,db,sql,params,mode);
++  const batches = [];
++  for (let b=0;b<5;b++) {
++    const cpu = process.cpuUsage(), start = performance.now();
++    for (let i=0;i<10000;i++) {
++      const body = (await projectedTaskList(db,db,sql,params,mode))!;
++      checksum += body[body.length-1];
++    }
++    batches.push({count:10000,elapsedMs:performance.now()-start,cpuMicroseconds:process.cpuUsage(cpu)});
++  }
++  records.push({mode,bodyBytes:first.length,responseSha256:hash,batches});
++}
++const output = path.resolve(root,'../runs/projection-inner.json');
++fs.writeFileSync(output,JSON.stringify({node:process.version,scope:'Projection only, synthetic promise DB, 100 public rows, stable epoch, all expiry checks live',records,checksum},null,2));
++console.log(JSON.stringify(records.map(r=>({mode:r.mode,microsecondsPerCall:r.batches.map((b:any)=>b.elapsedMs*1000/b.count)}))));
++}
++main().catch(error=>{console.error(error);process.exitCode=1;});
+diff --git a/bench/projection-mixed.mjs b/bench/projection-mixed.mjs
+index edb9566..4d8ecd8 100644
+--- a/bench/projection-mixed.mjs
++++ b/bench/projection-mixed.mjs
+@@ -10,7 +10,7 @@ import Database from 'better-sqlite3';
+ 
+ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+ const [mode, label] = process.argv.slice(2);
+-if (!['off','js','rust-fresh','rust-reuse'].includes(mode) || !/^[a-z0-9-]+$/.test(label ?? '')) throw Error('Use mode label');
++if (!['off','js','rust-fresh','rust-reuse','rust-u128'].includes(mode) || !/^[a-z0-9-]+$/.test(label ?? '')) throw Error('Use mode label');
+ const output = path.resolve(root, '../runs', label);
+ fs.mkdirSync(output, { recursive:true });
+ const hash = value => createHash('sha256').update(value).digest('hex');
+diff --git a/bench/run.mjs b/bench/run.mjs
+index 79f87ea..c0fe046 100644
+--- a/bench/run.mjs
++++ b/bench/run.mjs
+@@ -8,11 +8,12 @@ import { performance } from 'node:perf_hooks';
+ import { createHash } from 'node:crypto';
+ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+ const [label, mode = 'full'] = process.argv.slice(2);
+-if (!/^[a-z0-9-]+$/.test(label || '') || !['full','smoke'].includes(mode)) throw new Error('Use run.mjs label [full|smoke]');
++if (!/^[a-z0-9-]+$/.test(label || '') || !['full','smoke','tasks'].includes(mode)) throw new Error('Use run.mjs label [full|smoke|tasks]');
+ const workloadBytes = fs.readFileSync(path.join(root, 'bench/workload.json'));
+ const workload = JSON.parse(workloadBytes);
+ const output = path.resolve(root, '../runs', label);
+-fs.mkdirSync(output, { recursive: true });
++fs.mkdirSync(path.dirname(output), { recursive: true });
++fs.mkdirSync(output); // Refuse an existing run before writing any evidence.
+ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+ const metadata = { at: new Date().toISOString(), mode, upstreamHead: execFileSync('git', ['rev-parse','HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
+   projectionMode: process.env.TASK_LIST_PROJECTION_MODE ?? 'off',
+@@ -74,14 +75,14 @@ async function load(endpoint, count) {
+ try {
+   ({ port } = await waitFor('ready'));
+   const results = [];
+-  for (const endpoint of workload.endpoints) {
++  for (const endpoint of workload.endpoints.filter(e => mode !== 'tasks' || e.name.startsWith('tasks-'))) {
+     await load(endpoint, mode === 'smoke' ? 8 : workload.warmupRequests);
+     const runs = [];
+     for (let run = 0; run < (mode === 'smoke' ? 1 : workload.runs); run++) runs.push(await load(endpoint, mode === 'smoke' ? 12 : workload.measuredRequests));
+     const med = xs => [...xs].sort((a,b) => a-b)[Math.floor(xs.length/2)];
+     const item = { endpoint, runs, medianP50: med(runs.map(r=>r.p50)), medianP99: med(runs.map(r=>r.p99)), responseSha256: fingerprints.get(endpoint.name) };
+     results.push(item);
+-    if (mode === 'full') {
++    if (mode !== 'smoke') {
+       const started = waitFor('profile-started'); child.send({ type: 'profile-start' }); await started;
+       await load(endpoint, workload.profileRequests);
+       const stopped = waitFor('profile-stopped'); child.send({ type: 'profile-stop', name: endpoint.name }); await stopped;
+diff --git a/optional/task-projection/rust/src/lib.rs b/optional/task-projection/rust/src/lib.rs
+index b326dda..53dba31 100644
+--- a/optional/task-projection/rust/src/lib.rs
++++ b/optional/task-projection/rust/src/lib.rs
+@@ -3,9 +3,19 @@
+ //! next call. The JS boundary copies the output before starting an HTTP send.
+ use std::{cell::RefCell, collections::HashMap};
+ 
+-struct Row { bytes: Vec<u8>, expires: Vec<u8>, eligible: bool }
++struct Row { bytes: Vec<u8>, expires: Vec<u8>, expiry: Option<u128>, eligible: bool }
++#[derive(Clone, Copy, PartialEq, Eq)]
++struct Epoch { incarnation: u128, version: u128 }
++struct KeyedPage {
++    key: Vec<u8>, epoch: Epoch, rows: Vec<Row>, body: Vec<u8>, mask: Option<u128>,
++    revision: u32, touched: u128, window: Option<(u128, u128)>,
++}
+ #[derive(Default)]
+-struct Store { input: Vec<u8>, output: Vec<u8>, pages: HashMap<u32, Vec<Row>> }
++struct Store {
++    input: Vec<u8>, output: Vec<u8>, pages: HashMap<u32, Vec<Row>>,
++    keyed: HashMap<u32, KeyedPage>, index: HashMap<u128, Vec<u32>>, tick: u128,
++    hit: u32,
++}
+ thread_local! { static STORE: RefCell<Store> = RefCell::new(Store::default()); }
+ 
+ #[no_mangle]
+@@ -27,7 +37,8 @@ fn parse(bytes: &[u8]) -> Option<Vec<Row>> {
+         let eligible = read_u32(bytes, &mut offset)? != 0;
+         let row = bytes.get(offset..offset.checked_add(len)?)?.to_vec(); offset += len;
+         let expires = bytes.get(offset..offset.checked_add(expiry_len)?)?.to_vec(); offset += expiry_len;
+-        rows.push(Row { bytes: row, expires, eligible });
++        let expiry = timestamp(&expires);
++        rows.push(Row { bytes: row, expires, expiry, eligible });
+     }
+     if offset != bytes.len() { return None; }
+     Some(rows)
+@@ -42,12 +53,19 @@ pub extern "C" fn put(id: u32, len: u32) -> u32 {
+     })
+ }
+ #[no_mangle]
+-pub extern "C" fn remove(id: u32) { STORE.with(|s| { s.borrow_mut().pages.remove(&id); }); }
++pub extern "C" fn remove(id: u32) { STORE.with(|s| {
++    let mut s = s.borrow_mut(); s.pages.remove(&id);
++    if let Some(page) = s.keyed.remove(&id) {
++        let hash = fingerprint(&page.key);
++        if let Some(ids) = s.index.get_mut(&hash) { ids.retain(|&i| i != id); }
++        if s.index.get(&hash).is_some_and(|ids| ids.is_empty()) { s.index.remove(&hash); }
++    }
++}); }
+ #[no_mangle]
+ pub extern "C" fn render(id: u32, now_len: u32, reuse: u32) -> *const u8 {
+     STORE.with(|s| {
+         let mut s = s.borrow_mut();
+-        let Store { input, output, pages } = &mut *s;
++        let Store { input, output, pages, .. } = &mut *s;
+         if reuse == 0 { *output = Vec::new(); } else { output.clear(); }
+         output.extend_from_slice(b"{\"ok\":true,\"tasks\":[");
+         if let Some(rows) = pages.get(&id) {
+@@ -65,6 +83,111 @@ pub extern "C" fn render(id: u32, now_len: u32, reuse: u32) -> *const u8 {
+ #[no_mangle]
+ pub extern "C" fn output_len() -> u32 { STORE.with(|s| s.borrow().output.len() as u32) }
+ 
++// The query fingerprint is only an index: exact key equality resolves collisions.
++fn fingerprint(bytes: &[u8]) -> u128 {
++    bytes.iter().fold(0x6c62272e07bb014262b821756295c58du128,
++        |h, b| (h ^ *b as u128).wrapping_mul(0x0000000001000000000000000000013b))
++}
++fn epoch(bytes: &[u8]) -> Option<Epoch> {
++    let text = std::str::from_utf8(bytes).ok()?;
++    let (incarnation, version) = text.split_once(':')?;
++    if incarnation.len() != 32 { return None; }
++    Some(Epoch { incarnation: u128::from_str_radix(incarnation, 16).ok()?, version: version.parse().ok()? })
++}
++// Preserve lexicographic ISO semantics. Noncanonical legacy values use raw bytes.
++fn timestamp(bytes: &[u8]) -> Option<u128> {
++    if bytes.len() != 24 || bytes[4] != b'-' || bytes[7] != b'-' || bytes[10] != b'T'
++        || bytes[13] != b':' || bytes[16] != b':' || bytes[19] != b'.' || bytes[23] != b'Z' { return None; }
++    let mut value = 0u128;
++    for &i in &[0usize,1,2,3,5,6,8,9,11,12,14,15,17,18,20,21,22] {
++        if !bytes[i].is_ascii_digit() { return None; }
++        value = value * 10 + (bytes[i] - b'0') as u128;
++    }
++    Some(value)
++}
++fn claim_mask(rows: &[Row], now: &[u8]) -> u128 {
++    let packed_now = timestamp(now);
++    rows.iter().enumerate().fold(0u128, |mask, (i, row)| {
++        let live = match (row.expiry, packed_now) {
++            (Some(expiry), Some(now)) => expiry > now,
++            _ => row.expires.is_empty() || row.expires.as_slice() > now,
++        };
++        mask | if row.eligible && live { 1u128 << i } else { 0 }
++    })
++}
++fn refresh(page: &mut KeyedPage, now: &[u8]) {
++    let packed = timestamp(now);
++    if let (Some(now), Some((lower, upper))) = (packed, page.window) {
++        if now >= lower && now < upper { return; }
++    }
++    let mask = claim_mask(&page.rows, now);
++    page.window = packed.and_then(|now| {
++        let (mut lower, mut upper) = (0u128, u128::MAX);
++        for row in &page.rows {
++            if !row.eligible || row.expires.is_empty() { continue; }
++            let expiry = row.expiry?;
++            if expiry <= now { lower = lower.max(expiry); } else { upper = upper.min(expiry); }
++        }
++        Some((lower, upper))
++    });
++    if page.mask == Some(mask) { return; }
++    page.body.clear();
++    let needed = 21 + page.rows.iter().map(|r| r.bytes.len() + 7).sum::<usize>();
++    if page.body.capacity() < needed { page.body.reserve_exact(needed); }
++    page.body.extend_from_slice(b"{\"ok\":true,\"tasks\":[");
++    for (i, row) in page.rows.iter().enumerate() {
++        if i != 0 { page.body.push(b','); }
++        page.body.extend_from_slice(&row.bytes);
++        page.body.extend_from_slice(if mask & (1u128 << i) != 0 { b"true}" } else { b"false}" });
++    }
++    page.body.extend_from_slice(b"]}"); page.mask = Some(mask);
++    page.revision = page.revision.checked_add(1).expect("response revision exhausted");
++}
++#[no_mangle]
++pub extern "C" fn put_keyed(id: u32, key_len: u32, epoch_len: u32, len: u32) -> u32 {
++    STORE.with(|s| {
++        let mut s = s.borrow_mut();
++        let Some(bytes) = s.input.get(..len as usize) else { return 0; };
++        let split = key_len as usize;
++        let end = split + epoch_len as usize;
++        let Some(key) = bytes.get(..split) else { return 0; };
++        let Some(generation) = bytes.get(split..end).and_then(epoch) else { return 0; };
++        let Some(rows) = bytes.get(end..).and_then(parse) else { return 0; };
++        let key = key.to_vec(); let hash = fingerprint(&key);
++        if s.keyed.contains_key(&id) { return 0; }
++        s.tick += 1; let touched = s.tick;
++        s.keyed.insert(id, KeyedPage { key, epoch: generation, rows, body: Vec::new(), mask: None, revision: 0, touched, window: None });
++        s.index.entry(hash).or_default().push(id); 1
++    })
++}
++#[no_mangle]
++pub extern "C" fn lookup(key_len: u32, epoch_len: u32, now_len: u32) -> u32 {
++    STORE.with(|s| {
++        let mut s = s.borrow_mut(); s.hit = 0; s.tick += 1;
++        let Store { input, keyed, index, tick, hit, .. } = &mut *s;
++        let split = key_len as usize; let end = split + epoch_len as usize;
++        let Some(key) = input.get(..split) else { return 0; };
++        let Some(generation) = input.get(split..end).and_then(epoch) else { return 0; };
++        let Some(now) = input.get(end..end + now_len as usize) else { return 0; };
++        let Some(ids) = index.get(&fingerprint(key)) else { return 0; };
++        for &id in ids {
++            let page = keyed.get_mut(&id).unwrap();
++            if page.key == key && page.epoch == generation {
++                page.touched = *tick; refresh(page, now); *hit = id; return id;
++            }
++        }
++        0
++    })
++}
++#[no_mangle]
++pub extern "C" fn keyed_ptr() -> *const u8 { STORE.with(|s| { let s = s.borrow(); s.keyed[&s.hit].body.as_ptr() }) }
++#[no_mangle]
++pub extern "C" fn keyed_len() -> u32 { STORE.with(|s| { let s = s.borrow(); s.keyed[&s.hit].body.len() as u32 }) }
++#[no_mangle]
++pub extern "C" fn keyed_revision() -> u32 { STORE.with(|s| { let s = s.borrow(); s.keyed[&s.hit].revision }) }
++#[no_mangle]
++pub extern "C" fn oldest_id() -> u32 { STORE.with(|s| s.borrow().keyed.iter().min_by_key(|(_, p)| p.touched).map_or(0, |(&id, _)| id)) }
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+@@ -76,4 +199,17 @@ mod tests {
+         assert!(parse(&[0,0,0,0,1]).is_none());
+         assert_eq!(parse(&[0,0,0,0]).unwrap().len(), 0);
+     }
++    #[test]
++    fn fixed_width_boundaries_and_legacy_ordering() {
++        let earlier = b"2027-12-31T23:59:59.999Z";
++        let later = b"2028-01-01T00:00:00.000Z";
++        assert!(timestamp(earlier).unwrap() < timestamp(later).unwrap());
++        assert!(timestamp(b"+010000-01-01T00:00:00.000Z").is_none());
++        let rows: Vec<Row> = (0..100).map(|_| Row { bytes: vec![], expires: later.to_vec(), expiry: timestamp(later), eligible: true }).collect();
++        assert_eq!(claim_mask(&rows, earlier), (1u128 << 100) - 1);
++        assert_eq!(claim_mask(&rows, later), 0);
++        let a = epoch(b"ffffffffffffffffffffffffffffffff:9007199254740992").unwrap();
++        let b = epoch(b"ffffffffffffffffffffffffffffffff:9007199254740993").unwrap();
++        assert!(a != b); assert_eq!(a.incarnation, u128::MAX);
++    }
+ }
+diff --git a/optional/task-projection/task_projection.wasm b/optional/task-projection/task_projection.wasm
+new file mode 100644
+index 0000000000000000000000000000000000000000..f1b1fba54fac62f8411fad26c66f8e766543de8c
+GIT binary patch
+literal 50983
+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
+A%K!iX
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/api/src/routes/tasks.ts b/packages/api/src/routes/tasks.ts
+index 3feab6f..c5ea125 100644
+--- a/packages/api/src/routes/tasks.ts
++++ b/packages/api/src/routes/tasks.ts
+@@ -38,7 +38,7 @@ import { claimBudget, slashBondForDisputedClaim } from '../tasks/governance.js';
+ import { resolveOpenExpiry } from '../tasks/expiry.js';
+ import { bountyMinimumRefusal } from '../tasks/bounty-minimum.js';
+ import { escrowAvailable } from '../payments/house-wallet.js';
+-import { projectedTaskList, type ProjectionMode } from '../tasks/list-projection.js';
++import { projectedTaskList, projectedTaskETag, type ProjectionMode } from '../tasks/list-projection.js';
+ import { settledStats, settledTasks, logSettledWithoutTx, houseAccountIds, parseCursor, DEFAULT_LIMIT, MAX_LIMIT, DEFAULT_WINDOW_DAYS, MAX_WINDOW_DAYS } from '../tasks/settled.js';
+ import {
+   type Actor, type TaskRow, loadTask, creatorMatches, logPaymentEvent, recordFunnel,
+@@ -306,7 +306,11 @@ tasks.get('/', async (c) => {
+ 
+   const body = await projectedTaskList(db, c.env?.DB ?? db, sql, params,
+     (c.env?.TASK_LIST_PROJECTION_MODE ?? 'off') as ProjectionMode);
+-  if (body) return c.body(body, 200, { 'Content-Type': 'application/json' });
++  if (body) {
++    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
++    if (c.env?.TASK_LIST_PROJECTION_MODE === 'rust-u128-etag') headers.ETag = await projectedTaskETag(body);
++    return c.body(body, 200, headers);
++  }
+   const rows = await db.all<Record<string, unknown>>(sql, ...params);
+   return c.json({ ok: true, tasks: rows.map(publicTaskShape) });
+ });
+diff --git a/packages/api/src/task-projection.test.ts b/packages/api/src/task-projection.test.ts
+index e8d183c..22365ea 100644
+--- a/packages/api/src/task-projection.test.ts
++++ b/packages/api/src/task-projection.test.ts
+@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url';
+ import { runnerMigrationFiles, RUNNER_LOCAL_STATEMENTS } from './db/migration-list.js';
+ import { SQLiteAdapter } from './db/sqlite-adapter.js';
+ import { createTestApp } from './test-helpers.js';
+-import { clearTaskProjections, installTaskProjectionModule, projectedTaskList, taskProjectionStats } from './tasks/list-projection.js';
++import { clearTaskProjections, installTaskProjectionModule, projectedTaskList, projectedTaskETag, taskProjectionStats } from './tasks/list-projection.js';
++import { Hono } from 'hono';
++import { etag } from 'hono/etag';
+ 
+ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+ const install = readFileSync(resolve(root, 'optional/task-projection/install.sql'), 'utf8');
+@@ -23,7 +25,7 @@ function fixture() {
+   for (let i = 0; i < 120; i++) insert.run(`task_${i}`, i % 2 ? 'ag_claimed' : null, 'Newline\nUnicode 😃 <script> ', i % 2 ? 'code' : 'research', i % 2 ? '["code"]' : 'not-json', '2028-01-01T00:00:00.000Z', i % 3 ? '2000000' : null, i % 3 ? 'eip155:8453' : null);
+   return db;
+ }
+-for (const mode of ['js', 'rust-fresh', 'rust-reuse'] as const) describe(`public projection ${mode}`, () => {
++for (const mode of ['js', 'rust-fresh', 'rust-reuse', 'rust-u128', 'rust-u128-etag'] as const) describe(`public projection ${mode}`, () => {
+   it('matches SQL for 120 equal timestamps, filters, pagination and live mutations', async () => {
+     const db = fixture();
+     try {
+@@ -56,6 +58,8 @@ for (const mode of ['js', 'rust-fresh', 'rust-reuse'] as const) describe(`public
+       const second = await app.request('/v1/tasks?status=open&limit=100');
+       expect((await first.json() as any).tasks.every((t: any) => t.claimable)).toBe(true);
+       expect((await second.json() as any).tasks.every((t: any) => !t.claimable)).toBe(true);
++      vi.setSystemTime(new Date('2027-12-31T23:59:58.000Z'));
++      expect((await (await app.request('/v1/tasks?status=open&limit=100')).json() as any).tasks.every((t: any) => t.claimable)).toBe(true);
+       expect(db.prepare('SELECT version FROM task_projection_epoch').get()).toEqual(epoch);
+     } finally { db.close(); }
+   });
+@@ -74,6 +78,28 @@ for (const mode of ['js', 'rust-fresh', 'rust-reuse'] as const) describe(`public
+       expect(await projectedTaskList(adapter, adapter, sql, ['task_2'], mode)).toBeNull();
+     } finally { db.close(); }
+   });
++  it('preserves legacy expiry ordering, backwards clock changes, and outstanding response ownership', async () => {
++    const db = fixture();
++    try {
++      const expiries = ['', 'zz-legacy', '2028-01-01T00:00:00.000Z', '2027-12-31T23:59:59.999Z', '+010000-01-01T00:00:00.000Z'];
++      const update = db.prepare('UPDATE tasks SET expires_at=? WHERE task_id=?');
++      expiries.forEach((e, i) => update.run(e, `task_${i}`));
++      vi.useFakeTimers({ toFake: ['Date'] });
++      const adapter = new SQLiteAdapter(db), app = createTestApp(adapter, { TASK_LIST_PROJECTION_MODE: mode }), control = createTestApp(adapter);
++      const delayed: Array<{ response: Response; expected: unknown }> = [];
++      for (const time of ['2027-12-31T23:59:59.999Z', '2028-01-01T00:00:00.000Z', '2027-12-31T23:59:58.000Z']) {
++        vi.setSystemTime(new Date(time));
++        for (const offset of [0, 100]) {
++          const url = `/v1/tasks?status=open&limit=100&offset=${offset}`;
++          const expected = await (await control.request(url)).json();
++          delayed.push({ response: await app.request(url), expected });
++        }
++      }
++      db.exec("UPDATE tasks SET description=printf('%10000s','changed')");
++      await app.request('/v1/tasks?status=open&limit=100');
++      for (const { response, expected } of delayed) expect(await response.json()).toEqual(expected);
++    } finally { db.close(); }
++  });
+   it('reflects each certification revocation and the owner display name on the next read', async () => {
+     const db = fixture();
+     try {
+@@ -126,3 +152,22 @@ it('generation triggers preserve changes(), conditional outbox writes and transa
+     expect(db.prepare("SELECT title FROM tasks WHERE task_id='task_0'").get()).not.toEqual({ title: 'rolled back' });
+   } finally { db.close(); }
+ });
++it('cached tags match the actual Hono middleware across chunk boundaries and preserve conditional requests', async () => {
++  for (const size of [1, 166921, 262144, 262145, 700000]) {
++    const bytes = new Uint8Array(size);
++    for (let i=0;i<size;i++) bytes[i] = i % 251;
++    const tag = await projectedTaskETag(bytes);
++    const app = new Hono(); app.use('*', etag());
++    app.get('/reference', c => c.body(bytes, 200));
++    app.get('/cached', c => c.body(bytes, 200, { ETag: tag }));
++    expect((await app.request('/reference')).headers.get('ETag')).toBe(tag);
++    expect((await app.request('/cached')).headers.get('ETag')).toBe(tag);
++    for (const value of [tag, `W/${tag}`, `"another", ${tag}`, '*']) {
++      const response = await app.request('/cached', { headers: { 'If-None-Match': value } });
++      expect(response.status).toBe(304); expect(await response.text()).toBe('');
++    }
++    expect((await app.request('/cached', { headers: { 'If-None-Match': '"different"' } })).status).toBe(200);
++    const changed = bytes.slice(); changed[0] ^= 1;
++    expect(await projectedTaskETag(changed)).not.toBe(tag);
++  }
++});
+diff --git a/packages/api/src/tasks/list-projection.ts b/packages/api/src/tasks/list-projection.ts
+index e11e3cb..6a245d8 100644
+--- a/packages/api/src/tasks/list-projection.ts
++++ b/packages/api/src/tasks/list-projection.ts
+@@ -2,10 +2,10 @@ import type { DBAdapter } from '../db/adapter.js';
+ import { publicTaskShape } from './service.js';
+ 
+ // SQL remains authoritative. This opt-in projection only stores public rows
+-// from bounded query pages, not authenticated responses or completed bodies.
+-export type ProjectionMode = 'off' | 'js' | 'rust-fresh' | 'rust-reuse';
++// from bounded query pages. Keyed Rust also retains their immutable public bodies.
++export type ProjectionMode = 'off' | 'js' | 'rust-fresh' | 'rust-reuse' | 'rust-u128' | 'rust-u128-etag';
+ type Fragment = { bytes: Uint8Array; expires: Uint8Array; eligible: boolean };
+-type Page = { id: number; epoch: string; fragments: Fragment[]; bytes: number };
++type Page = { id: number; key: string; epoch: string; fragments: Fragment[]; bytes: number };
+ const encode = new TextEncoder();
+ const PREFIX = encode.encode('{"ok":true,"tasks":[');
+ const TRUE = encode.encode('true}');
+@@ -14,8 +14,28 @@ const SUFFIX = encode.encode(']}');
+ const EPOCH_SQL = "SELECT incarnation || ':' || CAST(version AS TEXT) AS epoch FROM task_projection_epoch WHERE singleton = 1";
+ let wasmModule: WebAssembly.Module | undefined;
+ let states = new WeakMap<object, Map<string, State>>();
++let etags = new WeakMap<Uint8Array<ArrayBuffer>, Promise<string>>();
+ export function installTaskProjectionModule(module: WebAssembly.Module): void { wasmModule = module; }
+-export function clearTaskProjections(): void { states = new WeakMap(); }
++export function clearTaskProjections(): void { states = new WeakMap(); etags = new WeakMap(); }
++export function projectedTaskETag(body: Uint8Array<ArrayBuffer>): Promise<string> {
++  let pending = etags.get(body);
++  if (!pending) {
++    pending = (async () => {
++      // Match Hono's 256 KiB chained SHA-1 convention exactly, including large
++      // pages. Bind the tag to immutable owned bytes, never just a query key.
++      let digest = new Uint8Array(0) as Uint8Array<ArrayBuffer>;
++      for (let offset = 0; offset < body.length; offset += 256 * 1024) {
++        const chunk = body.subarray(offset, offset + 256 * 1024);
++        const input = new Uint8Array(digest.length + chunk.length);
++        input.set(digest); input.set(chunk, digest.length);
++        digest = new Uint8Array(await crypto.subtle.digest('SHA-1', input));
++      }
++      return '"' + Array.from(digest, b => b.toString(16).padStart(2, '0')).join('') + '"';
++    })();
++    etags.set(body, pending);
++  }
++  return pending;
++}
+ 
+ interface RustExports extends WebAssembly.Exports {
+   memory: WebAssembly.Memory;
+@@ -24,20 +44,31 @@ interface RustExports extends WebAssembly.Exports {
+   remove(id: number): void;
+   render(id: number, nowLength: number, reuse: number): number;
+   output_len(): number;
++  put_keyed(id: number, keyLength: number, epochLength: number, length: number): number;
++  lookup(keyLength: number, epochLength: number, nowLength: number): number;
++  keyed_ptr(): number;
++  keyed_len(): number;
++  keyed_revision(): number;
++  oldest_id(): number;
+ }
+ class RustRenderer {
+   private readonly api: RustExports;
+-  constructor() {
++  private readonly bodies = new Map<number, { revision: number; bytes: Uint8Array<ArrayBuffer> }>();
++  constructor(readonly keyed: boolean) {
+     if (!wasmModule) throw new Error('Install the compiled task projection Wasm module before enabling Rust mode');
+     this.api = new WebAssembly.Instance(wasmModule, {}).exports as RustExports;
+   }
+   put(page: Page): void {
+-    const size = 4 + page.fragments.reduce((n, f) => n + 12 + f.bytes.length + f.expires.length, 0);
++    const key = this.keyed ? encode.encode(page.key) : new Uint8Array(0);
++    const epoch = this.keyed ? encode.encode(page.epoch) : new Uint8Array(0);
++    const prefix = key.length + epoch.length;
++    const size = prefix + 4 + page.fragments.reduce((n, f) => n + 12 + f.bytes.length + f.expires.length, 0);
+     const ptr = this.api.input_resize(size);
+     const input = new Uint8Array(this.api.memory.buffer, ptr, size);
+     const data = new DataView(input.buffer, ptr, size);
+-    data.setUint32(0, page.fragments.length, true);
+-    let cursor = 4;
++    input.set(key); input.set(epoch, key.length);
++    data.setUint32(prefix, page.fragments.length, true);
++    let cursor = prefix + 4;
+     for (const f of page.fragments) {
+       data.setUint32(cursor, f.bytes.length, true);
+       data.setUint32(cursor + 4, f.expires.length, true);
+@@ -45,9 +76,26 @@ class RustRenderer {
+       input.set(f.bytes, cursor); cursor += f.bytes.length;
+       input.set(f.expires, cursor); cursor += f.expires.length;
+     }
+-    if (!this.api.put(page.id, size)) throw new Error('Invalid projection payload');
++    const accepted = this.keyed ? this.api.put_keyed(page.id, key.length, epoch.length, size) : this.api.put(page.id, size);
++    if (!accepted) throw new Error('Invalid projection payload');
++  }
++  remove(id: number): void { this.api.remove(id); this.bodies.delete(id); }
++  oldestId(): number { return this.api.oldest_id(); }
++  lookup(keyText: string, epochText: string): Uint8Array<ArrayBuffer> | null {
++    const key = encode.encode(keyText), epoch = encode.encode(epochText), now = encode.encode(new Date().toISOString());
++    const length = key.length + epoch.length + now.length;
++    const ptr = this.api.input_resize(length);
++    const input = new Uint8Array(this.api.memory.buffer, ptr, length);
++    input.set(key); input.set(epoch, key.length); input.set(now, key.length + epoch.length);
++    const id = this.api.lookup(key.length, epoch.length, now.length);
++    if (!id) return null;
++    const revision = this.api.keyed_revision(), previous = this.bodies.get(id);
++    if (previous?.revision === revision) return previous.bytes;
++    // This owned immutable copy survives Wasm growth, eviction and other requests.
++    // Fetch copies it into each Response; it is never modified after publication.
++    const bytes = new Uint8Array(this.api.memory.buffer, this.api.keyed_ptr(), this.api.keyed_len()).slice();
++    this.bodies.set(id, { revision, bytes }); return bytes;
+   }
+-  remove(id: number): void { this.api.remove(id); }
+   render(id: number, now: Uint8Array, reuse: boolean): Uint8Array<ArrayBuffer> {
+     const input = this.api.input_resize(now.length);
+     new Uint8Array(this.api.memory.buffer, input, now.length).set(now);
+@@ -75,7 +123,7 @@ class State {
+   rust?: RustRenderer;
+   counters = { hits: 0, misses: 0, rebuilds: 0, evictions: 0, oversize: 0, changedDuringBuild: 0, unavailable: 0 };
+   constructor(readonly mode: ProjectionMode, readonly maxBytes: number, readonly maxPages: number) {
+-    if (mode.startsWith('rust')) this.rust = new RustRenderer();
++    if (mode.startsWith('rust')) this.rust = new RustRenderer(mode.startsWith('rust-u128'));
+   }
+   remove(key: string): void {
+     const p = this.pages.get(key);
+@@ -83,6 +131,7 @@ class State {
+     this.bytes -= p.bytes; this.pages.delete(key); this.rust?.remove(p.id);
+   }
+   render(page: Page): Uint8Array<ArrayBuffer> {
++    if (this.rust?.keyed) return this.rust.lookup(page.key, page.epoch)!;
+     const now = encode.encode(new Date().toISOString());
+     if (this.rust) return this.rust.render(page.id, now, this.mode === 'rust-reuse');
+     const needed = PREFIX.length + SUFFIX.length + page.fragments.reduce((n, f) => n + f.bytes.length + FALSE.length + 1, 0);
+@@ -113,7 +162,7 @@ export function taskProjectionStats(identity: object): unknown {
+ }
+ export async function projectedTaskList(db: DBAdapter, identity: object, sql: string, params: unknown[],
+   mode: ProjectionMode, maxBytes = 8 * 1024 * 1024, maxPages = 64): Promise<Uint8Array<ArrayBuffer> | null> {
+-  if (!['js', 'rust-fresh', 'rust-reuse'].includes(mode)) return null;
++  if (!['js', 'rust-fresh', 'rust-reuse', 'rust-u128', 'rust-u128-etag'].includes(mode)) return null;
+   const state = getState(identity, mode, maxBytes, maxPages);
+   // Read on every request; dropped application notifications cannot cause
+   // stale results. D1's un-sessioned queries use its primary database.
+@@ -121,9 +170,14 @@ export async function projectedTaskList(db: DBAdapter, identity: object, sql: st
+   try { epoch = (await db.get<{ epoch: string }>(EPOCH_SQL))?.epoch; }
+   catch { state.counters.unavailable++; return null; }
+   if (!epoch) return null;
++  if (state.rust?.keyed && !/^[0-9a-fA-F]{32}:\d{1,38}$/.test(epoch)) { state.counters.unavailable++; return null; }
+   const key = JSON.stringify([sql, params]); // Includes filters, page and environment network policy.
++  if (state.rust?.keyed) {
++    const body = state.rust.lookup(key, epoch);
++    if (body) { state.counters.hits++; return body; }
++  }
+   const existing = state.pages.get(key);
+-  if (existing?.epoch === epoch) {
++  if (!state.rust?.keyed && existing?.epoch === epoch) {
+     state.counters.hits++;
+     state.pages.delete(key); state.pages.set(key, existing);
+     return state.render(existing);
+@@ -151,13 +205,17 @@ export async function projectedTaskList(db: DBAdapter, identity: object, sql: st
+         expires: encode.encode(typeof row.expires_at === 'string' ? row.expires_at : ''),
+         eligible: row.status === 'open' && (!row.escrow || row.escrow_status === 'funded') };
+     });
+-    const bytes = fragments.reduce((n, f) => n + f.bytes.length + f.expires.length + 12, 4) + encode.encode(key).length;
++    // Keyed mode retains rows + a Rust body + an owned immutable JS body.
++    // Reserve all three, including worst-case false/comma suffixes and key overhead.
++    const rawBytes = fragments.reduce((n, f) => n + f.bytes.length + f.expires.length + 12, 4) + encode.encode(key).length;
++    const bytes = state.rust?.keyed ? rawBytes * 3 + fragments.length * 96 + 256 : rawBytes;
+     if (bytes > Math.min(maxBytes, 1024 * 1024) || maxPages < 1) { state.counters.oversize++; return null; }
+     state.remove(key);
+     while (state.pages.size >= maxPages || state.bytes + bytes > maxBytes) {
+-      state.remove(state.pages.keys().next().value!); state.counters.evictions++;
++      const oldest = state.rust?.keyed ? [...state.pages].find(([, p]) => p.id === state.rust!.oldestId())?.[0] : state.pages.keys().next().value;
++      state.remove(oldest!); state.counters.evictions++;
+     }
+-    const page = { id: state.nextId++, epoch: epoch!, fragments, bytes };
++    const page = { id: state.nextId++, key, epoch: epoch!, fragments, bytes };
+     state.rust?.put(page);
+     // Rust owns its fragments. Do not keep an extra JS copy of public rows.
+     if (state.rust) page.fragments = [];
+diff --git a/packages/api/src/types/index.ts b/packages/api/src/types/index.ts
+index 8a90d12..5b14db3 100644
+--- a/packages/api/src/types/index.ts
++++ b/packages/api/src/types/index.ts
+@@ -509,7 +509,7 @@ export type Variables = {
+ 
+ export type Bindings = {
+   /** Optional bounded public task-row projection; SQL remains authoritative. */
+-  TASK_LIST_PROJECTION_MODE?: 'off' | 'js' | 'rust-fresh' | 'rust-reuse';
++  TASK_LIST_PROJECTION_MODE?: 'off' | 'js' | 'rust-fresh' | 'rust-reuse' | 'rust-u128' | 'rust-u128-etag';
+   DB?: D1Database;
+   ENVIRONMENT?: string;            // 'production' | 'staging' — set per wrangler env (wrangler.toml)
+   HOUSE_ACCOUNT_IDS?: string;      // comma-separated agent (ag_…) / owner (ow_…) ids whose paid tasks are labeled `sponsored`

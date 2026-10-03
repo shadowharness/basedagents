@@ -1,0 +1,37 @@
+{
+  "projectionMode": "rust-u128-etag",
+  "cpuMicroseconds": {
+    "user": 577262,
+    "system": 134072
+  },
+  "elapsedMs": 1364.5970799999996,
+  "memoryBefore": {
+    "rss": 173002752,
+    "heapTotal": 51154944,
+    "heapUsed": 30916560,
+    "external": 13759373,
+    "arrayBuffers": 6922647
+  },
+  "memoryAfter": {
+    "rss": 173785088,
+    "heapTotal": 51417088,
+    "heapUsed": 32595672,
+    "external": 16517048,
+    "arrayBuffers": 9680322
+  },
+  "projection": [
+    {
+      "mode": "rust-u128-etag:8388608:64",
+      "hits": 5038,
+      "misses": 2,
+      "rebuilds": 2,
+      "evictions": 0,
+      "oversize": 0,
+      "changedDuringBuild": 0,
+      "unavailable": 0,
+      "pages": 2,
+      "retainedBytes": 1114940,
+      "outputCapacity": 0
+    }
+  ]
+}

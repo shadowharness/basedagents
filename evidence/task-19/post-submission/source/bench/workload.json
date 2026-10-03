@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "dataset": { "agents": 2000, "tasks": 50000, "verifications": 100000 },
+  "concurrency": 4,
+  "warmupRequests": 120,
+  "measuredRequests": 400,
+  "runs": 5,
+  "profileRequests": 400,
+  "endpoints": [
+    { "name": "tasks-open", "path": "/v1/tasks?status=open&limit=100" },
+    { "name": "tasks-verified", "path": "/v1/tasks?status=verified&limit=100" },
+    { "name": "agent-profile", "path": "/v1/agents/Benchmark-0001" },
+    { "name": "status", "path": "/v1/status" },
+    { "name": "chain", "path": "/v1/chain" }
+  ]
+}

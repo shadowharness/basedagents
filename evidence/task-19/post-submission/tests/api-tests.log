@@ -1,0 +1,5 @@
+
+> @basedagents/api@0.1.0 test
+> vitest run --reporter=json --outputFile=/benchmark/runs/api-tests-final.json
+
+JSON report written to /benchmark/runs/api-tests-final.json

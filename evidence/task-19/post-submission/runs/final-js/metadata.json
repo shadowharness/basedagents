@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-03T02:15:24.921Z",
+  "mode": "tasks",
+  "upstreamHead": "65d0bf39077cb267fa76a5099996e3c45ec6e52a",
+  "projectionMode": "js",
+  "platform": "linux",
+  "arch": "arm64",
+  "node": "v22.23.3",
+  "cpu": "Neoverse-N1",
+  "availableParallelism": 2,
+  "workload": {
+    "schema": 1,
+    "dataset": {
+      "agents": 2000,
+      "tasks": 50000,
+      "verifications": 100000
+    },
+    "concurrency": 4,
+    "warmupRequests": 120,
+    "measuredRequests": 400,
+    "runs": 5,
+    "profileRequests": 400,
+    "endpoints": [
+      {
+        "name": "tasks-open",
+        "path": "/v1/tasks?status=open&limit=100"
+      },
+      {
+        "name": "tasks-verified",
+        "path": "/v1/tasks?status=verified&limit=100"
+      },
+      {
+        "name": "agent-profile",
+        "path": "/v1/agents/Benchmark-0001"
+      },
+      {
+        "name": "status",
+        "path": "/v1/status"
+      },
+      {
+        "name": "chain",
+        "path": "/v1/chain"
+      }
+    ]
+  },
+  "workloadSha256": "9472b3c0227097dfa6a91d9c7bbd026964bcf5e16bf628ba1a8764adbbe6e493",
+  "sourceSha256": {
+    "bench/server.ts": "45c7867ce66915db03cd6a5cae674c7e4f0043408c9fe6d97cef342ce3cc0dd3",
+    "bench/run.mjs": "3b421731c9af0fb1ad26124c83d66cf3f668bee0539436c8b776b8facba88902",
+    "packages/api/src/index.ts": "5ebc1e13e47b59930b96a797c964a3714d980366475536971aa40ee25352ed98",
+    "packages/api/src/db/sqlite-adapter.ts": "0cebc9aaca2ede0287863c92cf5a711de83a0fc3fc323fa3dfb0034e711a3b2d",
+    "packages/api/src/tasks/service.ts": "9a64c6de9cab075ba5ddf78ba4c498dba28e0f1ad220441daee265d8836cd35f",
+    "packages/api/src/tasks/settled.ts": "9b3b65d76a3b468684da8091757b56723db26be9172a1e3077e8e1e76ea3aebf",
+    "packages/api/src/tasks/list-projection.ts": "3df79cdadfd30adff3ad3b9be879c45242dc78a2da03b82529be2a647073ee00",
+    "optional/task-projection/install.sql": "1c5dffa6a6efb6a2f6577c589f739a2f2d3fe69f0f184e4e44a0d5959f5354ed",
+    "optional/task-projection/task_projection.wasm": "5181681cb7fa9e6795febb3903db4ee88d8302e2a54c6ad65de0d4beb94eabb9"
+  }
+}
